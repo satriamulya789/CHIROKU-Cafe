@@ -1,0 +1,11 @@
+flutter_native_splash:
+  color: "#FFFFFF"     # <-- background putih
+  color_dark: "#131010"
+
+  image: assets/images/splash_screen.png
+  fullscreen: true
+
+  android_12:
+    color: "#FFFFFF" 
+    color_dark: "#131010"  # <-- background putih Android 12+
+    image: assets/images/splash_screen.png   # <-- background ikon putih
