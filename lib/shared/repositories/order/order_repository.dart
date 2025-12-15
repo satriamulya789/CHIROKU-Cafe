@@ -1,5 +1,6 @@
 import 'package:chiroku_cafe/constant/api_constant.dart';
-import 'package:chiroku_cafe/utils/enums/enum.dart';
+import 'package:chiroku_cafe/utils/enums/oder_enum.dart';
+import 'package:chiroku_cafe/utils/enums/user_enum.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OrderRepository {
