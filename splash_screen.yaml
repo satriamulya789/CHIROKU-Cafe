@@ -1,0 +1,12 @@
+flutter_native_splash:
+  # light (default)
+  color: "#ffffff"
+  image: "assets/images/splsh.png"
+  # general options
+  fullscreen: true
+  web: false
+
+  # Android 12+ config (must specify separately)
+  android_12:
+    color: "#ffffff"
+    image: "assets/images/splsh.png"        # center logo for Android 12+ (light)  # center logo for Android 12+ (dark)
