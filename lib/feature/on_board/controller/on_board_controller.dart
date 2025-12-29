@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/config/routes/route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:chiroku_cafe/constant/assets_constant.dart';
@@ -9,17 +10,17 @@ class OnBoardController extends GetxController {
     {
       "image": AssetsConstant.onboard1,
       "title": "Easy Payments",
-      "subtitle": "Fast and secure transaction process for your customers."
+      "subtitle": "Fast and secure transaction process for your customers.",
     },
     {
       "image": AssetsConstant.onboard2,
       "title": "Order Tracking",
-      "subtitle": "Manage orders efficiently and in an organized way."
+      "subtitle": "Manage orders efficiently and in an organized way.",
     },
     {
       "image": AssetsConstant.onboard3,
       "title": "Best Coffee",
-      "subtitle": "Deliver the best experience with premium coffee quality."
+      "subtitle": "Deliver the best experience with premium coffee quality.",
     },
   ];
 
@@ -31,7 +32,7 @@ class OnBoardController extends GetxController {
 
   void nextPage() {
     if (pageIndex.value == pages.length - 1) {
-      Get.offAllNamed('/login');
+      Get.toNamed(AppRoutes.signIn);
       return;
     }
 
@@ -42,6 +43,6 @@ class OnBoardController extends GetxController {
   }
 
   void skip() {
-    Get.offAllNamed('/login');
+    Get.toNamed(AppRoutes.signIn);
   }
 }

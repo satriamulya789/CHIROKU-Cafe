@@ -1,9 +1,18 @@
 import 'package:chiroku_cafe/app.dart';
 import 'package:chiroku_cafe/config/routes/route.dart';
+import 'package:chiroku_cafe/constant/api_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: ApiConstant.supabaseUrl,
+    anonKey: ApiConstant.supabaseAnonKey,
+  );
+
   runApp(const MyApp());
 }
 
