@@ -4,6 +4,7 @@ import 'package:chiroku_cafe/feature/sign_in/widgets/email_text_field.dart';
 import 'package:chiroku_cafe/feature/sign_in/widgets/password_text_field.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
+import 'package:chiroku_cafe/shared/widgets/divider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -65,6 +66,9 @@ class SignInPage extends StatelessWidget {
                   onPressed: controller.signIn,
                   isLoading: controller.isLoading, model: null,
                 ),
+
+                SizedBox(height: 40),
+                DivenderWidget()
 
 
   

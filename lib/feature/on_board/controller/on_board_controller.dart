@@ -1,4 +1,4 @@
-import 'package:chiroku_cafe/config/routes/route.dart';
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:chiroku_cafe/constant/assets_constant.dart';
@@ -32,7 +32,7 @@ class OnBoardController extends GetxController {
 
   void nextPage() {
     if (pageIndex.value == pages.length - 1) {
-      Get.toNamed(AppRoutes.signIn);
+      Get.toNamed(AppRoutes.signUp);
       return;
     }
 
@@ -43,6 +43,6 @@ class OnBoardController extends GetxController {
   }
 
   void skip() {
-    Get.toNamed(AppRoutes.signIn);
+    Get.toNamed(AppRoutes.signUp);
   }
 }

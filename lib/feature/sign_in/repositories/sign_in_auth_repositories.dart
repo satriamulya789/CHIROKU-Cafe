@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:chiroku_cafe/constant/api_constant.dart';
-import 'package:chiroku_cafe/feature/sign_in/models/error_sign_in_model.dart';
 import 'package:chiroku_cafe/feature/sign_in/models/sign_in_model.dart';
+import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepository {
@@ -17,7 +17,7 @@ class AuthRepository {
         password: user.password.trim(),
       );
       if (response.user == null) {
-        throw SignInError.fromException(e);
+        throw AuthErrorModel.unknownError();
       }
       
       final data = await _client
@@ -31,7 +31,7 @@ class AuthRepository {
 
 
     } catch (e) {
-      throw SignInError.fromException(e);
+      throw AuthErrorModel.unknownError();
       
     }
   }

@@ -1,5 +1,5 @@
 import 'package:chiroku_cafe/app.dart';
-import 'package:chiroku_cafe/config/routes/route.dart';
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/constant/api_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

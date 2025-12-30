@@ -1,15 +1,13 @@
+import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get_utils/src/get_utils/get_utils.dart';
 
 class EmailTextField extends StatelessWidget {
   final TextEditingController controller;
 
-  const EmailTextField({
-    super.key,
-    required this.controller,
-  });
+  const EmailTextField({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +15,10 @@ class EmailTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Email Address',
-          style: AppTypography.label.copyWith(
-            color: AppColors.brownDark,
-          ),
-        ),
-        const SizedBox(height: 8),
+        style: AppTypography.label.copyWith(
+          color: AppColors.brownDark,
+        ),),
+        SizedBox(height: 8,),
         TextFormField(
           controller: controller,
           keyboardType: TextInputType.emailAddress,
@@ -30,7 +27,7 @@ class EmailTextField extends StatelessWidget {
               return 'Email is required';
             }
             if (!GetUtils.isEmail(value)) {
-              return 'Invalid email format';
+              return AuthErrorModel.invalidEmailFormat().message;
             }
             return null;
           },
@@ -45,7 +42,7 @@ class EmailTextField extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
           ),
-        ),
+        )
       ],
     );
   }

@@ -1,16 +1,14 @@
-import 'package:chiroku_cafe/utils/enums/user_enum.dart';
-
 class SignUpModel {
   final String fullName;
   final String email;
   final String password;
-  final UserRole role; 
+  final String role; 
 
   SignUpModel({
     required this.fullName,
     required this.email,
     required this.password,
-    this.role = UserRole.cashier,
+    this.role = 'cashier',
   });
 
   Map<String, dynamic> toJson() => {

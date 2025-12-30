@@ -1,45 +1,73 @@
-import 'package:chiroku_cafe/feature/sign_up/models/sign_up_error_model.dart';
+import 'package:chiroku_cafe/feature/sign_up/models/sign_up_response.dart';
+import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/utils/enums/user_enum.dart';
+import 'package:chiroku_cafe/utils/functions/existing_email.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignUpService {
   final SupabaseClient supabase = Supabase.instance.client;
-  
-  Future<void> signUp ({
+
+  final ExistingEmail _existingEmail = ExistingEmail();
+
+  /// Create User Record in users table
+Future<void> _createUserRecord({
+  required String userId,
+  required String fullName,
+  required String email,
+}) async {
+  try {
+    await supabase.from('users').insert({
+      'id': userId,
+      'full_name': fullName,
+      'email': email,
+      'role': 'cashier',
+    });
+  } catch (e) {
+    throw AuthErrorModel.unknownError();    
+  }
+}
+
+  Future<AuthResponse> signUp({
     required String fullName,
     required String email,
+
     required String password, required UserRole role,
-  }) async{
+  }) async { 
     try {
-      
+      final emailExists = await _existingEmail.isEmailExists(email);
+      if (emailExists) {
+        throw AuthErrorModel.emailAlreadyExists();
+      }
       if (email.isEmpty || password.isEmpty) {
-        throw SignUpErrorModel.emptyField();
+        throw AuthErrorModel.passwordEmpty();
       }
       if (password.length < 6) {
-        throw SignUpErrorModel.passwordTooShort();
+        throw AuthErrorModel.passwordTooShort();
+      }
+      if (fullName.isEmpty) {
+        throw AuthErrorModel.nameEmpty();
+      }
+      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
+        throw AuthErrorModel.invalidEmailFormat();
       }
 
       final response = await supabase.auth.signUp(
-        email: email,
-        password: password,
-        data: {'full_name': fullName},
+      email: email,
+      password: password,
+      data: {'full_name': fullName, 'email': email},
       );
 
       if (response.user != null) {
-        await supabase.from('users').insert({
-          'id': response.user!.id,
-          'full_name': fullName,
-          'email': email,
-          'role': UserRole.cashier,
-        });
-      }
+      await _createUserRecord(
+        userId: response.user!.id,
+        fullName: fullName,
+        email: email,
+      );
+    }
 
-    } on AuthException catch (e) {
-      throw SignUpErrorModel.fromException(e);
-    } on SignUpErrorModel catch (e) {
-      throw Exception(e.message);
+    return response;
     } catch (e) {
-      throw SignUpErrorModel.unknownError();
+      throw AuthErrorModel.unknownError();
     }
   }
 }

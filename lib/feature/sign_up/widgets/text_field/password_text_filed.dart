@@ -4,11 +4,11 @@ import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class PasswordTextField extends StatelessWidget {
+class PasswordTextFiled extends StatelessWidget {
   final TextEditingController controller;
   final RxBool isHidden;
 
-  const PasswordTextField({
+  const PasswordTextFiled({
     super.key,
     required this.controller,
     required this.isHidden,

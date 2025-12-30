@@ -1,6 +1,7 @@
-import 'package:chiroku_cafe/feature/sign_in/models/error_sign_in_model.dart';
+
 import 'package:chiroku_cafe/feature/sign_in/models/sign_in_model.dart';
 import 'package:chiroku_cafe/feature/sign_in/repositories/sign_in_auth_repositories.dart';
+import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -47,7 +48,7 @@ class SignInController extends GetxController
     
 
     if (email.isEmpty || password.isEmpty) {
-      _showError(SignInError.emptyField());
+      _showError(AuthErrorModel.emptyField());
       return;
     }
 
@@ -59,14 +60,14 @@ class SignInController extends GetxController
       change(user, status: RxStatus.success());
       _redirect(user);
     } catch (e) {
-      final error = SignInError.fromException(e);
+      final error = AuthErrorModel.unknownError();
 
       change(null, status: RxStatus.error(error.message));
       _showError(error);
     }
   }
 
-  void _showError(SignInError error) {
+  void _showError(AuthErrorModel error) {
     Get.snackbar(
       'Login Failed',
       error.message,

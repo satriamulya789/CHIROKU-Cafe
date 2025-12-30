@@ -1,12 +1,13 @@
 import 'package:chiroku_cafe/feature/sign_up/services/sign_up_service.dart';
-import 'package:chiroku_cafe/feature/sign_up/models/sign_up_error_model.dart';
+import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/utils/enums/user_enum.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignUpRepository {
-  final SignUpService _signUpService;
+  final SignUpService _signUpService = SignUpService();
 
-  SignUpRepository(this._signUpService);
+  SignUpRepository(SignUpService find);
+
 
   Future<void> registerUser({
     required String fullName,
@@ -21,12 +22,10 @@ class SignUpRepository {
         password: password,
         role: UserRole.cashier,
       );
-     } on AuthException catch (e) {
-      throw SignUpErrorModel.fromException(e);
-    } on SignUpErrorModel catch (e) {
-      throw Exception(e.message);
+    } on AuthException catch (e) {
+      throw AuthErrorModel.fromException(e);
     } catch (e) {
-      throw SignUpErrorModel.unknownError();
+      throw AuthErrorModel.unknownError();
     }
   }
 }
