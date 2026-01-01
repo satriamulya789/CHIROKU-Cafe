@@ -1,4 +1,4 @@
-import 'package:chiroku_cafe/feature/sign_in/widgets/email_text_field.dart';
+import 'package:chiroku_cafe/feature/auth/sign_in/widgets/email_text_field.dart';
 import 'package:chiroku_cafe/feature/auth/sign_up/controllers/sign_up_controller.dart';
 import 'package:chiroku_cafe/feature/auth/sign_up/widgets/already_have_acc.dart';
 import 'package:chiroku_cafe/feature/auth/sign_up/widgets/button_sign_up.dart';
@@ -31,7 +31,6 @@ class SignUpPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 12),
                 Text(
                   'Create an Account',
                   style: AppTypography.h2.copyWith(
@@ -45,36 +44,51 @@ class SignUpPage extends StatelessWidget {
                     color: AppColors.brownNormal,
                   ),
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 40),
+                
+                // Email Field
+                CustomTextField(
+                  label: 'Email',
+                  hintText: 'Enter your email',
+                  controller: controller.emailController,
+                  type: TextFieldType.email,
+                  prefixIcon: Icons.email_outlined,
+                ),
+                const SizedBox(height: 20),
+
+                 // Password Field
+                CustomTextField(
+                  label: 'Password',
+                  hintText: 'Enter your password',
+                  controller: controller.passwordController,
+                  type: TextFieldType.password,
+                  prefixIcon: Icons.lock_outline,
+                  isPasswordVisible: controller.isPasswordObscured,
+                ),
+                const SizedBox(height: 20),
+
+                 // Confirm Password Field
+                 CustomTextField(
+                  label: 'Confirm Password',
+                  hintText: 'Re-enter your password',
+                  controller: controller.confirmPasswordController,
+                  type: TextFieldType.password,
+                  prefixIcon: Icons.lock_outline,
+                  isPasswordVisible: controller.isConfirmPasswordObscured,
+                  customValidator: (value) {
+                    // Order parameter: value dulu, password kedua
+                    return controller.validator.validateConfirmPassword(
+                      value,
+                      controller.passwordController.text,
+                    );
+                  },
+                ),
+                const SizedBox(height: 30),
+
+
+                
 
                 //Full Name Text Field
-                CustomTextField(
-                  label: 'Name',
-                  hintText: 'Enter your  name',
-                  controller: controller.nameController,
-                  keyboardType: TextInputType.name,
-                  type: TextFieldType.name,
-                ),
-
-                //Email Text Field
-                SizedBox(height: 16),
-                CustomTextField(
-              label: 'Email Address',
-              hintText: 'Enter your email address',
-              controller: controller.emailController,
-              keyboardType: TextInputType.emailAddress,
-              type: TextFieldType.email,
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              label: 'Password',
-              hintText: 'Enter your password',
-              controller: controller.passwordController,
-              obscureText: controller.isPasswordObscured.value,
-              type: TextFieldType.password,
-              
-            ),
-            SizedBox(height: 24),
 
                 ButtonSignUp(),
                 const SizedBox(height: 40),

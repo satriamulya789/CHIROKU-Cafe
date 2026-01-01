@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:chiroku_cafe/constant/api_constant.dart';
-import 'package:chiroku_cafe/feature/sign_in/models/sign_in_model.dart';
+import 'package:chiroku_cafe/feature/auth/sign_in/models/sign_in_model.dart';
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

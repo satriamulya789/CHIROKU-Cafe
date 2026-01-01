@@ -1,6 +1,6 @@
 
-import 'package:chiroku_cafe/feature/sign_in/models/sign_in_model.dart';
-import 'package:chiroku_cafe/feature/sign_in/repositories/sign_in_auth_repositories.dart';
+import 'package:chiroku_cafe/feature/auth/sign_in/models/sign_in_model.dart';
+import 'package:chiroku_cafe/feature/auth/sign_in/repositories/sign_in_auth_repositories.dart';
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:flutter/material.dart';

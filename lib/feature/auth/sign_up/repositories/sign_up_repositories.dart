@@ -1,4 +1,4 @@
-import 'package:chiroku_cafe/feature/auth/sign_up/services/sign_up_service.dart';
+
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/utils/enums/user_enum.dart';
@@ -8,7 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SignUpRepository {
   final supabase = Supabase.instance.client;
 
-  Future<void> registerUser(String email, String password) async {
+  Future<void> registerUser({ required String email, required String password }) async {
     try {
       final response = await supabase.auth.signUp(
         email: email,

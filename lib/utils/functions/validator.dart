@@ -12,9 +12,6 @@ class Validator {
     if (!GetUtils.isEmail(email)) {
       return AuthErrorModel.invalidEmailFormat().message;
     }
-    if (_existingEmail.isEmailExists(email) != null) {
-      return AuthErrorModel.emailAlreadyExists().message;
-    }
     return null;
   }
   String? validatorName(String? fullName) {
@@ -33,6 +30,16 @@ class Validator {
     }
     if(!passwordRegex.hasMatch(password)){
       return AuthErrorModel.passwordTooWeak().message;
+    }
+    return null;
+  }
+
+  String? validateConfirmPassword(String? value, String? password) {
+    if (value == null || value.isEmpty) {
+      return AuthErrorModel.confirmPassword().message;
+    }
+    if (value != password) {
+      return AuthErrorModel.passwordDontMatch().message;
     }
     return null;
   }

@@ -1,7 +1,7 @@
-import 'package:chiroku_cafe/feature/sign_in/controllers/sign_in_controller.dart';
-import 'package:chiroku_cafe/feature/sign_in/widgets/button_sign_in.dart';
-import 'package:chiroku_cafe/feature/sign_in/widgets/email_text_field.dart';
-import 'package:chiroku_cafe/feature/sign_in/widgets/password_text_field.dart';
+import 'package:chiroku_cafe/feature/auth/sign_in/controllers/sign_in_controller.dart';
+import 'package:chiroku_cafe/feature/auth/sign_in/widgets/button_sign_in.dart';
+import 'package:chiroku_cafe/feature/auth/sign_in/widgets/email_text_field.dart';
+import 'package:chiroku_cafe/feature/auth/sign_in/widgets/password_text_field.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:chiroku_cafe/shared/widgets/divider.dart';

@@ -1,6 +1,9 @@
-import 'package:chiroku_cafe/constant/api_constant.dart';
+
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
+import 'package:chiroku_cafe/shared/style/app_color.dart';
+import 'package:chiroku_cafe/utils/enums/user_enum.dart';
 import 'package:chiroku_cafe/utils/functions/existing_email.dart';
+import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignUpService {
@@ -8,63 +11,39 @@ class SignUpService {
 
   final ExistingEmail _existingEmail = ExistingEmail();
 
-  /// Create User Record in users table
-  Future<void> _createUserRecord({
-    required String userId,
-    required String fullName,
-    required String email,
-  }) async {
-    try {
-      await supabase.from(ApiConstant.usersTable).insert({
-        'id': userId,
-        'full_name': fullName,
-        'email': email,
-        'role': 'cashier',
-      });
-    } catch (e) {
-      print('Error creating user record: $e');
-      rethrow;
+  Future<AuthResponse> signUp(String email, String password) async {
+    final emailExists = await _existingEmail.isEmailExists(email);
+    if (emailExists) {
+      throw AuthErrorModel.emailAlreadyExists();
     }
-  }
-
-  Future<AuthResponse> signUp({
-    required String fullName,
-    required String email,
-    required String password,
-    required String role,
-  }) async {
+    if (email.isEmpty || password.isEmpty) {
+      throw AuthErrorModel.passwordEmpty();
+    }
+    if (password.length < 6) {
+      throw AuthErrorModel.passwordTooShort();
+    }
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
+      throw AuthErrorModel.invalidEmailFormat();
+    }
     try {
-      final emailExists = await _existingEmail.isEmailExists(email);
-      if (emailExists) {
-        throw AuthErrorModel.emailAlreadyExists();
-      }
-      if (email.isEmpty || password.isEmpty) {
-        throw AuthErrorModel.passwordEmpty();
-      }
-      if (password.length < 6) {
-        throw AuthErrorModel.passwordTooShort();
-      }
-      if (fullName.isEmpty) {
-        throw AuthErrorModel.nameEmpty();
-      }
-      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
-        throw AuthErrorModel.invalidEmailFormat();
-      }
-
       final response = await supabase.auth.signUp(
         email: email,
         password: password,
-        data: {'full_name': fullName, 'email': email},
+        data: {'role': UserRole.cashier},
       );
 
-      if (response.user != null) {
-        await _createUserRecord(
-          userId: response.user!.id,
-          fullName: fullName,
-          email: email,
+       final user = response.user; 
+      if (user != null) {
+         Get.snackbar(
+          'Sign Up Successful',
+          AuthErrorModel.successAccount().message,
+          colorText: AppColors.white,
+          backgroundColor: AppColors.alertNormal,
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 3),
+          borderRadius: 16,
         );
       }
-
       return response;
     } on AuthException catch (e) {
       print('AuthException: ${e.message}'); // Debug

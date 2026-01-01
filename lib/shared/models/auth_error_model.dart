@@ -33,6 +33,22 @@ class AuthErrorModel {
     );
   }
 
+  factory AuthErrorModel.confirmPassword(){
+    return AuthErrorModel(
+      message: 'Confirm Password must not be empty',
+      code: 'empty_field',
+      statusCode: 400,
+    );
+  }
+
+  factory AuthErrorModel.passwordDontMatch(){
+    return AuthErrorModel(
+      message: 'Passwords do not match',
+      code: 'passwords_do_not_match',
+      statusCode: 400,
+    );
+  }
+
   factory AuthErrorModel.emailAlreadyExists() {
     return AuthErrorModel(
       message: 'The email address is already registered.',
