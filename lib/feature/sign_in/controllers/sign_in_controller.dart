@@ -48,7 +48,7 @@ class SignInController extends GetxController
     
 
     if (email.isEmpty || password.isEmpty) {
-      _showError(AuthErrorModel.emptyField());
+      _showError(AuthErrorModel.emailEmpty());
       return;
     }
 

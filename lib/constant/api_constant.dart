@@ -1,15 +1,15 @@
+import 'package:chiroku_cafe/env/env.dart';
+
 class ApiConstant {
-    static  String get supabaseUrl => String.fromEnvironment('SUPABASE_URL');
-    static  String get supabaseAnonKey => String.fromEnvironment('SUPABASE_ANON_KEY');
-
-    static const String usersTable = 'users';          // data user/kasir/admin
-    static const String menusTable = 'menu';           // daftar menu
-    static const String tablesTable = 'tables';        // meja pelanggan
-    static const String ordersTable = 'orders';        // order utama
-    static const String orderItemsTable = 'order_items'; // item dalam order
-    static const String discountsTable = 'discounts';  // kode diskon
-    static const String paymentsTable = 'payments';
-
-    
-
+  // Gunakan Env dari envied, bukan dotenv
+  static String get supabaseUrl => Env.supabaseUrl;
+  static String get supabaseAnonKey => Env.supabaseAnonKey;
+  
+  static const String usersTable = 'users';
+  static const String menusTable = 'menu';
+  static const String tablesTable = 'tables';
+  static const String ordersTable = 'orders';
+  static const String orderItemsTable = 'order_items';
+  static const String discountsTable = 'discounts';
+  static const String paymentsTable = 'payments';
 }

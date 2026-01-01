@@ -1,4 +1,4 @@
-import 'package:chiroku_cafe/feature/sign_up/controllers/sign_up_controller.dart';
+import 'package:chiroku_cafe/feature/auth/sign_up/controllers/sign_up_controller.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';

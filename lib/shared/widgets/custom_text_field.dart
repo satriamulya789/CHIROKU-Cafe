@@ -46,6 +46,7 @@ class CustomTextField extends StatelessWidget {
           // You can customize the color as needed,
         ),
         SizedBox(height: 8),
+        _buildTextField(),
       ],
     );
   }

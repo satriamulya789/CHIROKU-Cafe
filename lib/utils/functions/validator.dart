@@ -7,8 +7,13 @@ class Validator {
   String? ValidatorEmail(String? email) {
     if (email == null || email.isEmpty) {
       return AuthErrorModel.emailEmpty().message;
-    } else if (!GetUtils.isEmail(email)) {
+    }
+    
+    if (!GetUtils.isEmail(email)) {
       return AuthErrorModel.invalidEmailFormat().message;
+    }
+    if (_existingEmail.isEmailExists(email) != null) {
+      return AuthErrorModel.emailAlreadyExists().message;
     }
     return null;
   }
@@ -22,9 +27,11 @@ class Validator {
     final passwordRegex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$');
     if (password == null || password.isEmpty) {
       return AuthErrorModel.passwordEmpty().message;
-    }else if (password.length < 6) {
+    }
+    if (password.length < 6) {
       return AuthErrorModel.passwordTooShort().message;
-    }else if(!passwordRegex.hasMatch(password)){
+    }
+    if(!passwordRegex.hasMatch(password)){
       return AuthErrorModel.passwordTooWeak().message;
     }
     return null;

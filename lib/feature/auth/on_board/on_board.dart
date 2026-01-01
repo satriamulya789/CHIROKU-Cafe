@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:chiroku_cafe/constant/assets_constant.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
-import 'package:chiroku_cafe/feature/on_board/controller/on_board_controller.dart';
-import 'package:chiroku_cafe/feature/on_board/view/on_board_view.dart';
+import 'package:chiroku_cafe/feature/auth/on_board/controller/on_board_controller.dart';
+import 'package:chiroku_cafe/feature/auth/on_board/view/on_board_view.dart';
 
 class OnBoardPages extends GetView<OnBoardController> {
   const OnBoardPages({super.key});

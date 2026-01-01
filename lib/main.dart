@@ -1,6 +1,7 @@
 import 'package:chiroku_cafe/app.dart';
+import 'package:chiroku_cafe/config/pages/pages.dart';
 import 'package:chiroku_cafe/config/routes/routes.dart';
-import 'package:chiroku_cafe/constant/api_constant.dart';
+import 'package:chiroku_cafe/env/env.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -8,9 +9,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Supabase dengan Env dari envied
   await Supabase.initialize(
-    url: ApiConstant.supabaseUrl,
-    anonKey: ApiConstant.supabaseAnonKey,
+    url: Env.supabaseUrl,
+    anonKey: Env.supabaseAnonKey,
   );
 
   runApp(const MyApp());
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Chiroku Cafe',
       initialRoute: AppRoutes.onboard,
-      getPages: AppPages.routes,
+      getPages: Pages.routes,
     );
   }
 }

@@ -115,6 +115,22 @@ class AuthErrorModel {
     );
   }
 
+  factory AuthErrorModel.sessionExpired() {
+    return AuthErrorModel(
+      message: 'Your session has expired. Please log in again.',
+      code: 'session_expired',
+      statusCode: 401,
+    );
+  }
+
+  factory AuthErrorModel.successAccount(){
+    return AuthErrorModel(
+      message: 'Your account has been created successfully.',
+      code: 'success_account',
+      statusCode: 200,
+    );
+  }
+
   /// Factory method to create AuthErrorModel from AuthException
   factory AuthErrorModel.fromException(AuthException exception) {
     final statusCode = exception.statusCode;

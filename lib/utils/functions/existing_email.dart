@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/constant/api_constant.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ExistingEmail {
@@ -6,9 +7,9 @@ class ExistingEmail {
     final SupabaseClient supabase = Supabase.instance.client;
     try {
       final response = await supabase
-          .from('users')
+          .from(ApiConstant.usersTable)
           .select('email')
-          .eq('email', email.trim().toLowerCase())
+          .eq('email', email.trim())
           .maybeSingle();
 
       return response != null;
