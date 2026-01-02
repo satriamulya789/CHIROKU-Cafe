@@ -19,10 +19,17 @@ class AuthErrorModel {
     );
   }
 
-  factory AuthErrorModel.uploadAvatar(){
+  factory AuthErrorModel.uploadAvatar() {
     return AuthErrorModel(
       message: 'Failed to upload avatar. Please try again.',
       code: 'upload_avatar_failed',
+      statusCode: 500,
+    );
+  }
+  factory AuthErrorModel.updateProfileFailed() {
+    return AuthErrorModel(
+      message: 'Failed to update profile. Please try again.',
+      code: 'update_profile_failed',
       statusCode: 500,
     );
   }
@@ -41,7 +48,7 @@ class AuthErrorModel {
     );
   }
 
-  factory AuthErrorModel.confirmPassword(){
+  factory AuthErrorModel.confirmPassword() {
     return AuthErrorModel(
       message: 'Confirm Password must not be empty',
       code: 'empty_field',
@@ -49,7 +56,7 @@ class AuthErrorModel {
     );
   }
 
-  factory AuthErrorModel.passwordDontMatch(){
+  factory AuthErrorModel.passwordDontMatch() {
     return AuthErrorModel(
       message: 'Passwords do not match',
       code: 'passwords_do_not_match',
@@ -147,7 +154,7 @@ class AuthErrorModel {
     );
   }
 
-  factory AuthErrorModel.successAccount(){
+  factory AuthErrorModel.successAccount() {
     return AuthErrorModel(
       message: 'Your account has been created successfully.',
       code: 'success_account',

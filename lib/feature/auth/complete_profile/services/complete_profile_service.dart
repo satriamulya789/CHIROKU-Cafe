@@ -33,9 +33,13 @@ class CompleteProfileService {
     String? avatarUrl,
   }) async{
     try {
-      
+      await supabase.from(ApiConstant.usersTable).update({
+        'full_name': fullName,
+        'avatar_url': avatarUrl,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', userId);
     } catch (e) {
-      
+      throw AuthErrorModel.updateProfileFailed();
     }
   }
 }
