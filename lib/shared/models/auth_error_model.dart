@@ -18,6 +18,14 @@ class AuthErrorModel {
       statusCode: 400,
     );
   }
+
+  factory AuthErrorModel.uploadAvatar(){
+    return AuthErrorModel(
+      message: 'Failed to upload avatar. Please try again.',
+      code: 'upload_avatar_failed',
+      statusCode: 500,
+    );
+  }
   factory AuthErrorModel.emailEmpty() {
     return AuthErrorModel(
       message: 'Email must not be empty',

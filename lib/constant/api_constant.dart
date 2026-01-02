@@ -6,6 +6,7 @@ class ApiConstant {
   static String get supabaseAnonKey => Env.supabaseAnonKey;
   
   static const String usersTable = 'users';
+  static const String avatarsUrl = 'avatars';
   static const String menusTable = 'menu';
   static const String tablesTable = 'tables';
   static const String ordersTable = 'orders';
