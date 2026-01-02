@@ -8,25 +8,28 @@ import 'package:chiroku_cafe/utils/functions/validator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class SignUpController extends GetxController {
-  //================== Repository ===================//
+  //================== Dependencies ===================//
   final signUpRepository = SignUpRepository();
-
-  //================== Form Controllers ===================//
-  final formKey = GlobalKey<FormState>();
-  // final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
-  final role = UserRole.cashier.obs;
   final validator = Validator();
   final ExistingEmail _existingEmail = ExistingEmail();
 
+  //================== Form Controllers ===================//
+  final formKey = GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  //================== Observables ===================//
   final isLoading = false.obs;
   final _isPasswordObscured = true.obs;
   final _isConfirmPasswordObscured = true.obs;
 
+  //================== Getters ===================//
+  RxBool get isPasswordObscured => _isPasswordObscured;
+  RxBool get isConfirmPasswordObscured => _isConfirmPasswordObscured;
+
+  //================== Lifecycle ===================//
   @override
   void onClose() {
     emailController.dispose();
@@ -35,14 +38,12 @@ class SignUpController extends GetxController {
     super.onClose();
   }
 
-  //================== Function ===================//
-
-  RxBool get isPasswordObscured => _isPasswordObscured;
-  RxBool get isConfirmPasswordObscured => _isConfirmPasswordObscured;
-
- 
+  //================== Toggle Functions ===================//
   void togglePasswordVisibility() {
     _isPasswordObscured.value = !_isPasswordObscured.value;
+  }
+  void toggleConfirmPasswordVisibility() {
+    _isConfirmPasswordObscured.value = !_isConfirmPasswordObscured.value;
   }
 
   //  String? validateConfirmPassword(String? value) {
@@ -51,31 +52,25 @@ class SignUpController extends GetxController {
   //     passwordController.text,
   //   );
   // }
-  
+
   // // Opsional - Validator lainnya jika mau dipakai
   // String? validateEmail(String? value) {
   //   return validator.ValidatorEmail(value);
   // }
 
-  void toggleConfirmPasswordVisibility() {
-    _isConfirmPasswordObscured.value = !_isConfirmPasswordObscured.value;
-  }
 
+//================== Sign Up Function ===================//
   Future<void> signUp() async {
-    emailController.text = emailController.text.trim();
-    passwordController.text = passwordController.text.trim();
-    confirmPasswordController.text = confirmPasswordController.text.trim();
-
-    final emailExists = await _existingEmail.isEmailExists(
-      emailController.text.trim(),
-    );
-
     if (!formKey.currentState!.validate()) return;
 
-    if (emailExists) {
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+ 
+    if (password != confirmPassword) {
       Get.snackbar(
         'Sign Up Error',
-        AuthErrorModel.emailAlreadyExists().message,
+        AuthErrorModel.passwordDontMatch().message,
         snackPosition: SnackPosition.TOP,
         duration: const Duration(seconds: 3),
         borderRadius: 16,
@@ -87,14 +82,52 @@ class SignUpController extends GetxController {
       return;
     }
 
+    isLoading.value = true;
+
     try {
+      //email chechk exists
+      final emailExists = await _existingEmail.isEmailExists(
+        emailController.text.trim(),
+      );
+
+      if (emailExists) {
+        Get.snackbar(
+          'Sign Up Error',
+          AuthErrorModel.emailAlreadyExists().message,
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 3),
+          borderRadius: 16,
+          backgroundColor: AppColors.alertNormal,
+          margin: const EdgeInsets.all(16),
+          colorText: AppColors.white,
+          icon: const Icon(Icons.error_outline, color: AppColors.white),
+        );
+        return;
+      }
+
       await signUpRepository.registerUser(
-      email: emailController.text,
-      password: passwordController.text,
-    );
+        email: email,
+        password: password,
+        role: 'cashier',
+      );
+
+      emailController.clear();
+      passwordController.clear();
+      confirmPasswordController.clear();
+
       Get.toNamed(AppRoutes.signIn);
     } catch (e) {
-      throw AuthErrorModel.unknownError();
+      Get.snackbar(
+        'Error',
+        AuthErrorModel.unknownError().message,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 3),
+        borderRadius: 16,
+        backgroundColor: AppColors.alertNormal,
+        margin: const EdgeInsets.all(16),
+        colorText: AppColors.white,
+        icon: const Icon(Icons.error_outline, color: AppColors.white),
+      );
     }
   }
 }
