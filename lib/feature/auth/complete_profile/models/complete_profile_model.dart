@@ -17,4 +17,11 @@ class CompleteProfileModel {
       'updated_at': DateTime.now().toIso8601String(),
     };
   }
+  factory CompleteProfileModel.fromJson(Map<String, dynamic> json) {
+    return CompleteProfileModel(
+      userId: json['id'] as String,
+      fullName: json['full_name'] as String,
+      avatarUrl: json['avatar_url'] as String?,
+    );
+  }
 }
