@@ -169,6 +169,14 @@ class AuthErrorModel {
     );
   }
 
+  factory AuthErrorModel.deleteAvatar(){
+    return AuthErrorModel(
+      message: 'Failed to delete avatar. Please try again.',
+      code: 'delete_avatar_failed',
+      statusCode: 500,
+    );
+  }
+
   /// Factory method to create AuthErrorModel from AuthException
   factory AuthErrorModel.fromException(AuthException exception) {
     final statusCode = exception.statusCode;
