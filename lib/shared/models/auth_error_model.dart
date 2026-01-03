@@ -26,6 +26,13 @@ class AuthErrorModel {
       statusCode: 500,
     );
   }
+  factory AuthErrorModel.invalidAvatarFormat() {
+    return AuthErrorModel(
+      message: 'Invalid avatar format. Please upload a valid image file.',
+      code: 'invalid_avatar_format',
+      statusCode: 400,
+    );
+  }
   factory AuthErrorModel.updateProfileFailed() {
     return AuthErrorModel(
       message: 'Failed to update profile. Please try again.',
