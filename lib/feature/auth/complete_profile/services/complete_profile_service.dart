@@ -12,6 +12,7 @@ class CompleteProfileService {
       final fileName = '$userId-${DateTime.now().millisecondsSinceEpoch}.jpg';
       final path = 'avatars/$fileName';
 
+      //Upload file to Supabase Storage
       await supabase.storage
           .from(ApiConstant.avatarsUrl)
           .upload(
@@ -27,6 +28,7 @@ class CompleteProfileService {
     }
   }
 
+  //update user profile in database
   Future<void> updateUserProfile({
     required String userId,
     required String fullName,
