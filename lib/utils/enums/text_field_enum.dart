@@ -4,5 +4,5 @@ enum TextFieldType {
   password, 
   name, 
   phone, 
-  number, fullName 
+  number,  
 }

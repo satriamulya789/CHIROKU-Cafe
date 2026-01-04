@@ -1,4 +1,6 @@
 import 'package:chiroku_cafe/config/routes/routes.dart';
+import 'package:chiroku_cafe/feature/auth/complete_profile/binding/complete_profile_binding.dart';
+import 'package:chiroku_cafe/feature/auth/complete_profile/views/complete_profile_page.dart';
 import 'package:chiroku_cafe/feature/auth/on_board/on_board.dart';
 import 'package:chiroku_cafe/feature/auth/sign_up/binding/sign_up_binding.dart';
 import 'package:chiroku_cafe/feature/auth/sign_up/views/sign_up_page.dart';
@@ -16,6 +18,11 @@ class Pages {
       name: AppRoutes.signUp,
       page: () => const SignUpPage(),
       binding: SignUpBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.completeProfile,
+      page: () => const CompleteProfileView(),
+      binding: CompleteProfileBinding(), // Uncomment if you have a binding for this page
     ),
     // GetPage(
     //   name: AppRoutes.signIn,

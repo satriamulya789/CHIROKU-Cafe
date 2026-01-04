@@ -1,20 +1,23 @@
 import 'dart:io';
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/repositories/complete_profile_repositories.dart';
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
+import 'package:chiroku_cafe/utils/functions/validator.dart';
 import 'package:chiroku_cafe/utils/services/permission_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CompleteProfileController extends GetxController {
   //================== Dependencies ===================//
   final _repository = CompleteProfileRepository();
   final _permissionService = PermissionService();
+  final _customSnackbar = CustomSnackbar();
   final supabase = Supabase.instance.client;
 
   //================== Form ===================//
@@ -71,30 +74,16 @@ class CompleteProfileController extends GetxController {
 
       if (pickedFile != null) {
         _avatarFile.value = File(pickedFile.path);
-        Get.snackbar(
-          'Success',
+        _customSnackbar.showSuccessSnackbar(
           AuthErrorModel.imageSelected().message,
-          backgroundColor: AppColors.successNormal,
-          colorText: AppColors.white,
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          icon: const Icon(Icons.check_circle_outline, color: AppColors.white),
-          borderRadius: 16,
-          margin: const EdgeInsets.all(16),
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      _customSnackbar.showErrorSnackbar(
         AuthErrorModel.invalidAvatarFormat().message,
-        backgroundColor: AppColors.alertNormal,
-        colorText: AppColors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        icon: const Icon(Icons.error_outline, color: AppColors.white),
-        borderRadius: 16,
-        margin: const EdgeInsets.all(16),
       );
+    } finally {
+      _isUploading.value = false;
     }
   }
   //
@@ -120,29 +109,13 @@ class CompleteProfileController extends GetxController {
 
       if (pickedFile != null) {
         _avatarFile.value = File(pickedFile.path);
-        Get.snackbar(
-          'Success',
+        _customSnackbar.showSuccessSnackbar(
           AuthErrorModel.capturePhoto().message,
-          backgroundColor: AppColors.successNormal,
-          colorText: AppColors.white,
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          icon: const Icon(Icons.check_circle_outline, color: AppColors.white),
-          borderRadius: 16,
-          margin: const EdgeInsets.all(16),
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      _customSnackbar.showErrorSnackbar(
         AuthErrorModel.capturePhotoFailed().message,
-        backgroundColor: AppColors.alertNormal,
-        colorText: AppColors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        icon: const Icon(Icons.error_outline, color: AppColors.white),
-        borderRadius: 16,
-        margin: const EdgeInsets.all(16),
       );
     }
   }
@@ -203,13 +176,57 @@ class CompleteProfileController extends GetxController {
     );
   }
 
-   /// Remove selected avatar
+  /// Remove selected avatar
   Future<void> removeAvatar() async {
     _avatarFile.value = null;
-    
   }
 
-   @override
+  /// Complete user profile
+  Future<void> completeProfile() async {
+    // Validate form
+    if (!nameFormKey.currentState!.validate()) {
+      return;
+    }
+
+    // Check if user is authenticated
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) {
+      _customSnackbar.showErrorSnackbar(
+        AuthErrorModel.failedLoadUser().message,
+      );
+      Get.offAllNamed(AppRoutes.signUp);
+      return;
+    }
+
+    try {
+      _isLoading.value = true;
+
+      final sanitizedName = Validator.sanitizeName(nameController.text);
+
+      // Complete profile via repository
+      await _repository.completeProfile(
+        userId: userId,
+        fullName: nameController.text.trim(),
+        avatarFile: avatarFile,
+      );
+
+      _customSnackbar.showSuccessSnackbar(
+        AuthErrorModel.successAccount().message,
+      );
+
+      // Navigate to home screen
+      await Future.delayed(const Duration(milliseconds: 500));
+      Get.offAllNamed(AppRoutes.signIn);
+    } catch (e) {
+      _customSnackbar.showErrorSnackbar(
+        AuthErrorModel.updateProfileFailed().message,
+      );
+    } finally {
+      _isLoading.value = false;
+    }
+  }
+
+  @override
   void onClose() {
     nameController.dispose();
     super.onClose();

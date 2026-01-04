@@ -111,11 +111,9 @@ class SignUpController extends GetxController {
         role: 'cashier',
       );
 
-      emailController.clear();
-      passwordController.clear();
-      confirmPasswordController.clear();
 
-      Get.toNamed(AppRoutes.signIn);
+
+      Get.toNamed(AppRoutes.completeProfile);
     } catch (e) {
       Get.snackbar(
         'Error',

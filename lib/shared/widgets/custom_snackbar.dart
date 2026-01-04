@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 class CustomSnackbar {
   //success snackbar
-  void _showSuccessSnackbar(String message) {
+  void showSuccessSnackbar(String message) {
     Get.snackbar(
       'Success',
       message,
@@ -31,7 +31,7 @@ class CustomSnackbar {
   }
 
   // error snackbar
-  void _showErrorSnackbar(String message) {
+  void showErrorSnackbar(String message) {
     Get.snackbar(
       'Error',
       message,
