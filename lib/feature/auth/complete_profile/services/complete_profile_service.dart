@@ -26,7 +26,7 @@ class CompleteProfileService {
           .getPublicUrl(path);
       return publicUrl;
     } catch (e) {
-      throw AuthErrorModel.uploadAvatar();
+      throw AuthErrorModel.uploadAvatarFailed();
     }
   }
 

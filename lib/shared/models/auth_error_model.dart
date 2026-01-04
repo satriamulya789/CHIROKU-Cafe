@@ -19,7 +19,15 @@ class AuthErrorModel {
     );
   }
 
-  factory AuthErrorModel.uploadAvatar() {
+  factory AuthErrorModel.failedLoadUser(){
+    return AuthErrorModel(
+      message: 'Failed to load user data. Please try again.',
+      code: 'failed_load_user',
+      statusCode: 500,
+    );
+  }
+
+  factory AuthErrorModel.uploadAvatarFailed() {
     return AuthErrorModel(
       message: 'Failed to upload avatar. Please try again.',
       code: 'upload_avatar_failed',
