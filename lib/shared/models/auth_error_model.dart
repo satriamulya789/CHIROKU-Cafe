@@ -11,6 +11,9 @@ class AuthErrorModel {
     required this.statusCode,
   });
 
+  // ==================== Validation Errors ====================
+  
+  /// Error when name field is empty
   factory AuthErrorModel.nameEmpty() {
     return AuthErrorModel(
       message: 'Name must not be empty',
@@ -19,35 +22,7 @@ class AuthErrorModel {
     );
   }
 
-  factory AuthErrorModel.failedLoadUser(){
-    return AuthErrorModel(
-      message: 'Failed to load user data. Please try again.',
-      code: 'failed_load_user',
-      statusCode: 500,
-    );
-  }
-
-  factory AuthErrorModel.uploadAvatarFailed() {
-    return AuthErrorModel(
-      message: 'Failed to upload avatar. Please try again.',
-      code: 'upload_avatar_failed',
-      statusCode: 500,
-    );
-  }
-  factory AuthErrorModel.invalidAvatarFormat() {
-    return AuthErrorModel(
-      message: 'Invalid avatar format. Please upload a valid image file.',
-      code: 'invalid_avatar_format',
-      statusCode: 400,
-    );
-  }
-  factory AuthErrorModel.updateProfileFailed() {
-    return AuthErrorModel(
-      message: 'Failed to update profile. Please try again.',
-      code: 'update_profile_failed',
-      statusCode: 500,
-    );
-  }
+  /// Error when email field is empty
   factory AuthErrorModel.emailEmpty() {
     return AuthErrorModel(
       message: 'Email must not be empty',
@@ -55,6 +30,8 @@ class AuthErrorModel {
       statusCode: 400,
     );
   }
+
+  /// Error when password field is empty
   factory AuthErrorModel.passwordEmpty() {
     return AuthErrorModel(
       message: 'Password must not be empty',
@@ -63,6 +40,7 @@ class AuthErrorModel {
     );
   }
 
+  /// Error when confirm password field is empty
   factory AuthErrorModel.confirmPassword() {
     return AuthErrorModel(
       message: 'Confirm Password must not be empty',
@@ -71,6 +49,7 @@ class AuthErrorModel {
     );
   }
 
+  /// Error when passwords do not match
   factory AuthErrorModel.passwordDontMatch() {
     return AuthErrorModel(
       message: 'Passwords do not match',
@@ -79,22 +58,7 @@ class AuthErrorModel {
     );
   }
 
-  factory AuthErrorModel.emailAlreadyExists() {
-    return AuthErrorModel(
-      message: 'The email address is already registered.',
-      code: 'email_already_exists',
-      statusCode: 409,
-    );
-  }
-
-  factory AuthErrorModel.emailNotRegistered() {
-    return AuthErrorModel(
-      message: 'The email address is not registered.',
-      code: 'email_not_registered',
-      statusCode: 404,
-    );
-  }
-
+  /// Error when password is too short (less than 6 characters)
   factory AuthErrorModel.passwordTooShort() {
     return AuthErrorModel(
       message: 'Password must be at least 6 characters long.',
@@ -103,6 +67,7 @@ class AuthErrorModel {
     );
   }
 
+  /// Error when password doesn't meet complexity requirements
   factory AuthErrorModel.passwordTooWeak() {
     return AuthErrorModel(
       message:
@@ -112,6 +77,136 @@ class AuthErrorModel {
     );
   }
 
+  /// Error when email format is invalid
+  factory AuthErrorModel.invalidEmailFormat() {
+    return AuthErrorModel(
+      message: 'The email address format is invalid.',
+      code: 'invalid_email_format',
+      statusCode: 400,
+    );
+  }
+
+  // ==================== Authentication Errors ====================
+
+  /// Error when email is already registered in the system
+  factory AuthErrorModel.emailAlreadyExists() {
+    return AuthErrorModel(
+      message: 'The email address is already registered.',
+      code: 'email_already_exists',
+      statusCode: 409,
+    );
+  }
+
+  /// Error when email is not found in the system
+  factory AuthErrorModel.emailNotRegistered() {
+    return AuthErrorModel(
+      message: 'The email address is not registered.',
+      code: 'email_not_registered',
+      statusCode: 404,
+    );
+  }
+
+  /// Error when user session has expired
+  factory AuthErrorModel.sessionExpired() {
+    return AuthErrorModel(
+      message: 'Your session has expired. Please log in again.',
+      code: 'session_expired',
+      statusCode: 401,
+    );
+  }
+
+  /// Success message when account is created successfully
+  factory AuthErrorModel.successAccount() {
+    return AuthErrorModel(
+      message: 'Your account has been created successfully.',
+      code: 'success_account',
+      statusCode: 200,
+    );
+  }
+
+  /// Error when failed to load user data
+  factory AuthErrorModel.failedLoadUser(){
+    return AuthErrorModel(
+      message: 'Failed to load user data. Please try again.',
+      code: 'failed_load_user',
+      statusCode: 500,
+    );
+  }
+
+  // ==================== Avatar & Profile Errors ====================
+
+  /// Success message when image is selected
+  factory AuthErrorModel.imageSelected(){
+    return AuthErrorModel(
+      message: 'Image selected successfully.',
+      code: 'image_selected',
+      statusCode: 200,
+    );
+  }
+
+  factory AuthErrorModel.capturePhoto (){
+    return AuthErrorModel(
+      message: 'Photo captured successfully.',
+      code: 'photo_captured',
+      statusCode: 200,
+    );
+  }
+
+   factory AuthErrorModel.capturePhotoFailed (){
+    return AuthErrorModel(
+      message: 'Photo capture failed.',
+      code: 'photo_capture_failed',
+      statusCode: 500,
+    );
+  }
+
+  factory AuthErrorModel.deleteAvatar (){
+    return AuthErrorModel(
+      message: 'Avatar deleted successfully.',
+      code: 'image_selection_failed',
+      statusCode: 500,
+    );
+  }
+
+  /// Error when avatar upload fails
+  factory AuthErrorModel.uploadAvatarFailed() {
+    return AuthErrorModel(
+      message: 'Failed to upload avatar. Please try again.',
+      code: 'upload_avatar_failed',
+      statusCode: 500,
+    );
+  }
+
+  /// Error when avatar format is not valid
+  factory AuthErrorModel.invalidAvatarFormat() {
+    return AuthErrorModel(
+      message: 'Invalid avatar format. Please upload a valid image file.',
+      code: 'invalid_avatar_format',
+      statusCode: 400,
+    );
+  }
+
+  /// Error when avatar deletion fails
+  factory AuthErrorModel.deleteAvatarFailed(){
+    return AuthErrorModel(
+      message: 'Failed to delete avatar. Please try again.',
+      code: 'delete_avatar_failed',
+      statusCode: 500,
+    );
+  }
+
+  /// Error when profile update fails
+  factory AuthErrorModel.updateProfileFailed() {
+    return AuthErrorModel(
+      message: 'Failed to update profile. Please try again.',
+      code: 'update_profile_failed',
+      statusCode: 500,
+    );
+  }
+
+  // ==================== Network & Server Errors ====================
+
+  /// Error when network connection is unavailable
   factory AuthErrorModel.networkError() {
     return AuthErrorModel(
       message:
@@ -121,6 +216,7 @@ class AuthErrorModel {
     );
   }
 
+  /// Error when too many requests are made
   factory AuthErrorModel.tooManyRequests() {
     return AuthErrorModel(
       message: 'Too many requests. Please try again later.',
@@ -129,6 +225,7 @@ class AuthErrorModel {
     );
   }
 
+  /// Error when request times out
   factory AuthErrorModel.requestTimeOut() {
     return AuthErrorModel(
       message: 'The request timed out. Please try again later.',
@@ -137,6 +234,7 @@ class AuthErrorModel {
     );
   }
 
+  /// Error when server encounters an internal error
   factory AuthErrorModel.internalServer() {
     return AuthErrorModel(
       message: 'An internal server error occurred. Please try again later.',
@@ -145,14 +243,7 @@ class AuthErrorModel {
     );
   }
 
-  factory AuthErrorModel.invalidEmailFormat() {
-    return AuthErrorModel(
-      message: 'The email address format is invalid.',
-      code: 'invalid_email_format',
-      statusCode: 400,
-    );
-  }
-
+  /// Error when an unknown error occurs
   factory AuthErrorModel.unknownError() {
     return AuthErrorModel(
       message: 'An unknown error occurred. Please try again later.',
@@ -161,31 +252,10 @@ class AuthErrorModel {
     );
   }
 
-  factory AuthErrorModel.sessionExpired() {
-    return AuthErrorModel(
-      message: 'Your session has expired. Please log in again.',
-      code: 'session_expired',
-      statusCode: 401,
-    );
-  }
+  // ==================== Exception Handler ====================
 
-  factory AuthErrorModel.successAccount() {
-    return AuthErrorModel(
-      message: 'Your account has been created successfully.',
-      code: 'success_account',
-      statusCode: 200,
-    );
-  }
-
-  factory AuthErrorModel.deleteAvatar(){
-    return AuthErrorModel(
-      message: 'Failed to delete avatar. Please try again.',
-      code: 'delete_avatar_failed',
-      statusCode: 500,
-    );
-  }
-
-  /// Factory method to create AuthErrorModel from AuthException
+  /// Factory method to create AuthErrorModel from Supabase AuthException
+  /// Automatically maps exception status codes and messages to appropriate error types
   factory AuthErrorModel.fromException(AuthException exception) {
     final statusCode = exception.statusCode;
     final message = exception.message.toLowerCase();
