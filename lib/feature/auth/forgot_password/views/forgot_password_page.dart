@@ -1,5 +1,5 @@
-import 'package:chiroku_cafe/feature/auth/fotgot_password/controllers/forgot_password_controller.dart';
-import 'package:chiroku_cafe/feature/auth/fotgot_password/widgets/forgot_password_button.dart';
+import 'package:chiroku_cafe/feature/auth/forgot_password/controllers/forgot_password_controller.dart';
+import 'package:chiroku_cafe/feature/auth/forgot_password/widgets/forgot_password_button.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_text_field.dart';

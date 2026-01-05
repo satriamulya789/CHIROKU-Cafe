@@ -1,5 +1,5 @@
 import 'package:chiroku_cafe/config/routes/routes.dart';
-import 'package:chiroku_cafe/feature/auth/fotgot_password/repositories/forgot_password_repositories.dart';
+import 'package:chiroku_cafe/feature/auth/forgot_password/repositories/forgot_password_repositories.dart';
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:chiroku_cafe/utils/functions/validator.dart';
@@ -79,6 +79,11 @@ class ResetPasswordController extends GetxController {
 
       if (result.success) {
         _customSnackbar.showSuccessSnackbar(result.message);
+
+            // Tunggu sebentar agar user bisa melihat success message
+        await Future.delayed(const Duration(seconds: 1));
+        
+        
         // Navigate ke halaman sign in
         Get.offAllNamed(AppRoutes.signIn);
       }

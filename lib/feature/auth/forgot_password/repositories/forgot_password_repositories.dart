@@ -1,16 +1,18 @@
-import 'package:chiroku_cafe/feature/auth/fotgot_password/models/forgot_password_model.dart';
+import 'package:chiroku_cafe/feature/auth/forgot_password/models/forgot_password_model.dart';
 import 'package:chiroku_cafe/feature/auth/reset_password/models/reset_password_model.dart';
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ForgotPasswordRepository {
-  final _supabase = Supabase.instance.client;
+  final supabase = Supabase.instance.client;
+  final _customSnackbar = CustomSnackbar();
 
   // Verifikasi email terdaftar
   Future<ForgotPasswordModel> verifyEmail({required String email}) async {
     try {
       // Cek apakah email ada di database
-      final response = await _supabase
+      final response = await supabase
           .from('users')
           .select('email')
           .eq('email', email)
@@ -48,26 +50,30 @@ class ForgotPasswordRepository {
       }
 
       // Validasi panjang password
-      if (newPassword.length < 6) {
-        throw AuthErrorModel.unknownError();
+      if (newPassword.length < 8) {
+        throw AuthErrorModel.passwordTooShort();
       }
 
-      // Update password di Supabase Auth (jika menggunakan)
-      // await _supabase.auth.updateUser(
-      //   UserAttributes(password: newPassword),
-      // );
+         // Update password langsung menggunakan updateUser
+      final response = await supabase.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
 
-      // Atau update langsung ke database users table
-      await _supabase
-          .from('users')
-          .update({'password': newPassword})
-          .eq('email', email);
+      // Update password di Supabase Auth (jika menggunakan)
+      await supabase.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+
+
+      if (response.user == null) {
+        _customSnackbar.showSuccessSnackbar( AuthErrorModel.updatePassword().message);
+      }
 
       return ResetPasswordModel(
         email: email,
         newPassword: newPassword,
         confirmPassword: confirmPassword,
-        message: 'Password berhasil direset',
+        message: 'Password has been reset successfully.',
         success: true,
       );
     } on AuthException catch (e) {

@@ -86,6 +86,14 @@ class AuthErrorModel {
     );
   }
 
+  factory AuthErrorModel.updatePassword() {
+    return AuthErrorModel(
+      message: 'Failed to update password. Please try again.',
+      code: 'update_password_failed',
+      statusCode: 400,
+    );
+  }
+
   // ==================== Authentication Errors ====================
 
   /// Error when email is already registered in the system
