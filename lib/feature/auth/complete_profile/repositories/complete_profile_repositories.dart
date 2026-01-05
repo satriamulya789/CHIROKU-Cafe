@@ -6,6 +6,34 @@ import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 class CompleteProfileRepository {
   final _service = CompleteProfileService();
 
+
+  //get user data
+  Future<CompleteProfileModel?> getUserProfile(String userId) async {
+    try {
+      final data = await _service.getUserProfile(userId);
+      if (data == null) return null;
+
+      return CompleteProfileModel.fromJson(data.toJson());
+    } catch (e) {
+      throw AuthErrorModel.updateProfileFailed();
+      
+      }
+  }
+
+// Upload avatar only
+  Future<String?> uploadAvatar({
+    required String userId,
+    required File avatarFile,
+  }) async {
+    try {
+      final avatarUrl = await _service.uploadAvatar(userId, avatarFile);
+      return avatarUrl;
+    } catch (e) {
+      throw AuthErrorModel.uploadAvatarFailed();
+    }
+  }
+  
+//complete profile with avatar upload
   Future<CompleteProfileModel> completeProfile({
     required String userId,
     required String fullName,
@@ -16,7 +44,7 @@ class CompleteProfileRepository {
 
       // Upload avatar if provided
       if (avatarFile != null) {
-        avatarUrl = await _service.uploadAvatar(avatarFile, userId);
+        avatarUrl = await _service.uploadAvatar(userId,avatarFile);
       }
 
       // Update user profile
@@ -32,22 +60,10 @@ class CompleteProfileRepository {
         avatarUrl: avatarUrl,
       );
     } catch (e) {
-      throw Exception('Failed to complete profile: $e');
+      throw Exception(AuthErrorModel.failedLoadUser());
     }
   }
 
-  //get user data
-  Future<CompleteProfileModel?> getUserProfile(String userId) async {
-    try {
-      final data = await _service.getUserProfile(userId);
-      if (data == null) return null;
-
-      return CompleteProfileModel.fromJson(data);
-    } catch (e) {
-      throw AuthErrorModel.updateProfileFailed();
-      
-      }
-  }
 
   //update user profile
 }

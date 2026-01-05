@@ -7,11 +7,14 @@ import 'package:chiroku_cafe/utils/functions/existing_email.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 
 class SignUpService {
   final SupabaseClient supabase = Supabase.instance.client;
 
   final ExistingEmail _existingEmail = ExistingEmail();
+  
+  final _customSnackbar = CustomSnackbar();
 
   //create user record in table 'users'
   Future<void> _createUserRecord({
@@ -42,8 +45,11 @@ class SignUpService {
     if (emailExists) {
       throw AuthErrorModel.emailAlreadyExists();
     }
-    if (email.isEmpty || password.isEmpty) {
+    if (password.isEmpty) {
       throw AuthErrorModel.passwordEmpty();
+    }
+    if (email.isEmpty) {
+      throw AuthErrorModel.emailEmpty();
     }
     if (password.length < 6) {
       throw AuthErrorModel.passwordTooShort();
@@ -64,16 +70,7 @@ class SignUpService {
           userId: response.user!.id,
           email: email,
         );
-         Get.snackbar(
-          'Sign Up Successful',
-          AuthErrorModel.successAccount().message,
-          colorText: AppColors.white,
-          backgroundColor: AppColors.successNormal,
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          icon: const Icon(Icons.check_circle_outline, color: AppColors.white),
-          borderRadius: 16,
-        );
+         _customSnackbar.showSuccessSnackbar(AuthErrorModel.successAccount().message);
       }
       return response;
     } on AuthException catch (e) {

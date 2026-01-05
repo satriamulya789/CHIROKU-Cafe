@@ -1,5 +1,6 @@
 import 'package:chiroku_cafe/feature/auth/complete_profile/controllers/complete_profile_controller.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/widget/avatar_picker_widget.dart';
+import 'package:chiroku_cafe/feature/auth/complete_profile/widget/complete_profile_button.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_text_field.dart';
@@ -64,7 +65,8 @@ class CompleteProfileView extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 20),
-                
+
+                CompleteProfileButton()
               ],
             ),
           ),

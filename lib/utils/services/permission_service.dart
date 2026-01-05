@@ -184,81 +184,17 @@ class PermissionService {
     );
   }
 
-  /// Show loading dialog while checking permissions
-  void showPermissionLoadingDialog() {
-    Get.dialog(
-      PopScope(
-        canPop: false,
-        child: Center(
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            color: AppColors.white,
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const CircularProgressIndicator(
-                    color: AppColors.brownNormal,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Checking permissions...',
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: AppColors.brownDark,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-      barrierDismissible: false,
-    );
-  }
+  // HAPUS METHOD INI
+  // /// Show loading dialog while checking permissions
+  // void showPermissionLoadingDialog() { ... }
 
-  /// Request all necessary permissions for image picking
-  Future<bool> requestAllImagePermissions() async {
-    showPermissionLoadingDialog();
-    
-    final storageGranted = await requestStoragePermission();
-    
-    Get.back(); // Close loading dialog
-    
-    if (!storageGranted) {
-      _showPermissionSnackbar(
-        'Permission Denied',
-        'Storage permission is required to select images',
-        false,
-      );
-      return false;
-    }
-    
-    return true;
-  }
+  // HAPUS METHOD INI
+  // /// Request all necessary permissions for image picking
+  // Future<bool> requestAllImagePermissions() async { ... }
 
-  /// Request all necessary permissions for camera
-  Future<bool> requestAllCameraPermissions() async {
-    showPermissionLoadingDialog();
-    
-    final cameraGranted = await requestCameraPermission();
-    
-    Get.back(); // Close loading dialog
-    
-    if (!cameraGranted) {
-      _showPermissionSnackbar(
-        'Permission Denied',
-        'Camera permission is required to take photos',
-        false,
-      );
-      return false;
-    }
-    
-    return true;
-  }
+  // HAPUS METHOD INI
+  // /// Request all necessary permissions for camera
+  // Future<bool> requestAllCameraPermissions() async { ... }
 
   /// Show permission snackbar
   void _showPermissionSnackbar(String title, String message, bool isSuccess) {

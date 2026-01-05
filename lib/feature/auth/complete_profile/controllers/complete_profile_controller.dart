@@ -58,7 +58,7 @@ class CompleteProfileController extends GetxController {
 
   Future<void> pickImage() async {
     //Request permission storage/gallery
-    final hasPermission = await _permissionService.requestAllImagePermissions();
+    final hasPermission = await _permissionService.requestStoragePermission();
     if (!hasPermission) return;
 
     try {
@@ -93,7 +93,7 @@ class CompleteProfileController extends GetxController {
     //Request permission camera
 
     final hasPermission = await _permissionService
-        .requestAllCameraPermissions();
+        .requestCameraPermission();
     if (!hasPermission) return;
 
     try {
@@ -178,7 +178,54 @@ class CompleteProfileController extends GetxController {
 
   /// Remove selected avatar
   Future<void> removeAvatar() async {
-    _avatarFile.value = null;
+  // Show confirmation dialog
+  await Get.defaultDialog(
+    title: 'Remove Photo',
+    titleStyle: AppTypography.h5.copyWith(
+      color: AppColors.brownDarker,
+      fontWeight: FontWeight.bold,
+    ),
+    middleText: 'Are you sure you want to remove this photo?',
+    middleTextStyle: AppTypography.bodyMedium.copyWith(
+      color: AppColors.brownNormal,
+    ),
+    textConfirm: 'Remove',
+    textCancel: 'Cancel',
+    confirmTextColor: AppColors.white,
+    cancelTextColor: AppColors.brownNormal,
+    buttonColor: AppColors.alertNormal,
+    onConfirm: () {
+      _avatarFile.value = null;
+      Get.back(); // Close dialog
+      _customSnackbar.showSuccessSnackbar(
+        AuthErrorModel.deleteAvatarFailed().message,
+      );
+    },
+    onCancel: () {
+      Get.back(); // Close dialog
+    },
+  );
+}/// Upload avatar to storage and get URL
+  Future<String?> _uploadAvatar() async {
+    if (_avatarFile.value == null) return null;
+
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) throw Exception('User not logged in');
+
+      // Upload avatar via repository
+      final avatarUrl = await _repository.uploadAvatar(
+        userId: userId,
+        avatarFile: _avatarFile.value!,
+      );
+
+      return avatarUrl;
+    } catch (e) {
+      _customSnackbar.showErrorSnackbar(
+       AuthErrorModel.uploadAvatarFailed().message,
+      );
+      return null;
+    }
   }
 
   /// Complete user profile
@@ -191,17 +238,32 @@ class CompleteProfileController extends GetxController {
     // Check if user is authenticated
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) {
-      _customSnackbar.showErrorSnackbar(
-        AuthErrorModel.failedLoadUser().message,
-      );
-      Get.offAllNamed(AppRoutes.signUp);
+      
+        AuthErrorModel.failedLoadUser();
+      
+      // Get.offAllNamed(AppRoutes.signUp);
       return;
     }
 
     try {
       _isLoading.value = true;
 
-      final sanitizedName = Validator.sanitizeName(nameController.text);
+      String? newAvatarUrl;
+    if (_avatarFile.value != null) {
+      print('Avatar file exists: ${_avatarFile.value!.path}');
+      print('File size: ${await _avatarFile.value!.length()} bytes');
+      
+      newAvatarUrl = await _uploadAvatar();
+      
+      if (newAvatarUrl == null) {
+        print('Avatar upload failed!');
+        _isLoading.value = false;
+        return;
+      }
+      print('Avatar uploaded successfully: $newAvatarUrl');
+    } else {
+      print('No avatar file selected');
+    }
 
       // Complete profile via repository
       await _repository.completeProfile(

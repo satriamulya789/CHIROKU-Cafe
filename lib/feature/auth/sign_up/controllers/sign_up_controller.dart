@@ -2,6 +2,7 @@ import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/auth/sign_up/repositories/sign_up_repositories.dart';
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:chiroku_cafe/utils/enums/user_enum.dart';
 import 'package:chiroku_cafe/utils/functions/existing_email.dart';
 import 'package:chiroku_cafe/utils/functions/validator.dart';
@@ -13,6 +14,7 @@ class SignUpController extends GetxController {
   final signUpRepository = SignUpRepository();
   final validator = Validator();
   final ExistingEmail _existingEmail = ExistingEmail();
+  final _customSnackbar = CustomSnackbar();
 
   //================== Form Controllers ===================//
   final formKey = GlobalKey<FormState>();
@@ -46,19 +48,6 @@ class SignUpController extends GetxController {
     _isConfirmPasswordObscured.value = !_isConfirmPasswordObscured.value;
   }
 
-  //  String? validateConfirmPassword(String? value) {
-  //   return validator.validateConfirmPassword(
-  //     value,
-  //     passwordController.text,
-  //   );
-  // }
-
-  // // Opsional - Validator lainnya jika mau dipakai
-  // String? validateEmail(String? value) {
-  //   return validator.ValidatorEmail(value);
-  // }
-
-
 //================== Sign Up Function ===================//
   Future<void> signUp() async {
     if (!formKey.currentState!.validate()) return;
@@ -68,17 +57,7 @@ class SignUpController extends GetxController {
     final confirmPassword = confirmPasswordController.text.trim();
  
     if (password != confirmPassword) {
-      Get.snackbar(
-        'Sign Up Error',
-        AuthErrorModel.passwordDontMatch().message,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        borderRadius: 16,
-        backgroundColor: AppColors.alertNormal,
-        margin: const EdgeInsets.all(16),
-        colorText: AppColors.white,
-        icon: const Icon(Icons.error_outline, color: AppColors.white),
-      );
+     _customSnackbar.showErrorSnackbar(AuthErrorModel.passwordDontMatch().message);
       return;
     }
 
@@ -91,17 +70,7 @@ class SignUpController extends GetxController {
       );
 
       if (emailExists) {
-        Get.snackbar(
-          'Sign Up Error',
-          AuthErrorModel.emailAlreadyExists().message,
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-          borderRadius: 16,
-          backgroundColor: AppColors.alertNormal,
-          margin: const EdgeInsets.all(16),
-          colorText: AppColors.white,
-          icon: const Icon(Icons.error_outline, color: AppColors.white),
-        );
+        _customSnackbar.showSuccessSnackbar(AuthErrorModel.emailAlreadyExists().message);
         return;
       }
 
@@ -110,22 +79,9 @@ class SignUpController extends GetxController {
         password: password,
         role: 'cashier',
       );
-
-
-
       Get.toNamed(AppRoutes.completeProfile);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        AuthErrorModel.unknownError().message,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-        borderRadius: 16,
-        backgroundColor: AppColors.alertNormal,
-        margin: const EdgeInsets.all(16),
-        colorText: AppColors.white,
-        icon: const Icon(Icons.error_outline, color: AppColors.white),
-      );
+      _customSnackbar.showErrorSnackbar(AuthErrorModel.unknownError().message);
     }
   }
 }

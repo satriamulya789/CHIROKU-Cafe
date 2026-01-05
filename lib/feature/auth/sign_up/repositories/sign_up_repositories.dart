@@ -4,7 +4,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignUpRepository {
   final supabase = Supabase.instance.client;
-
   final _signUpService = SignUpService();
 
   Future<void> registerUser({

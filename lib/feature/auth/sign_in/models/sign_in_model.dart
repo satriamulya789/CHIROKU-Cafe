@@ -1,32 +1,17 @@
-import 'package:chiroku_cafe/utils/enums/user_enum.dart';
-
-class UserModel {
+class SignInModel {
   final String email;
   final String password;
-  final UserRole role;
+  final String role;
 
-  const UserModel({
+  const SignInModel({
     required this.email,
     required this.password,
-    required this.role,
+    this.role = 'cashier',
   });
 
-  Map<String, dynamic> toLoginJson() {
-    return {
-      'email': email,
-      'password': password,
-    };
-  }
-
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      email: json['email'] ?? '',
-      password: json['password'] ?? '',
-      role: UserRoleExt.fromString(json['role'] ?? UserRole.cashier),
-    );
-  }
-
-  
-  bool get isAdmin => role == UserRole.admin;
-  bool get isCashier => role == UserRole.cashier;
+  Map<String, dynamic> toJson() => {
+    'email': email,
+    'password': password,
+    'role': role,
+  };
 }

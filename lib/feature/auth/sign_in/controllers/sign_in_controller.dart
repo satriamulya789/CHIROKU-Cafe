@@ -1,109 +1,64 @@
-// import 'package:flutter/src/widgets/editable_text.dart';
-// import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:chiroku_cafe/feature/auth/sign_in/repositories/sign_in_repositories.dart';
+import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
+import 'package:chiroku_cafe/utils/functions/validator.dart';
+import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 
-// class SignInController extends GetxController{
-//   TextEditingController get passwordController => null;
-   
-//   }
+class SignInController extends GetxController {
+  //================== Dependencies ===================//
+  final signInRepository = SignInRepositories();
+  final _customSnackbar = CustomSnackbar();
+  final validator = Validator();
+  //================== Form Controllers ===================//
+  final formKey = GlobalKey<FormState>();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  //================== Observables ===================//
+  final isLoading = false.obs;
+  final _isPasswordObscured = true.obs;
+  RxBool get isPasswordObscured => _isPasswordObscured;
+  //================== Lifecycle ===================//
+  @override
+  void onClose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.onClose();
+  }
 
+  //================== Toggle Functions ===================//
+  void togglePasswordVisibility() {
+    _isPasswordObscured.value = !_isPasswordObscured.value;
+  }
 
+  //================== Sign In Function ===================//
+  Future<void> signIn() async {
+    if (!formKey.currentState!.validate()) return;
 
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
 
+    if (password.isEmpty) {
+      throw AuthErrorModel.passwordEmpty();
+    }
+    if (email.isEmpty) {
+      throw AuthErrorModel.emailEmpty();
+    }
 
-// // import 'package:chiroku_cafe/feature/auth/sign_in/models/sign_in_model.dart';
-// // import 'package:chiroku_cafe/feature/auth/sign_in/repositories/sign_in_auth_repositories.dart';
-// // import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
-// // import 'package:chiroku_cafe/shared/style/app_color.dart';
-// // import 'package:flutter/material.dart';
-// // import 'package:get/get.dart';
-// // import 'package:supabase_flutter/supabase_flutter.dart';
+    isLoading.value = true;
+    try {
+      await signInRepository.signUpUser(email: email, password: password);
 
-// // class SignInController extends GetxController
-// //     with StateMixin<UserModel> {
-// //   late final AuthRepository _repo;
-
-// //   final emailController = TextEditingController();
-// //   final passwordController = TextEditingController();
-// //   final formKey = GlobalKey<FormState>();
-
-// //   final _isPasswordHidden = true.obs;
-// //   RxBool get isPasswordHidden => _isPasswordHidden;
-
-// //   final _isLoading = false.obs;
-// //   RxBool get isLoading => _isLoading;
-// //   void togglePassword() {
-// //     _isPasswordHidden.value = !_isPasswordHidden.value;
-// //   }
-
-
-// //   @override
-// //   void onInit() {
-// //     super.onInit();
-// //     _repo = AuthRepository(Supabase.instance.client);
-// //     _checkSession();
-// //   }
-
-// //   Future<void> _checkSession() async {
-// //     try {
-// //       final user = await _repo.autoLogin();
-// //       if (user != null) {
-// //         _redirect(user);
-// //       }
-// //     } catch (_) {}
-// //   }
-
-// //   Future<void> signIn() async {
-// //     final email = emailController.text.trim();
-// //     final password = passwordController.text.trim();
-
-    
-
-// //     if (email.isEmpty || password.isEmpty) {
-// //       _showError(AuthErrorModel.emailEmpty());
-// //       return;
-// //     }
-
-// //     change(null, status: RxStatus.loading());
-
-// //     try {
-// //       final user = await _repo.signIn(email as UserModel, password, email: email);
-
-// //       change(user, status: RxStatus.success());
-// //       _redirect(user);
-// //     } catch (e) {
-// //       final error = AuthErrorModel.unknownError();
-
-// //       change(null, status: RxStatus.error(error.message));
-// //       _showError(error);
-// //     }
-// //   }
-
-// //   void _showError(AuthErrorModel error) {
-// //     Get.snackbar(
-// //       'Login Failed',
-// //       error.message,
-// //       snackPosition: SnackPosition.TOP,
-// //       backgroundColor: AppColors.alertNormal,
-// //       colorText: AppColors.white,
-// //       icon: const Icon(Icons.error_outline, color: AppColors.white),
-// //       margin: const EdgeInsets.all(16),
-// //       borderRadius: 12,
-// //       duration: const Duration(seconds: 5),
-// //     );
-// //   }
-
-// //   void _redirect(UserModel user) {
-// //     if (user.isAdmin) {
-// //       Get.offAllNamed('/admin');
-// //     } else {
-// //       Get.offAllNamed('/cashier');
-// //     }
-// //   }
-
-// //   @override
-// //   void onClose() {
-// //     emailController.dispose();
-// //     passwordController.dispose();
-// //     super.onClose();
-// //   }
-// // }
+      // // Routing berdasarkan role menggunakan enum
+      // if (user.role == UserRole.admin) {
+      //   Get.offAllNamed('/admin');
+      // } else if (user.role == UserRole.cashier) {
+      //   Get.offAllNamed('/home-cashier');
+      // } else {
+      //   _customSnackbar.showErrorSnackbar('Role tidak dikenali');
+      // }
+    } catch (e) {
+      _customSnackbar.showErrorSnackbar(AuthErrorModel.unknownError().message);
+    }
+  }
+}

@@ -3,8 +3,8 @@ import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class DivenderWidget extends StatelessWidget {
-  const DivenderWidget({super.key});
+class DividerWidget extends StatelessWidget {
+  const DividerWidget({super.key});
 
   Widget _buildDivider() {
     return Row(
