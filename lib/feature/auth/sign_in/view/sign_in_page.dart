@@ -2,6 +2,7 @@ import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/auth/sign_in/controllers/sign_in_controller.dart';
 import 'package:chiroku_cafe/feature/auth/sign_in/widgets/sign_in_button.dart';
 import 'package:chiroku_cafe/feature/auth/sign_in/widgets/sign_in_dont_have_account.dart';
+import 'package:chiroku_cafe/feature/auth/sign_in/widgets/sign_in_forgot_password.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_text_field.dart';
@@ -67,10 +68,12 @@ class SignInPage extends StatelessWidget {
                   isPasswordVisible: controller.isPasswordObscured,
                 ),
                 const SizedBox(height: 20),
-
+                SignInForgotPassword(),
+                const SizedBox(height: 20),
                 SignInButton(),
                 const SizedBox(height: 40),
                 DividerWidget(),
+                const SizedBox(height: 40),
                 SignInDontHaveAccount()
               ],
             ),

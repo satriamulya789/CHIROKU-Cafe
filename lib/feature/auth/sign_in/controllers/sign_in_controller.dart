@@ -12,13 +12,19 @@ class SignInController extends GetxController {
   final validator = Validator();
   //================== Form Controllers ===================//
   final formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  var emailController = TextEditingController();
+  var passwordController = TextEditingController();
   //================== Observables ===================//
   final isLoading = false.obs;
   final _isPasswordObscured = true.obs;
   RxBool get isPasswordObscured => _isPasswordObscured;
   //================== Lifecycle ===================//
+    @override
+  void onInit() {
+    super.onInit();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+  }
   @override
   void onClose() {
     emailController.dispose();

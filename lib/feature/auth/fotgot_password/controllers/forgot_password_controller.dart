@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/auth/fotgot_password/repositories/forgot_password_repositories.dart';
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
@@ -43,7 +44,7 @@ class ForgotPasswordController extends GetxController {
       if (result.success) {
         _customSnackbar.showSuccessSnackbar(result.message);
         // Navigate ke halaman reset password dengan email
-        Get.toNamed('/reset-password', arguments: email);
+        Get.toNamed(AppRoutes.resetPassword, arguments: email);
       } else {
         _customSnackbar.showErrorSnackbar(AuthErrorModel.emailNotRegistered().message);
       }
