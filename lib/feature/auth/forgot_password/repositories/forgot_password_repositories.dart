@@ -23,11 +23,11 @@ class ForgotPasswordRepository {
       }
 
       // Kirim email reset password (opsional jika menggunakan Supabase Auth)
-      // await _supabase.auth.resetPasswordForEmail(email);
+      await supabase.auth.resetPasswordForEmail(email);
 
       return ForgotPasswordModel(
         email: email,
-        message: 'Email terverifikasi. Silakan reset password.',
+        message: 'Email verification successful. Please check your inbox.',
         success: true,
       );
     } on AuthException catch (e) {
@@ -46,7 +46,7 @@ class ForgotPasswordRepository {
     try {
       // Validasi password match
       if (newPassword != confirmPassword) {
-        throw AuthErrorModel.unknownError();
+        throw AuthErrorModel.passwordDontMatch();
       }
 
       // Validasi panjang password

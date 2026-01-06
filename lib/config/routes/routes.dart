@@ -5,6 +5,6 @@ abstract class AppRoutes {
   static const completeProfile = '/complete-profile';
   static const forgotPassword = '/forgot-password';
   static const resetPassword = '/reset-password';
-
+  static const bottomBarAdmin = '/bottom-bar-admin';
   
 }
