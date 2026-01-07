@@ -93,6 +93,24 @@ class AuthErrorModel {
       statusCode: 400,
     );
   }
+   // ==================== Dashboard Errors ====================
+  
+  factory AuthErrorModel.failedLoadDashboard() {
+    return AuthErrorModel(
+      message: 'Failed to load dashboard data. Please try again.',
+      code: 'failed_load_dashboard',
+      statusCode: 500,
+    );
+  }
+
+  factory AuthErrorModel.failedLoadOrders() {
+    return AuthErrorModel(
+      message: 'Failed to load orders. Please try again.',
+      code: 'failed_load_orders',
+      statusCode: 500,
+    );
+  }
+
 
   // ==================== Authentication Errors ====================
 

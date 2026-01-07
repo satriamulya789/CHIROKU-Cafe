@@ -7,7 +7,7 @@ class ApiConstant {
   
   static const String usersTable = 'users';
   static const String avatarsUrl = 'avatars';
-  static const String menusTable = 'menu';
+  static const String menuTable = 'menu';
   static const String tablesTable = 'tables';
   static const String ordersTable = 'orders';
   static const String orderItemsTable = 'order_items';

@@ -1,4 +1,6 @@
 import 'package:chiroku_cafe/config/routes/routes.dart';
+import 'package:chiroku_cafe/feature/admin/admin_bottom_bar/binding/admin_bottom_bar_binding.dart';
+import 'package:chiroku_cafe/feature/admin/admin_bottom_bar/views/admin_bottom_bar_page.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/binding/complete_profile_binding.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/views/complete_profile_page.dart';
 import 'package:chiroku_cafe/feature/auth/forgot_password/binding/forgot_password_binding.dart';
@@ -10,6 +12,8 @@ import 'package:chiroku_cafe/feature/auth/sign_in/binding/sign_in_binding.dart';
 import 'package:chiroku_cafe/feature/auth/sign_in/view/sign_in_page.dart';
 import 'package:chiroku_cafe/feature/auth/sign_up/binding/sign_up_binding.dart';
 import 'package:chiroku_cafe/feature/auth/sign_up/views/sign_up_page.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_bottom_bar/binding/cashier_bottom_bar_binding.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_bottom_bar/view/cashier_bottom_bar_page.dart';
 import 'package:get/get.dart';
 import 'package:chiroku_cafe/feature/auth/on_board/binding/on_board_binding.dart';
 
@@ -28,7 +32,8 @@ class Pages {
     GetPage(
       name: AppRoutes.completeProfile,
       page: () => const CompleteProfileView(),
-      binding: CompleteProfileBinding(), // Uncomment if you have a binding for this page
+      binding:
+          CompleteProfileBinding(), // Uncomment if you have a binding for this page
     ),
     GetPage(
       name: AppRoutes.signIn,
@@ -44,6 +49,16 @@ class Pages {
       name: AppRoutes.resetPassword,
       page: () => const ResetPasswordPage(),
       binding: ResetPasswordBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.bottomBarAdmin,
+      page: () => const BottomBar(),
+      binding: AdminBottomBarBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.bottomBarCashier,
+      page: () => const CashierBottomBarView(),
+      binding: CashierBottomBarBinding(),
     ),
   ];
 }

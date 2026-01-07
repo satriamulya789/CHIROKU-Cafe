@@ -1,6 +1,7 @@
 import 'package:chiroku_cafe/constant/api_constant.dart';
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
+import 'package:chiroku_cafe/utils/enums/user_enum.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignInService {
@@ -29,11 +30,36 @@ class SignInService {
       );
       //check if user is null
       if (response.user == null) {
-        _customSnackbar.showErrorSnackbar(AuthErrorModel.emailNotRegistered().message);
+        _customSnackbar.showErrorSnackbar(
+          AuthErrorModel.emailNotRegistered().message,
+        );
       }
       return response;
     } catch (e) {
       throw AuthErrorModel.unknownError();
+    }
+  }
+
+  Future<UserRole?> getUserRole(String userId) async {
+    try {
+      final userData = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', userId)
+          .maybeSingle();
+
+      if (userData == null) return null;
+
+      final roleString = userData['role'] as String?;
+
+      if (roleString?.toLowerCase() == 'admin') {
+        return UserRole.admin;
+      } else if (roleString?.toLowerCase() == 'cashier') {
+        return UserRole.cashier;
+      }
+      return null;
+    } catch (e) {
+      throw AuthErrorModel.failedLoadUser();
     }
   }
 
@@ -52,7 +78,7 @@ class SignInService {
     }
   }
 
-   /// Check if user session exists
+  /// Check if user session exists
   Future<bool> hasActiveSession() async {
     final session = supabase.auth.currentSession;
     return session != null;
@@ -71,5 +97,4 @@ class SignInService {
       throw AuthErrorModel.unknownError();
     }
   }
-
 }

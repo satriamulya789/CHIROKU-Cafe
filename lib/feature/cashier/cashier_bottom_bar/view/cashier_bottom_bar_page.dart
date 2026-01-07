@@ -1,21 +1,20 @@
-import 'package:chiroku_cafe/feature/admin/admin_bottom_bar/controllers/admin_bottom_bar_controller.dart';
-import 'package:chiroku_cafe/feature/admin/admin_setting/views/admin_setting_view.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_bottom_bar/controllers/cashier_bottom_bar_controller.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class BottomBar extends StatelessWidget {
-  const BottomBar({super.key});
+class CashierBottomBarView extends StatelessWidget {
+  const CashierBottomBarView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final c = Get.put(BottomBarController());
+    final c = Get.put(CashierBottomBarController());
     final List<Widget> pages = const [
-      // AdminHomeView(),
-      // HomeAdmin(),
-      // MenuControlPage(),
-      // ReportAdmin(),
-      AdminSettingView(),
+      // CashierDashboardPage(),
+      // OrderPage(),
+      // ReportPage(),
+      // CartPage(),
+      // SettingsPage(),
     ];
 
     return Obx(
@@ -24,8 +23,8 @@ class BottomBar extends StatelessWidget {
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: c.selectedIndex.value,
-          selectedItemColor: AppColors.brownDarker,
-          unselectedItemColor: AppColors.brownNormal.withOpacity(0.5),
+          selectedItemColor: Theme.of(context).primaryColor,
+          unselectedItemColor: AppColors.brownLight,
           selectedFontSize: 12,
           unselectedFontSize: 12,
           onTap: c.changeIndex,
@@ -36,14 +35,19 @@ class BottomBar extends StatelessWidget {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.admin_panel_settings_outlined),
-              activeIcon: Icon(Icons.admin_panel_settings),
-              label: 'Admin Control',
+              icon: Icon(Icons.list_alt_outlined),
+              activeIcon: Icon(Icons.list_alt),
+              label: 'Orders',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.assessment_outlined),
               activeIcon: Icon(Icons.assessment),
               label: 'Report',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart_outlined),
+              activeIcon: Icon(Icons.shopping_cart),
+              label: 'Cart',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings_outlined),
