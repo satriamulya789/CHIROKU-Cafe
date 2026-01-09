@@ -10,6 +10,7 @@ class ApiConstant {
   static const String menuTable = 'menu';
   static const String tablesTable = 'tables';
   static const String ordersTable = 'orders';
+  static const String categoriesTable = 'categories';
   static const String orderItemsTable = 'order_items';
   static const String discountsTable = 'discounts';
   static const String paymentsTable = 'payments';

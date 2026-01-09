@@ -1,4 +1,5 @@
 import 'package:chiroku_cafe/feature/cashier/cashier_bottom_bar/controllers/cashier_bottom_bar_controller.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_setting/views/cashier_setting_view.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,7 @@ class CashierBottomBarView extends StatelessWidget {
       // ReportPage(),
       // CartPage(),
       // SettingsPage(),
+      CashierSettingView()
     ];
 
     return Obx(
@@ -23,17 +25,12 @@ class CashierBottomBarView extends StatelessWidget {
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: c.selectedIndex.value,
-          selectedItemColor: Theme.of(context).primaryColor,
-          unselectedItemColor: AppColors.brownLight,
+          selectedItemColor: AppColors.brownDarker,
+          unselectedItemColor: AppColors.brownNormal,
           selectedFontSize: 12,
           unselectedFontSize: 12,
           onTap: c.changeIndex,
           items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: 'Home',
-            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.list_alt_outlined),
               activeIcon: Icon(Icons.list_alt),

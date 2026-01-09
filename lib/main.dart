@@ -1,4 +1,3 @@
-import 'package:chiroku_cafe/app.dart';
 import 'package:chiroku_cafe/config/pages/pages.dart';
 import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/env/env.dart';

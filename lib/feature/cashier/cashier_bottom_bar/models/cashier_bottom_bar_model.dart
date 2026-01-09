@@ -14,11 +14,6 @@ class CashierNavItemModel {
   static List<CashierNavItemModel> getItems() {
     return [
       CashierNavItemModel(
-        icon: Icons.home_outlined,
-        activeIcon: Icons.home,
-        label: 'Home',
-      ),
-      CashierNavItemModel(
         icon: Icons.list_alt_outlined,
         activeIcon: Icons.list_alt,
         label: 'Orders',

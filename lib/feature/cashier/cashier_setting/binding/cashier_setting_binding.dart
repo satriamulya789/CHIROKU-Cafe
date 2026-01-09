@@ -1,13 +1,9 @@
-import 'package:chiroku_cafe/feature/cashier/cashier_bottom_bar/controllers/cashier_bottom_bar_controller.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_setting/controllers/cashier_setting_controller.dart';
 import 'package:get/get.dart';
 
-class CashierBottomBarBinding extends Bindings {
+class CashierSettingBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<CashierBottomBarController>(
-      () => CashierBottomBarController(),
-    );
     Get.lazyPut<CashierSettingController>(() => CashierSettingController());
   }
 }
