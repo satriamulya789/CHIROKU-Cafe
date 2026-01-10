@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,7 @@ class QuickActionsWidget extends StatelessWidget {
                 'Update product inventory',
                 Icons.inventory_2_outlined,
                 AppColors.warningNormal,
-                () => Get.toNamed('/admin/controller?tab=2'),
+                () => Get.toNamed(AppRoutes.adminManageControl),
               ),
               const Divider(height: 1),
               _buildQuickActionItem(

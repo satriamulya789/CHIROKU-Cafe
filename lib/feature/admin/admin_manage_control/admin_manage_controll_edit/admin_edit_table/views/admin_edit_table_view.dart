@@ -57,10 +57,16 @@ class AdminEditTableView extends GetView<AdminEditTableController> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddDialog(context),
         backgroundColor: AppColors.brownNormal,
-        child: const Icon(Icons.add, color: AppColors.white),
+        icon: const Icon(Icons.table_chart, color: AppColors.white),
+        label: Text(
+          'Add Table',
+          style: AppTypography.button.copyWith(
+            color: AppColors.white,
+          ),
+        ),
       ),
     );
   }

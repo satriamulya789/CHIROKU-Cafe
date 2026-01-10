@@ -57,10 +57,16 @@ class AdminEditCategoryView extends GetView<AdminEditCategoryController> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddDialog(context),
         backgroundColor: AppColors.brownNormal,
-        child: const Icon(Icons.add, color: AppColors.white),
+        icon: const Icon(Icons.category, color: AppColors.white),
+        label: Text(
+          'Add Category',
+          style: AppTypography.button.copyWith(
+            color: AppColors.white,
+          ),
+        ),
       ),
     );
   }
@@ -83,7 +89,10 @@ class AdminEditCategoryView extends GetView<AdminEditCategoryController> {
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
         ),
       ),
     );
@@ -101,10 +110,8 @@ class AdminEditCategoryView extends GetView<AdminEditCategoryController> {
     controller.setEditCategory(category);
     showDialog(
       context: context,
-      builder: (context) => CategoryFormDialog(
-        categoryId: category.id,
-        isEdit: true,
-      ),
+      builder: (context) =>
+          CategoryFormDialog(categoryId: category.id, isEdit: true),
     );
   }
 
@@ -120,9 +127,12 @@ class AdminEditCategoryView extends GetView<AdminEditCategoryController> {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel', style: AppTypography.button.copyWith(
-              color: AppColors.brownNormal,
-            )),
+            child: Text(
+              'Cancel',
+              style: AppTypography.button.copyWith(
+                color: AppColors.brownNormal,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -132,9 +142,10 @@ class AdminEditCategoryView extends GetView<AdminEditCategoryController> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.alertNormal,
             ),
-            child: Text('Delete', style: AppTypography.button.copyWith(
-              color: AppColors.white,
-            )),
+            child: Text(
+              'Delete',
+              style: AppTypography.button.copyWith(color: AppColors.white),
+            ),
           ),
         ],
       ),
