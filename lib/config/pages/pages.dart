@@ -1,6 +1,18 @@
 import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/admin/admin_bottom_bar/binding/admin_bottom_bar_binding.dart';
 import 'package:chiroku_cafe/feature/admin/admin_bottom_bar/views/admin_bottom_bar_page.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/binding/admin_edit_category_binding.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/views/admin_edit_category_view.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/binding/admin_edit_menu_binding.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/views/admin_edit_menu_form_view.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/views/admin_edit_menu_view.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_table/binding/admin_edit_user_binding.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_table/views/admin_edit_table_view.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/binding/admin_edit_user_binding.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/views/admin_edit_user_view.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/binding/admin_manage_controll_binding.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/views/admin_manage_control_view.dart';
+
 import 'package:chiroku_cafe/feature/auth/complete_profile/binding/complete_profile_binding.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/views/complete_profile_page.dart';
 import 'package:chiroku_cafe/feature/auth/forgot_password/binding/forgot_password_binding.dart';
@@ -32,8 +44,7 @@ class Pages {
     GetPage(
       name: AppRoutes.completeProfile,
       page: () => const CompleteProfileView(),
-      binding:
-          CompleteProfileBinding(), // Uncomment if you have a binding for this page
+      binding: CompleteProfileBinding(),
     ),
     GetPage(
       name: AppRoutes.signIn,
@@ -59,6 +70,51 @@ class Pages {
       name: AppRoutes.bottomBarCashier,
       page: () => const CashierBottomBarView(),
       binding: CashierBottomBarBinding(),
+    ),
+    
+    // Admin Manage Control Routes
+    GetPage(
+      name: AppRoutes.adminManageControl,
+      page: () => const AdminManageControlView(),
+      binding: AdminManageControlBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.adminEditUser,
+      page: () => const AdminEditUserView(),
+      binding: AdminEditUserBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.adminEditMenu,
+      page: () => const AdminEditMenuView(),
+      binding: AdminEditMenuBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.adminEditCategory,
+      page: () => const AdminEditCategoryView(),
+      binding: AdminEditCategoryBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.adminEditTable,
+      page: () => const AdminEditTableView(),
+      binding: AdminEditTableBinding(),
+    ),
+    
+    // Admin Menu Form Routes
+    GetPage(
+      name: AppRoutes.adminAddMenu,
+      page: () => const AdminMenuFormPage(isEdit: false),
+      binding: AdminEditMenuBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.adminEditMenuForm,
+      page: () {
+        final menuId = Get.arguments as int?;
+        return AdminMenuFormPage(
+          menuId: menuId,
+          isEdit: true,
+        );
+      },
+      binding: AdminEditMenuBinding(),
     ),
   ];
 }

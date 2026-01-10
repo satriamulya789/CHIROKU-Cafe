@@ -10,4 +10,14 @@ abstract class AppRoutes {
   static const adminHome = '/admin-home';
   static const adminSettings = '/admin-settings';
   
+  // Admin Manage Control
+  static const adminManageControl = '/admin-manage-control';
+  static const adminEditUser = '/admin-edit-user';
+  static const adminEditMenu = '/admin-edit-menu';
+  static const adminEditCategory = '/admin-edit-category';
+  static const adminEditTable = '/admin-edit-table';
+  
+  // Admin Menu Form
+  static const adminAddMenu = '/admin-add-menu';
+  static const adminEditMenuForm = '/admin-edit-menu-form';
 }

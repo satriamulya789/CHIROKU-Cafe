@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/constant/assets_constant.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_user_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
@@ -34,7 +35,7 @@ class AdminHomeViewAppBar extends StatelessWidget implements PreferredSizeWidget
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.asset(
-                'assets/images/icon/logoo.png',
+                AssetsConstant.logo,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return const Icon(

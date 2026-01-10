@@ -39,7 +39,6 @@ class StatsSectionWidget extends StatelessWidget {
               child: StatCardWidget(
                 title: 'Completed Orders',
                 value: stats!.completedOrders.toString(),
-                subtitle: '${stats!.totalOrders} total',
                 icon: Icons.check_circle_outline,
                 color: AppColors.successNormal,
                 backgroundColor: AppColors.white,

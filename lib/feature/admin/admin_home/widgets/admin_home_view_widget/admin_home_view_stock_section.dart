@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_stock_status_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_stock_status_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
@@ -49,7 +50,7 @@ class StockSectionWidget extends StatelessWidget {
                 ],
               ),
               TextButton(
-                onPressed: () => Get.toNamed('/admin/controller?tab=2'),
+                onPressed: () => Get.toNamed(AppRoutes.adminManageControl),
                 child: Text(
                   'Manage Stock',
                   style: AppTypography.bodySmall.copyWith(

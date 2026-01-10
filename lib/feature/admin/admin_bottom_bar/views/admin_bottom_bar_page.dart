@@ -1,5 +1,6 @@
 import 'package:chiroku_cafe/feature/admin/admin_bottom_bar/controllers/admin_bottom_bar_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/views/admin_home_view.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/views/admin_manage_control_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/views/admin_setting_view.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ class BottomBar extends StatelessWidget {
     final c = Get.put(BottomBarController());
     final List<Widget> pages = const [
       AdminHomeView(),
-      // HomeAdmin(),
+      AdminManageControlView(),
       // MenuControlPage(),
       // ReportAdmin(),
       AdminSettingView(),
