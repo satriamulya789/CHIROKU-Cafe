@@ -14,7 +14,12 @@ import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_con
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/views/admin_edit_user_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/binding/admin_manage_controll_binding.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/views/admin_manage_control_view.dart';
-
+import 'package:chiroku_cafe/feature/admin/admin_setting/binding/admin_setting_binding.dart' show AdminSettingBinding;
+import 'package:chiroku_cafe/feature/admin/admin_setting/views/admin_setting_view.dart';
+import 'package:chiroku_cafe/feature/admin/admin_setting_manage_printer/binding/thermal_printer_binding.dart';
+import 'package:chiroku_cafe/feature/admin/admin_setting_manage_printer/views/thermal_printer_view.dart';
+import 'package:chiroku_cafe/feature/admin/admin_setting_manage_qris/binding/admin_manage_qris_binding.dart';
+import 'package:chiroku_cafe/feature/admin/admin_setting_manage_qris/views/admin_manage_qris_view.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/binding/complete_profile_binding.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/views/complete_profile_page.dart';
 import 'package:chiroku_cafe/feature/auth/forgot_password/binding/forgot_password_binding.dart';
@@ -119,10 +124,28 @@ class Pages {
       binding: AdminEditMenuBinding(),
     ),
 
-     GetPage(
+    // Edit Profile Route
+    GetPage(
       name: AppRoutes.editProfile,
       page: () => const EditProfileView(),
       binding: EditProfileBinding(),
+    ),
+    GetPage(
+  name: AppRoutes.paymentSettings,
+  page: () => const PaymentSettingsView(),
+  binding: PaymentSettingsBinding(),
+),
+    
+    // Thermal Printer Route
+    GetPage(
+      name: AppRoutes.thermalPrinterSettings,
+      page: () => const ThermalPrinterSettingsView(),
+      binding: ThermalPrinterBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.adminSettings,
+      page: () => const AdminSettingView(),
+      binding: AdminSettingBinding(),
     ),
   ];
 }

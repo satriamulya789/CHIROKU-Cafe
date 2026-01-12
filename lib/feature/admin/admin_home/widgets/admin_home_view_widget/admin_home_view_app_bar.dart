@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/constant/assets_constant.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/controllers/admin_home_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_user_model.dart';
@@ -108,7 +109,7 @@ class AdminHomeViewAppBar extends StatelessWidget implements PreferredSizeWidget
         Padding(
           padding: const EdgeInsets.only(right: 8),
           child: GestureDetector(
-            onTap: () => Get.toNamed('/settings'),
+            onTap: () => Get.toNamed(AppRoutes.adminSettings),
             child: CircleAvatar(
               radius: 18,
               backgroundColor: AppColors.brownLight,

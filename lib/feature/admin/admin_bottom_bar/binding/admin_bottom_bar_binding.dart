@@ -17,9 +17,6 @@ class AdminBottomBarBinding extends Bindings {
     ); 
     Get.lazyPut<AdminManageControlController>(() => AdminManageControlController());
 
-    // Tambahkan controller lain sesuai kebutuhan untuk tab lainnya
-    // Get.lazyPut<HomeAdminController>(() => HomeAdminController());
-    // Get.lazyPut<MenuControlController>(() => MenuControlController());
     // Get.lazyPut<ReportAdminController>(() => ReportAdminController());
   }
 }

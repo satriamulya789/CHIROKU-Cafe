@@ -16,11 +16,15 @@ abstract class AppRoutes {
   static const adminEditMenu = '/admin-edit-menu';
   static const adminEditCategory = '/admin-edit-category';
   static const adminEditTable = '/admin-edit-table';
+    static const paymentSettings = '/payment-settings';
   
   // Admin Menu Form
   static const adminAddMenu = '/admin-add-menu';
   static const adminEditMenuForm = '/admin-edit-menu-form';
 
-  //edit profile
+  // Edit Profile
   static const editProfile = '/edit-profile';
+  
+  // Thermal Printer
+  static const thermalPrinterSettings = '/thermal-printer-settings';
 }

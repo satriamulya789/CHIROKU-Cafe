@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/models/admin_setting_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/services/admin_setting_service.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -42,6 +43,23 @@ class AdminSettingController extends GetxController {
 
   Future<void> refreshProfile() async {
     await loadUserProfile();
+  }
+   void goToEditProfile() {
+    Get.toNamed(AppRoutes.editProfile);
+  }
+
+  // Navigate to Thermal Printer Settings
+  void goToThermalPrinterSettings() {
+    Get.toNamed(AppRoutes.thermalPrinterSettings);
+  }
+
+  void goToManageQrisPayment(){
+    Get.toNamed(AppRoutes.paymentSettings);
+  }
+
+  // Navigate to Manage Control (Users, Menu, Category, Table)
+  void goToManageControl() {
+    Get.toNamed(AppRoutes.adminManageControl);
   }
 
   Future<void> logout() async {

@@ -58,6 +58,27 @@ class AdminSettingView extends GetView<AdminSettingController> {
                       snackPosition: SnackPosition.BOTTOM,
                     );
                   },
+                  iconColor: AppColors.alertNormal,
+                ),
+                SettingItemWidget(
+                  icon: Icons.print_outlined,
+                  title: 'Manage Printers',
+                  subtitle: 'Configure thermal printers',
+                  onTap: controller.goToThermalPrinterSettings,
+                  iconColor: AppColors.blueNormal,
+                ),
+                   SettingItemWidget(
+                  icon: Icons.qr_code,
+                  title: 'Manage QRIS Payment',
+                  subtitle: 'Configure QRIS payment settings',
+                  onTap: controller.goToManageQrisPayment,
+                  iconColor: AppColors.purpleNormal,
+                ),
+                SettingItemWidget(
+                  icon: Icons.admin_panel_settings,
+                  title: 'Admin Control',
+                  subtitle: 'Manage users, menu, categories, and tables',
+                  onTap: controller.goToManageControl,
                   iconColor: AppColors.orangeNormal,
                 ),
                 SettingItemWidget(
