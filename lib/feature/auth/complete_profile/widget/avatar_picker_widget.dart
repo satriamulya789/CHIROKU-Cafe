@@ -13,7 +13,7 @@ class AvatarPickerWidget extends StatelessWidget {
     required this.avatarFile,
     required this.isUploading,
     required this.onTap,
-    required this.onRemove,
+    required this.onRemove, String? avatarUrl, File? selectedImage, required bool isLoading,
   });
 
   @override

@@ -20,4 +20,7 @@ abstract class AppRoutes {
   // Admin Menu Form
   static const adminAddMenu = '/admin-add-menu';
   static const adminEditMenuForm = '/admin-edit-menu-form';
+
+  //edit profile
+  static const editProfile = '/edit-profile';
 }

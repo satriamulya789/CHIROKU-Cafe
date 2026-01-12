@@ -1,6 +1,8 @@
 import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/admin/admin_bottom_bar/binding/admin_bottom_bar_binding.dart';
 import 'package:chiroku_cafe/feature/admin/admin_bottom_bar/views/admin_bottom_bar_page.dart';
+import 'package:chiroku_cafe/feature/admin/admin_edit_profile/binding/admin_edit_profile_binding.dart';
+import 'package:chiroku_cafe/feature/admin/admin_edit_profile/views/admin_edit_profile_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/binding/admin_edit_category_binding.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/views/admin_edit_category_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/binding/admin_edit_menu_binding.dart';
@@ -115,6 +117,12 @@ class Pages {
         );
       },
       binding: AdminEditMenuBinding(),
+    ),
+
+     GetPage(
+      name: AppRoutes.editProfile,
+      page: () => const EditProfileView(),
+      binding: EditProfileBinding(),
     ),
   ];
 }

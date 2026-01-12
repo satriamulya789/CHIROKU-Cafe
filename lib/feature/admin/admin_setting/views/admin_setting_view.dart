@@ -24,13 +24,6 @@ class AdminSettingView extends GetView<AdminSettingController> {
         elevation: 0,
         backgroundColor: AppColors.white,
         foregroundColor: Colors.black87,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
-            onPressed: controller.refreshProfile,
-          ),
-        ],
       ),
       body: Obx(() {
         if (controller.isLoading.value) {

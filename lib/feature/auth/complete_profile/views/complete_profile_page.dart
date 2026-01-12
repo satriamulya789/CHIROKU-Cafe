@@ -51,7 +51,7 @@ class CompleteProfileView extends StatelessWidget {
                     avatarFile: controller.avatarFile,
                     isUploading: controller.isUploading,
                     onTap: controller.selectImageSource,
-                    onRemove: controller.removeAvatar,
+                    onRemove: controller.removeAvatar, isLoading: controller.isLoading,
                   );
                 }),
 

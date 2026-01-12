@@ -1,4 +1,5 @@
 import 'package:chiroku_cafe/constant/assets_constant.dart';
+import 'package:chiroku_cafe/feature/admin/admin_home/controllers/admin_home_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_user_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
@@ -14,7 +15,7 @@ class AdminHomeViewAppBar extends StatelessWidget implements PreferredSizeWidget
     super.key,
     this.user,
     required this.unreadCount,
-    required this.onNotificationTap,
+    required this.onNotificationTap, required AdminHomeController controller,
   });
 
   @override

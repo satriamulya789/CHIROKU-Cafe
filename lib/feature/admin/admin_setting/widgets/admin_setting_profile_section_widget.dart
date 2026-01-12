@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/controllers/admin_setting_controller.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
@@ -126,7 +127,7 @@ class ProfileSectionWidget extends GetView<AdminSettingController> {
               icon: Icon(Icons.edit_outlined, color: Colors.grey[600]),
               tooltip: 'Edit Profile',
               onPressed: () async {
-                final result = await Get.toNamed('/admin/edit-profile');
+                final result = await Get.toNamed(AppRoutes.editProfile);
                 if (result == true) controller.refreshProfile();
               },
             ),

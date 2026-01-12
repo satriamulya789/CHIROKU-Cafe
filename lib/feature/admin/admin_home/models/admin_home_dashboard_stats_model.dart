@@ -35,4 +35,6 @@ class DashboardStatsModel {
           .toList() ?? [],
     );
   }
+
+  static empty() {}
 }

@@ -22,6 +22,7 @@ class AdminHomeView extends GetView<AdminHomeController> {
         user: controller.currentUser.value,
         unreadCount: controller.unreadNotificationsCount,
         onNotificationTap: _showNotificationsBottomSheet,
+        controller: controller,
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
