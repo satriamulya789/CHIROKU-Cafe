@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:chiroku_cafe/constant/api_constant.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/models/complete_profile_model.dart';
-import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
+import 'package:chiroku_cafe/shared/models/handling_error_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CompleteProfileService {

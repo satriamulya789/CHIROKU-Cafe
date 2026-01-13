@@ -1,4 +1,4 @@
-import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
+import 'package:chiroku_cafe/shared/models/handling_error_model.dart';
 import 'package:chiroku_cafe/utils/functions/existing_email.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
 

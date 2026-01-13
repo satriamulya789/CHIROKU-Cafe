@@ -1,5 +1,5 @@
 import 'package:chiroku_cafe/constant/api_constant.dart';
-import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
+import 'package:chiroku_cafe/shared/models/handling_error_model.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:chiroku_cafe/utils/enums/user_enum.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

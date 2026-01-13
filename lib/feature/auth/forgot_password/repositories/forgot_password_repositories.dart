@@ -1,6 +1,6 @@
 import 'package:chiroku_cafe/feature/auth/forgot_password/models/forgot_password_model.dart';
 import 'package:chiroku_cafe/feature/auth/reset_password/models/reset_password_model.dart';
-import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
+import 'package:chiroku_cafe/shared/models/handling_error_model.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

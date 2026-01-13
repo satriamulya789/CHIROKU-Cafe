@@ -1,4 +1,5 @@
 import 'package:chiroku_cafe/feature/cashier/cashier_bottom_bar/controllers/cashier_bottom_bar_controller.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_order/views/cashier_order_view.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_setting/views/cashier_setting_view.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class CashierBottomBarView extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = Get.put(CashierBottomBarController());
     final List<Widget> pages = const [
+      OrderPage(),
       // CashierDashboardPage(),
       // OrderPage(),
       // ReportPage(),

@@ -56,7 +56,7 @@ class QuickActionsWidget extends StatelessWidget {
                 'Check sales analytics',
                 Icons.analytics_outlined,
                 AppColors.blueNormal,
-                () => Get.toNamed('/reports'),
+                () => Get.toNamed(AppRoutes.adminReport),
               ),
             ],
           ),

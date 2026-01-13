@@ -33,14 +33,6 @@ class QrisImageCardWidget extends GetView<PaymentSettingsController> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  if (hasQris && !controller.isUploadingImage.value)
-                    IconButton(
-                      icon: const Icon(
-                        Icons.delete_outline,
-                        color: AppColors.alertNormal,
-                      ),
-                      onPressed: controller.removeQrisImage,
-                    ),
                 ],
               ),
               const SizedBox(height: 16),

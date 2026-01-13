@@ -1,0 +1,41 @@
+{
+    "outlet name": {
+        "id": 1,
+        "latitude": -6.302556,
+        "longitude": 106.989212,
+        "name": "HAYYU Bekasi",
+        "address": "Jl. Raya Narogong No.1, RT.001/RW.001, Jatiranggon, Kec. Jatisampurna, Kota Bks, Jawa Barat 17432",
+        "outlet_distance": "string",
+        "distance": "string",
+        "doctor_schedules": [
+            {
+                "id_doctor": 1,
+                "doctor_name": "string",
+                "specialist": "string",
+                "day": "string",
+                "start_time": "string",
+                "end_time": "string"
+            },
+            {
+                "id_doctor": 1,
+                "doctor_name": "string",
+                "specialist": "string",
+                "day": "string",
+                "start_time": "string",
+                "end_time": "string"
+            }
+        ],
+        "operating_hours": [
+            {
+                "days": "string",
+                "open": "string",
+                "close": "string"
+            },
+            {
+                "days": "string",
+                "open": "string",
+                "close": "string"
+            }
+        ]
+    }
+}

@@ -48,7 +48,7 @@ class AdminSettingView extends GetView<AdminSettingController> {
                 ),
                 const SizedBox(height: 12),
                 SettingItemWidget(
-                  icon: Icons.lock_reset,
+                  icon: Icons.lock_reset_rounded,
                   title: 'Reset Password',
                   subtitle: 'Request password reset link',
                   onTap: () {
@@ -61,7 +61,7 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   iconColor: AppColors.alertNormal,
                 ),
                 SettingItemWidget(
-                  icon: Icons.print_outlined,
+                  icon: Icons.print_rounded,
                   title: 'Manage Printers',
                   subtitle: 'Configure thermal printers',
                   onTap: controller.goToThermalPrinterSettings,
@@ -72,7 +72,14 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   title: 'Manage QRIS Payment',
                   subtitle: 'Configure QRIS payment settings',
                   onTap: controller.goToManageQrisPayment,
-                  iconColor: AppColors.purpleNormal,
+                  iconColor: AppColors.purpleDark,
+                ),
+                    SettingItemWidget(
+                  icon: Icons.discount_rounded,
+                  title: 'Manage Discounts',
+                  subtitle: 'Configure discount settings',
+                  onTap: controller.goToManageDiscounts,
+                  iconColor: AppColors.blueDark,
                 ),
                 SettingItemWidget(
                   icon: Icons.admin_panel_settings,
@@ -82,7 +89,7 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   iconColor: AppColors.orangeNormal,
                 ),
                 SettingItemWidget(
-                  icon: Icons.notifications_outlined,
+                  icon: Icons.notifications_rounded,
                   title: 'Notifications',
                   subtitle: 'Manage notification preferences',
                   onTap: () {

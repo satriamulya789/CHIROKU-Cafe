@@ -1,4 +1,6 @@
 import 'package:chiroku_cafe/config/routes/routes.dart';
+import 'package:chiroku_cafe/feature/admin/admin_add_discount/binding/admin_add_discout_binding.dart';
+import 'package:chiroku_cafe/feature/admin/admin_add_discount/views/admin_add_discount_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_bottom_bar/binding/admin_bottom_bar_binding.dart';
 import 'package:chiroku_cafe/feature/admin/admin_bottom_bar/views/admin_bottom_bar_page.dart';
 import 'package:chiroku_cafe/feature/admin/admin_edit_profile/binding/admin_edit_profile_binding.dart';
@@ -14,6 +16,11 @@ import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_con
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/views/admin_edit_user_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/binding/admin_manage_controll_binding.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/views/admin_manage_control_view.dart';
+import 'package:chiroku_cafe/feature/admin/admin_report/binding/admin_report_all_transaction_binding.dart';
+import 'package:chiroku_cafe/feature/admin/admin_report/binding/admin_report_binding.dart';
+import 'package:chiroku_cafe/feature/admin/admin_report/controllers/admin_report_all_transaction_controller.dart';
+import 'package:chiroku_cafe/feature/admin/admin_report/views/admin_report_all_transaction_view.dart';
+import 'package:chiroku_cafe/feature/admin/admin_report/views/admin_report_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/binding/admin_setting_binding.dart' show AdminSettingBinding;
 import 'package:chiroku_cafe/feature/admin/admin_setting/views/admin_setting_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting_manage_printer/binding/thermal_printer_binding.dart';
@@ -33,6 +40,10 @@ import 'package:chiroku_cafe/feature/auth/sign_up/binding/sign_up_binding.dart';
 import 'package:chiroku_cafe/feature/auth/sign_up/views/sign_up_page.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_bottom_bar/binding/cashier_bottom_bar_binding.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_bottom_bar/view/cashier_bottom_bar_page.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_order/binding/cashier_order_binding.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_order/views/cashier_order_view.dart';
+import 'package:chiroku_cafe/feature/push_notification/binding/push_notification_binding.dart';
+import 'package:chiroku_cafe/feature/push_notification/views/push_notification_view.dart';
 import 'package:get/get.dart';
 import 'package:chiroku_cafe/feature/auth/on_board/binding/on_board_binding.dart';
 
@@ -147,5 +158,48 @@ class Pages {
       page: () => const AdminSettingView(),
       binding: AdminSettingBinding(),
     ),
+    GetPage(
+  name: AppRoutes.adminReport,
+  page: () => const ReportAdminView(),
+  binding: ReportAdminBinding(),
+),
+
+    //
+    GetPage(
+      name: AppRoutes.pushNotificationSettings,
+      page: () => const PushNotificationView(),
+      binding: PushNotificationBinding(),
+    ),  
+
+   //all transactions
+   GetPage(
+  name: AppRoutes.adminAllTransactions,
+  page: () => const AllTransactionsView(), // <-- tanpa parameter
+  binding: BindingsBuilder(() {
+    final args = Get.arguments as Map<String, dynamic>;
+    Get.lazyPut<AllTransactionsController>(() => AllTransactionsController(
+      startDate: args['startDate'] as DateTime,
+      endDate: args['endDate'] as DateTime,
+      cashierId: args['cashierId'] as String?,
+    ));
+  }),
+),
+
+//add discount
+GetPage(
+  name: AppRoutes.adminAddDiscount,
+  page: () => const AddDiscountView(),
+  binding: DiscountBinding(),
+),
+
+
+
+//cashier    
+GetPage(
+      name: AppRoutes.cashierOrder,
+      page: () => OrderPage(),
+      binding: OrderBinding(),
+    ),
+   
   ];
 }

@@ -57,6 +57,11 @@ class AdminSettingController extends GetxController {
     Get.toNamed(AppRoutes.paymentSettings);
   }
 
+
+  void goToManageDiscounts(){
+    Get.toNamed(AppRoutes.adminAddDiscount);
+  }
+
   // Navigate to Manage Control (Users, Menu, Category, Table)
   void goToManageControl() {
     Get.toNamed(AppRoutes.adminManageControl);

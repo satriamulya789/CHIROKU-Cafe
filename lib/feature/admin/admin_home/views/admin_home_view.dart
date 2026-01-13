@@ -1,4 +1,5 @@
 import 'package:chiroku_cafe/feature/admin/admin_home/controllers/admin_home_controller.dart';
+import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_notification_card_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_view_widget/admin_home_view_app_bar.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_view_widget/admin_home_view_notification_bottom_sheet.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_view_widget/admin_home_view_notification_selection.dart';
@@ -89,6 +90,8 @@ class AdminHomeView extends GetView<AdminHomeController> {
     NotificationsBottomSheet.show(
       notifications: controller.notifications,
       onNotificationTap: _handleNotificationTap,
+      notificationCardBuilder: (notif, onTap) =>
+          NotificationCardWidget(notification: notif, onTap: onTap),
     );
   }
 

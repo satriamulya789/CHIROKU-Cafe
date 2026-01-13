@@ -1,6 +1,6 @@
 import 'package:chiroku_cafe/feature/auth/reset_password/controllers/reset_password_controllers.dart';
 import 'package:chiroku_cafe/feature/auth/reset_password/widgets/reset_password_button.dart';
-import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
+import 'package:chiroku_cafe/shared/models/handling_error_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_text_field.dart';

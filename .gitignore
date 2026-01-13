@@ -15,6 +15,7 @@
 *.env
 migrate_working_dir/
 
+android/app/google-services.json
 *.g.dart
 *env.dart
 lib/env/env.g.dart

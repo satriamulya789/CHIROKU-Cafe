@@ -20,8 +20,10 @@ class BarChartWidget extends StatelessWidget {
         barTouchData: BarTouchData(
           enabled: true,
           touchTooltipData: BarTouchTooltipData(
-            getTooltipColor: (group) => AppColors.brownDarker,
+                    getTooltipColor: (group) => AppColors.brownDarker,
             tooltipBorderRadius: BorderRadius.all(Radius.circular(8)),
+            //   tooltipBgColor: AppColors.brownDarker,
+            // tooltipRoundedRadius: 8,
             tooltipPadding: const EdgeInsets.all(8),
             getTooltipItem: (group, groupIndex, rod, rodIndex) {
               return BarTooltipItem(
@@ -55,10 +57,10 @@ class BarChartWidget extends StatelessWidget {
         ),
         titlesData: FlTitlesData(
           show: true,
-          rightTitles: const AxisTitles(
+          rightTitles:  AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          topTitles: const AxisTitles(
+          topTitles:  AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
           bottomTitles: AxisTitles(

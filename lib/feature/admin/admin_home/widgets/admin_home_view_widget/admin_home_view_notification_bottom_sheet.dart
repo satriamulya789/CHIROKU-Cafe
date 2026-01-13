@@ -1,28 +1,38 @@
-import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_notification_model.dart';
-import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_notification_card_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class NotificationsBottomSheet extends StatelessWidget {
-  final List<NotificationModel> notifications;
-  final Function(NotificationModel) onNotificationTap;
+class NotificationsBottomSheet<T> extends StatelessWidget {
+  final List<T> notifications;
+  final Function(T) onNotificationTap;
+  final Widget Function(T, VoidCallback) notificationCardBuilder;
+  final String title;
+  final IconData? icon;
 
   const NotificationsBottomSheet({
     super.key,
     required this.notifications,
     required this.onNotificationTap,
+    required this.notificationCardBuilder,
+    this.title = 'All Notifications',
+    this.icon,
   });
 
-  static void show({
-    required List<NotificationModel> notifications,
-    required Function(NotificationModel) onNotificationTap,
+  static void show<T>({
+    required List<T> notifications,
+    required Function(T) onNotificationTap,
+    required Widget Function(T, VoidCallback) notificationCardBuilder,
+    String title = 'All Notifications',
+    IconData? icon,
   }) {
     Get.bottomSheet(
-      NotificationsBottomSheet(
+      NotificationsBottomSheet<T>(
         notifications: notifications,
         onNotificationTap: onNotificationTap,
+        notificationCardBuilder: notificationCardBuilder,
+        title: title,
+        icon: icon,
       ),
       isScrollControlled: true,
     );
@@ -52,12 +62,19 @@ class NotificationsBottomSheet extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'All Notifications',
-                  style: AppTypography.h5.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.brownDarker,
-                  ),
+                Row(
+                  children: [
+                    if (icon != null)
+                      Icon(icon, color: AppColors.brownDarker),
+                    if (icon != null) const SizedBox(width: 8),
+                    Text(
+                      title,
+                      style: AppTypography.h5.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.brownDarker,
+                      ),
+                    ),
+                  ],
                 ),
                 IconButton(
                   onPressed: () => Get.back(),
@@ -93,9 +110,9 @@ class NotificationsBottomSheet extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     itemCount: notifications.length,
                     itemBuilder: (context, index) {
-                      return NotificationCardWidget(
-                        notification: notifications[index],
-                        onTap: () => onNotificationTap(notifications[index]),
+                      return notificationCardBuilder(
+                        notifications[index],
+                        () => onNotificationTap(notifications[index]),
                       );
                     },
                   ),

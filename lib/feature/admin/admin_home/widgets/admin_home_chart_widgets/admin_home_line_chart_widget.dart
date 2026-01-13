@@ -19,8 +19,10 @@ class LineChartWidget extends StatelessWidget {
         lineTouchData: LineTouchData(
           enabled: true,
           touchTooltipData: LineTouchTooltipData(
-            getTooltipColor: (touchedSpot) => AppColors.brownDarker,
+                    getTooltipColor: (group) => AppColors.brownDarker,
             tooltipBorderRadius: BorderRadius.all(Radius.circular(8)),
+            // tooltipBgColor: AppColors.brownDarker,
+            // tooltipRoundedRadius: 8,
             tooltipPadding: const EdgeInsets.all(8),
             getTooltipItems: (touchedSpots) {
               return touchedSpots.map((spot) {
@@ -60,10 +62,10 @@ class LineChartWidget extends StatelessWidget {
         ),
         titlesData: FlTitlesData(
           show: true,
-          rightTitles: const AxisTitles(
+          rightTitles:  AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          topTitles: const AxisTitles(
+          topTitles:  AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
           bottomTitles: AxisTitles(

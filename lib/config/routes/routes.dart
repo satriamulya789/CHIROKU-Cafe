@@ -17,6 +17,7 @@ abstract class AppRoutes {
   static const adminEditCategory = '/admin-edit-category';
   static const adminEditTable = '/admin-edit-table';
     static const paymentSettings = '/payment-settings';
+        static const adminReport = '/admin-report';
   
   // Admin Menu Form
   static const adminAddMenu = '/admin-add-menu';
@@ -24,7 +25,21 @@ abstract class AppRoutes {
 
   // Edit Profile
   static const editProfile = '/edit-profile';
+
+  //push notif
+  static const pushNotificationSettings = '/push-notification-settings';
   
   // Thermal Printer
   static const thermalPrinterSettings = '/thermal-printer-settings';
-}
+
+  //all transactions
+  static const adminAllTransactions = '/admin/all-transactions';
+
+  //add discount
+  static const adminAddDiscount = '/admin/add-discount';
+
+
+  //cashier
+  static const cashierOrder = '/cashier-order';
+  
+  }

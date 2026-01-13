@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:chiroku_cafe/feature/auth/complete_profile/models/complete_profile_model.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/services/complete_profile_service.dart';
-import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
+import 'package:chiroku_cafe/shared/models/handling_error_model.dart';
 
 class CompleteProfileRepository {
   final _service = CompleteProfileService();
