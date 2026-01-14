@@ -1,5 +1,6 @@
+import 'dart:developer';
+
 import 'package:chiroku_cafe/feature/auth/sign_up/services/sign_up_service.dart';
-import 'package:chiroku_cafe/utils/enums/user_enum.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignUpRepository {
@@ -20,10 +21,21 @@ class SignUpRepository {
       final user = response.user;
 
       if (user != null) {
-        print('User registered: ${user.email}');
+        log(
+          'User registered: ${user.email}',
+          name: 'SignUpRepository.registerUser',
+          level: 800,
+        );
       }
     } catch (e) {
-      throw e;
+      log(
+        'Registration failed',
+        name: 'SignUpRepository.registerUser',
+        error: e,
+        level: 1000,
+      );
+      // ✅ Rethrow agar controller bisa handle error dan tampilkan snackbar
+      rethrow;
     }
   }
 }

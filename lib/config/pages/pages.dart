@@ -31,7 +31,7 @@ import 'package:chiroku_cafe/feature/auth/complete_profile/binding/complete_prof
 import 'package:chiroku_cafe/feature/auth/complete_profile/views/complete_profile_page.dart';
 import 'package:chiroku_cafe/feature/auth/forgot_password/binding/forgot_password_binding.dart';
 import 'package:chiroku_cafe/feature/auth/forgot_password/views/forgot_password_page.dart';
-import 'package:chiroku_cafe/feature/auth/on_board/on_board.dart';
+import 'package:chiroku_cafe/feature/auth/on_board/widgets/on_board_widget.dart';
 import 'package:chiroku_cafe/feature/auth/reset_password/binding/reset_password_binding.dart';
 import 'package:chiroku_cafe/feature/auth/reset_password/views/reset_password_page.dart';
 import 'package:chiroku_cafe/feature/auth/sign_in/binding/sign_in_binding.dart';

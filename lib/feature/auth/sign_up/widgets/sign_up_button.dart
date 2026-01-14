@@ -30,8 +30,8 @@ class ButtonSignUp extends GetView<SignUpController> {
                 )
               : Text(
                   'Sign Up',
-                  style: AppTypography.button.copyWith(
-                    color: AppColors.white,
+                  style: AppTypography.buttonLarge.copyWith(
+                    color: AppColors.brownLight,
                   ),
                 ),
         ),

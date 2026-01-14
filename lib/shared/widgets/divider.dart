@@ -1,7 +1,6 @@
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class DividerWidget extends StatelessWidget {
   const DividerWidget({super.key});
@@ -14,7 +13,7 @@ class DividerWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'or',
-            style: AppTypography.bodySmall.copyWith(color:  AppColors.brownNormal),
+            style: AppTypography.labelLarge.copyWith(color:  AppColors.brownNormal),
             ),
           ),
         const Expanded(child: Divider()),

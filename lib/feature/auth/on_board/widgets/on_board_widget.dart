@@ -74,8 +74,8 @@ class OnBoardPages extends GetView<OnBoardController> {
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     decoration: BoxDecoration(
                       color: controller.pageIndex.value == i
-                          ? Colors.brown
-                          : Colors.grey.shade400,
+                          ? AppColors.brownNormal
+                          : AppColors.brownLightActive,
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -96,8 +96,8 @@ class OnBoardPages extends GetView<OnBoardController> {
                   child: ElevatedButton(
                     key: ValueKey(controller.pageIndex.value),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.brown,
-                      foregroundColor: Colors.white,
+                      backgroundColor: AppColors.brownNormal,
+                      foregroundColor: AppColors.brownLight,
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
