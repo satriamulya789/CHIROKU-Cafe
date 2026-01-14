@@ -40,7 +40,7 @@ class SignInRepositories {
       );
     } on AuthException catch (e) {
       log('Auth exception during sign in');
-      rethrow;
+      throw e;
     } catch (e) {
       log('Unknown error during sign in');
       rethrow;
