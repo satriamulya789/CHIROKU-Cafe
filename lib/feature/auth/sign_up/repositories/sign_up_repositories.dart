@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:chiroku_cafe/feature/auth/sign_up/services/sign_up_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -34,7 +33,7 @@ class SignUpRepository {
         error: e,
         level: 1000,
       );
-      // ✅ Rethrow agar controller bisa handle error dan tampilkan snackbar
+      // Rethrow agar controller bisa handle error dan tampilkan snackbar
       rethrow;
     }
   }

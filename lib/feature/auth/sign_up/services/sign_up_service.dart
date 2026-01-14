@@ -24,15 +24,10 @@ class SignUpService {
 
       log(
         'User record created successfully',
-        name: 'SignUpService._createUserRecord',
-        level: 800,
       );
     } catch (e) {
       log(
-        'Error creating user record',
-        name: 'SignUpService._createUserRecord',
-        error: e,
-        level: 1000,
+        'Error creating user record'
       );
       rethrow;
     }

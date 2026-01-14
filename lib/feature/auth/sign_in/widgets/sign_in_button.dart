@@ -9,15 +9,18 @@ class SignInButton extends GetView<SignInController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => SizedBox(
+    return Obx(
+      () => SizedBox(
         width: double.infinity,
         child: ElevatedButton(
           onPressed: controller.isLoading.value ? null : controller.signIn,
           style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: AppColors.brownNormal,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12))),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            backgroundColor: AppColors.brownNormal,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
           child: controller.isLoading.value
               ? const SizedBox(
                   height: 20,
@@ -29,11 +32,12 @@ class SignInButton extends GetView<SignInController> {
                 )
               : Text(
                   'Sign In',
-                  style: AppTypography.button.copyWith(
-                    color: AppColors.white,
-                  ),
+                  style: AppTypography.buttonLarge.copyWith(
+                    color: AppColors.brownLight
+                    ),
                 ),
         ),
-      ),);
+      ),
+    );
   }
 }

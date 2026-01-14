@@ -1,23 +1,36 @@
+import 'dart:developer';
+
 import 'package:chiroku_cafe/constant/api_constant.dart';
-import 'package:chiroku_cafe/shared/models/handling_error_model.dart';
-import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
+import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/utils/enums/user_enum.dart';
+import 'package:chiroku_cafe/utils/functions/not_register_email.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignInService {
   final SupabaseClient supabase = Supabase.instance.client;
-  final _customSnackbar = CustomSnackbar();
+  final _emailNotRegister = NotRegisterEmail();
+  // final _customSnackbar = CustomSnackbar();
 
   //sign in with email & password
   Future<AuthResponse> signIn({
     required String email,
     required String password,
   }) async {
-    if (email.isEmpty) {
-      throw AuthErrorModel.emailEmpty();
+    //validator
+    final emailNotRegister = await _emailNotRegister.isEmailNotRegistered(
+      email,
+    );
+    if (emailNotRegister) {
+      throw AuthErrorModel.emailNotRegistered();
     }
     if (password.isEmpty) {
       throw AuthErrorModel.passwordEmpty();
+    }
+    if (email.isEmpty) {
+      throw AuthErrorModel.emailEmpty();
+    }
+    if (password.length < 6) {
+      throw AuthErrorModel.passwordTooShort();
     }
     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
       throw AuthErrorModel.invalidEmailFormat();
@@ -29,14 +42,14 @@ class SignInService {
         password: password,
       );
       //check if user is null
-      if (response.user == null) {
-        _customSnackbar.showErrorSnackbar(
-          AuthErrorModel.emailNotRegistered().message,
-        );
+      final user = response.user;
+      if (user == null) {
+        log('user not register');
       }
       return response;
     } catch (e) {
-      throw AuthErrorModel.unknownError();
+      log('Error sign in user');
+      rethrow;
     }
   }
 
@@ -59,7 +72,8 @@ class SignInService {
       }
       return null;
     } catch (e) {
-      throw AuthErrorModel.failedLoadUser();
+      log('Failed to load user');
+      rethrow;
     }
   }
 
@@ -74,7 +88,8 @@ class SignInService {
 
       return data;
     } catch (e) {
-      throw AuthErrorModel.failedLoadUser();
+      log('Failed to load user');
+      rethrow;
     }
   }
 
@@ -87,14 +102,5 @@ class SignInService {
   /// Get current user
   User? getCurrentUser() {
     return supabase.auth.currentUser;
-  }
-
-  /// Sign out
-  Future<void> signOut() async {
-    try {
-      await supabase.auth.signOut();
-    } catch (e) {
-      throw AuthErrorModel.unknownError();
-    }
   }
 }

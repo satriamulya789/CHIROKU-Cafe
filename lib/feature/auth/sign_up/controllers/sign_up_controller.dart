@@ -17,9 +17,9 @@ class SignUpController extends GetxController {
 
   //================== Form Controllers ===================//
   final formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
+  var emailController = TextEditingController();
+  var passwordController = TextEditingController();
+  var confirmPasswordController = TextEditingController();
 
   //================== Observables ===================//
   final isLoading = false.obs;
@@ -35,6 +35,8 @@ class SignUpController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
     // Listen to password changes for reactive UI updates
     passwordController.addListener(() {
       passwordText.value = passwordController.text;
@@ -67,6 +69,21 @@ class SignUpController extends GetxController {
     final password = passwordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
 
+    // Validasi input
+    if (email.isEmpty) {
+      _customSnackbar.showErrorSnackbar(AuthErrorModel.emailEmpty().message);
+      return;
+    }
+    if (password.isEmpty) {
+      _customSnackbar.showErrorSnackbar(AuthErrorModel.passwordEmpty().message);
+      return;
+    }
+    if (confirmPassword.isEmpty) {
+      _customSnackbar.showErrorSnackbar(
+        AuthErrorModel.confirmPasswordEmpty().message,
+      );
+      return;
+    }
     // Check password match
     if (password != confirmPassword) {
       _customSnackbar.showErrorSnackbar(

@@ -14,7 +14,7 @@ class SignInDontHaveAccount extends StatelessWidget {
       children: [
         Text(
           'Don\'t have an account? ',
-          style: AppTypography.bodyMedium.copyWith(
+          style: AppTypography.subtitleMedium.copyWith(
             color: AppColors.brownNormal,
           ),
         ),
@@ -22,9 +22,8 @@ class SignInDontHaveAccount extends StatelessWidget {
           onTap: () => Get.toNamed(AppRoutes.signUp),
           child: Text(
             'Sign Up',
-            style: AppTypography.bodyMedium.copyWith(
+            style: AppTypography.bodyLargeBold.copyWith(
               color: AppColors.brownDarker,
-              fontWeight: FontWeight.bold,
             ),
           ),
         ),

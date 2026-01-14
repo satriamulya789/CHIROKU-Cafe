@@ -15,10 +15,12 @@ class ButtonSignUp extends GetView<SignUpController> {
         child: ElevatedButton(
           onPressed: controller.isLoading.value ? null : controller.signUp,
           style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: AppColors.brownNormal,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12))),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            backgroundColor: AppColors.brownNormal,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
           child: controller.isLoading.value
               ? const SizedBox(
                   height: 20,

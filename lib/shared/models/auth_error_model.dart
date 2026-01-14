@@ -22,6 +22,51 @@ class AuthErrorModel {
     );
   }
 
+  /// Error when name is too short (less than 3 characters)
+  factory AuthErrorModel.nameTooShort() {
+    return AuthErrorModel(
+      message: 'Full name must be at least 3 characters',
+      code: 'name_too_short',
+      statusCode: 400,
+    );
+  }
+
+  /// Error when name is too long (more than 50 characters)
+  factory AuthErrorModel.nameTooLong() {
+    return AuthErrorModel(
+      message: 'Full name must not exceed 50 characters',
+      code: 'name_too_long',
+      statusCode: 400,
+    );
+  }
+
+  /// Error when name contains invalid characters
+  factory AuthErrorModel.nameInvalidCharacters() {
+    return AuthErrorModel(
+      message: 'Full name can only contain letters and spaces',
+      code: 'name_invalid_characters',
+      statusCode: 400,
+    );
+  }
+
+  /// Error when name contains only spaces
+  factory AuthErrorModel.nameOnlySpaces() {
+    return AuthErrorModel(
+      message: 'Full name cannot be only spaces',
+      code: 'name_only_spaces',
+      statusCode: 400,
+    );
+  }
+
+  /// Error when avatar/profile photo is not selected
+  factory AuthErrorModel.avatarNotSelected() {
+    return AuthErrorModel(
+      message: 'Please select a profile photo',
+      code: 'avatar_not_selected',
+      statusCode: 400,
+    );
+  }
+
   /// Error when email field is empty
   factory AuthErrorModel.emailEmpty() {
     return AuthErrorModel(
@@ -149,6 +194,15 @@ class AuthErrorModel {
     return AuthErrorModel(
       message: 'Your account has been created successfully.',
       code: 'account_created_success',
+      statusCode: 200,
+    );
+  }
+
+  // succes mesege when user login
+  factory AuthErrorModel.accountSignInSuccess() {
+    return AuthErrorModel(
+      message: 'Your sign in successfully.',
+      code: 'account_sign_in_success',
       statusCode: 200,
     );
   }

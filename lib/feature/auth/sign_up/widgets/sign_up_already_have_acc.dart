@@ -23,7 +23,8 @@ class AlreadyHaveAccount extends StatelessWidget {
           child: Text(
             'Sign In',
             style: AppTypography.bodyLargeBold.copyWith(
-              color: AppColors.brownDarker),
+              color: AppColors.brownDarker
+            ),
           ),
         ),
       ],

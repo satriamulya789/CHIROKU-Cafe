@@ -16,9 +16,8 @@ class SignInForgotPassword extends StatelessWidget {
           onTap: () => Get.toNamed(AppRoutes.forgotPassword),
           child: Text(
             'Forgot Password?',
-            style: AppTypography.label.copyWith(
+            style: AppTypography.labelLarge.copyWith(
               color: AppColors.brownDarker,
-              fontWeight: FontWeight.bold,
             ),
           ),
         ),
