@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:flutter/material.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 
@@ -30,11 +31,11 @@ class OnBoardView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          Text(title, style: AppTypography.h3, textAlign: TextAlign.center),
+          Text(title, style: AppTypography.h2.copyWith(color: AppColors.brownDarker), textAlign: TextAlign.center),
           const SizedBox(height: 12),
           Text(
             subtitle,
-            style: AppTypography.bodySmall,
+            style: AppTypography.subtitleLarge.copyWith(color: AppColors.brownDark),
             textAlign: TextAlign.center,
           ),
         ],

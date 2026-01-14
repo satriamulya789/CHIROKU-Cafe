@@ -12,7 +12,7 @@ class AuthErrorModel {
   });
 
   // ==================== Validation Errors ====================
-  
+
   /// Error when name field is empty
   factory AuthErrorModel.nameEmpty() {
     return AuthErrorModel(
@@ -26,7 +26,7 @@ class AuthErrorModel {
   factory AuthErrorModel.emailEmpty() {
     return AuthErrorModel(
       message: 'Email must not be empty',
-      code: 'empty_field',
+      code: 'email_empty',
       statusCode: 400,
     );
   }
@@ -35,16 +35,16 @@ class AuthErrorModel {
   factory AuthErrorModel.passwordEmpty() {
     return AuthErrorModel(
       message: 'Password must not be empty',
-      code: 'empty_field',
+      code: 'password_empty',
       statusCode: 400,
     );
   }
 
   /// Error when confirm password field is empty
-  factory AuthErrorModel.confirmPassword() {
+  factory AuthErrorModel.confirmPasswordEmpty() {
     return AuthErrorModel(
       message: 'Confirm Password must not be empty',
-      code: 'empty_field',
+      code: 'confirm_password_empty',
       statusCode: 400,
     );
   }
@@ -86,15 +86,18 @@ class AuthErrorModel {
     );
   }
 
-  factory AuthErrorModel.updatePassword() {
+  /// Error when failed to update password
+  factory AuthErrorModel.updatePasswordFailed() {
     return AuthErrorModel(
       message: 'Failed to update password. Please try again.',
       code: 'update_password_failed',
-      statusCode: 400,
+      statusCode: 500,
     );
   }
-   // ==================== Dashboard Errors ====================
-  
+
+  // ==================== Dashboard Errors ====================
+
+  /// Error when failed to load dashboard data
   factory AuthErrorModel.failedLoadDashboard() {
     return AuthErrorModel(
       message: 'Failed to load dashboard data. Please try again.',
@@ -103,6 +106,7 @@ class AuthErrorModel {
     );
   }
 
+  /// Error when failed to load orders
   factory AuthErrorModel.failedLoadOrders() {
     return AuthErrorModel(
       message: 'Failed to load orders. Please try again.',
@@ -110,7 +114,6 @@ class AuthErrorModel {
       statusCode: 500,
     );
   }
-
 
   // ==================== Authentication Errors ====================
 
@@ -142,16 +145,16 @@ class AuthErrorModel {
   }
 
   /// Success message when account is created successfully
-  factory AuthErrorModel.successAccount() {
+  factory AuthErrorModel.accountCreatedSuccess() {
     return AuthErrorModel(
       message: 'Your account has been created successfully.',
-      code: 'success_account',
+      code: 'account_created_success',
       statusCode: 200,
     );
   }
 
   /// Error when failed to load user data
-  factory AuthErrorModel.failedLoadUser(){
+  factory AuthErrorModel.failedLoadUser() {
     return AuthErrorModel(
       message: 'Failed to load user data. Please try again.',
       code: 'failed_load_user',
@@ -162,23 +165,25 @@ class AuthErrorModel {
   // ==================== Avatar & Profile Errors ====================
 
   /// Success message when image is selected
-  factory AuthErrorModel.imageSelected(){
+  factory AuthErrorModel.imageSelectedSuccess() {
     return AuthErrorModel(
       message: 'Image selected successfully.',
-      code: 'image_selected',
+      code: 'image_selected_success',
       statusCode: 200,
     );
   }
 
-  factory AuthErrorModel.capturePhoto (){
+  /// Success message when photo is captured
+  factory AuthErrorModel.photoCapturedSuccess() {
     return AuthErrorModel(
       message: 'Photo captured successfully.',
-      code: 'photo_captured',
+      code: 'photo_captured_success',
       statusCode: 200,
     );
   }
 
-   factory AuthErrorModel.capturePhotoFailed (){
+  /// Error when photo capture fails
+  factory AuthErrorModel.capturePhotoFailed() {
     return AuthErrorModel(
       message: 'Photo capture failed.',
       code: 'photo_capture_failed',
@@ -186,11 +191,12 @@ class AuthErrorModel {
     );
   }
 
-  factory AuthErrorModel.deleteAvatar (){
+  /// Success message when avatar is deleted
+  factory AuthErrorModel.avatarDeletedSuccess() {
     return AuthErrorModel(
       message: 'Avatar deleted successfully.',
-      code: 'image_selection_failed',
-      statusCode: 500,
+      code: 'avatar_deleted_success',
+      statusCode: 200,
     );
   }
 
@@ -213,7 +219,7 @@ class AuthErrorModel {
   }
 
   /// Error when avatar deletion fails
-  factory AuthErrorModel.deleteAvatarFailed(){
+  factory AuthErrorModel.deleteAvatarFailed() {
     return AuthErrorModel(
       message: 'Failed to delete avatar. Please try again.',
       code: 'delete_avatar_failed',
