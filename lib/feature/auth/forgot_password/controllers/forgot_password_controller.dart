@@ -46,12 +46,12 @@ class ForgotPasswordController extends GetxController {
         // Navigate ke halaman reset password dengan email
         Get.toNamed(AppRoutes.resetPassword, arguments: email);
       } else {
-        _customSnackbar.showErrorSnackbar(AuthErrorModel.emailNotRegistered().message);
+        _customSnackbar.showErrorSnackbar(
+          AuthErrorModel.emailNotRegistered().message,
+        );
       }
     } catch (e) {
-      _customSnackbar.showErrorSnackbar(
-        AuthErrorModel.unknownError().message,
-      );
+      _customSnackbar.showErrorSnackbar(AuthErrorModel.unknownError().message);
     } finally {
       isLoading.value = false;
     }

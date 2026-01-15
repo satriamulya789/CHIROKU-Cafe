@@ -32,7 +32,9 @@ class ResetPasswordButton extends GetView<ResetPasswordController> {
                 )
               : Text(
                   'Reset Password',
-                  style: AppTypography.button.copyWith(color: AppColors.white),
+                  style: AppTypography.bodyLarge.copyWith(
+                    color: AppColors.brownLight
+                    ),
                 ),
         ),
       ),
