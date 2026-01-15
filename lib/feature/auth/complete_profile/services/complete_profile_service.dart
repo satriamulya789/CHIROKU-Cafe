@@ -1,8 +1,9 @@
+
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:chiroku_cafe/constant/api_constant.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/models/complete_profile_model.dart';
-import 'package:chiroku_cafe/shared/models/handling_error_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CompleteProfileService {
@@ -30,7 +31,8 @@ class CompleteProfileService {
           .getPublicUrl(path);
       return publicUrl;
     } catch (e) {
-      throw AuthErrorModel.uploadAvatarFailed();
+      log('Error uploading avatar: $e');
+      rethrow;
     }
   }
 
@@ -58,7 +60,8 @@ class CompleteProfileService {
           })
           .eq('id', userId);
     } catch (e) {
-      throw AuthErrorModel.updateProfileFailed();
+      log('Error updating user profile: $e');
+      rethrow;
     }
   }
 
@@ -72,7 +75,7 @@ class CompleteProfileService {
           .single();
 
       if (response == null) {
-        throw AuthErrorModel.failedLoadUser();
+        log('Failed to load user profile: response is null');
       }
       ;
 
@@ -89,7 +92,8 @@ class CompleteProfileService {
     try {
       await supabase.storage.from(ApiConstant.avatarsUrl).remove([avatarPath]);
     } catch (e) {
-      throw AuthErrorModel.deleteAvatar();
+      log('Error deleting avatar: $e');
+      rethrow;
     }
   }
 }

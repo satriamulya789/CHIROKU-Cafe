@@ -1,7 +1,7 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:chiroku_cafe/feature/auth/complete_profile/models/complete_profile_model.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/services/complete_profile_service.dart';
-import 'package:chiroku_cafe/shared/models/handling_error_model.dart';
 
 class CompleteProfileRepository {
   final _service = CompleteProfileService();
@@ -15,7 +15,7 @@ class CompleteProfileRepository {
 
       return CompleteProfileModel.fromJson(data.toJson());
     } catch (e) {
-      throw AuthErrorModel.updateProfileFailed();
+      log('Error fetching user profile: $e');
       
       }
   }
@@ -29,7 +29,7 @@ class CompleteProfileRepository {
       final avatarUrl = await _service.uploadAvatar(userId, avatarFile);
       return avatarUrl;
     } catch (e) {
-      throw AuthErrorModel.uploadAvatarFailed();
+      log('Error uploading avatar: $e');
     }
   }
   
@@ -60,7 +60,8 @@ class CompleteProfileRepository {
         avatarUrl: avatarUrl,
       );
     } catch (e) {
-      throw Exception(AuthErrorModel.failedLoadUser());
+      log('Error load user profile: $e');
+      rethrow;
     }
   }
 

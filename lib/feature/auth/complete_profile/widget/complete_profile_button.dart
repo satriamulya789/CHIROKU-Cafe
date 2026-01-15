@@ -30,22 +30,10 @@ class CompleteProfileButton extends GetView<CompleteProfileController> {
                     strokeWidth: 2,
                   ),
                 )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Complete Profile',
-                      style: AppTypography.button.copyWith(
-                        color: AppColors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(
-                      Icons.arrow_forward_rounded,
-                      size: 20,
-                      color: AppColors.white,
-                    ),
-                  ],
+              : Text(
+                  'Complete Profile',
+                  style: AppTypography.button.copyWith(
+                    color: AppColors.brownLight),
                 ),
         ),
       ),

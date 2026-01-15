@@ -263,6 +263,14 @@ class AuthErrorModel {
     );
   }
 
+  factory AuthErrorModel.uploadAvatarSuccess() {
+    return AuthErrorModel(
+      message: 'Avatar uploaded successfully.',
+      code: 'upload_avatar_success',
+      statusCode: 200,
+    );
+  }
+
   /// Error when avatar format is not valid
   factory AuthErrorModel.invalidAvatarFormat() {
     return AuthErrorModel(

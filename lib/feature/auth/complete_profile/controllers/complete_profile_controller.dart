@@ -1,12 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/repositories/complete_profile_repositories.dart';
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
-import 'package:chiroku_cafe/utils/functions/validator.dart';
 import 'package:chiroku_cafe/utils/services/permission_service.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -92,8 +91,7 @@ class CompleteProfileController extends GetxController {
   Future<void> takePhoto() async {
     //Request permission camera
 
-    final hasPermission = await _permissionService
-        .requestCameraPermission();
+    final hasPermission = await _permissionService.requestCameraPermission();
     if (!hasPermission) return;
 
     try {
@@ -134,7 +132,7 @@ class CompleteProfileController extends GetxController {
           children: [
             Text(
               'Select Image Source',
-              style: AppTypography.h5.copyWith(color: AppColors.black),
+              style: AppTypography.h5.copyWith(color: AppColors.brownDarker),
             ),
             const SizedBox(height: 20),
             ListTile(
@@ -145,7 +143,7 @@ class CompleteProfileController extends GetxController {
               title: Text(
                 'Gallery',
                 style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.black,
+                  color: AppColors.brownDarker,
                 ),
               ),
               onTap: () {
@@ -161,7 +159,7 @@ class CompleteProfileController extends GetxController {
               title: Text(
                 'Camera',
                 style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.black,
+                  color: AppColors.brownDarker,
                 ),
               ),
               onTap: () {
@@ -178,34 +176,36 @@ class CompleteProfileController extends GetxController {
 
   /// Remove selected avatar
   Future<void> removeAvatar() async {
-  // Show confirmation dialog
-  await Get.defaultDialog(
-    title: 'Remove Photo',
-    titleStyle: AppTypography.h5.copyWith(
-      color: AppColors.brownDarker,
-      fontWeight: FontWeight.bold,
-    ),
-    middleText: 'Are you sure you want to remove this photo?',
-    middleTextStyle: AppTypography.bodyMedium.copyWith(
-      color: AppColors.brownNormal,
-    ),
-    textConfirm: 'Remove',
-    textCancel: 'Cancel',
-    confirmTextColor: AppColors.white,
-    cancelTextColor: AppColors.brownNormal,
-    buttonColor: AppColors.alertNormal,
-    onConfirm: () {
-      _avatarFile.value = null;
-      Get.back(); // Close dialog
-      _customSnackbar.showSuccessSnackbar(
-        AuthErrorModel.deleteAvatarFailed().message,
-      );
-    },
-    onCancel: () {
-      Get.back(); // Close dialog
-    },
-  );
-}/// Upload avatar to storage and get URL
+    // Show confirmation dialog
+    await Get.defaultDialog(
+      title: 'Remove Photo',
+      titleStyle: AppTypography.h5.copyWith(
+        color: AppColors.brownDarker,
+        fontWeight: FontWeight.bold,
+      ),
+      middleText: 'Are you sure you want to remove this photo?',
+      middleTextStyle: AppTypography.bodyMedium.copyWith(
+        color: AppColors.brownNormal,
+      ),
+      textConfirm: 'Remove',
+      textCancel: 'Cancel',
+      confirmTextColor: AppColors.white,
+      cancelTextColor: AppColors.brownNormal,
+      buttonColor: AppColors.alertNormal,
+      onConfirm: () {
+        _avatarFile.value = null;
+        Get.back(); // Close dialog
+        _customSnackbar.showSuccessSnackbar(
+          AuthErrorModel.deleteAvatarFailed().message,
+        );
+      },
+      onCancel: () {
+        Get.back(); // Close dialog
+      },
+    );
+  }
+
+  /// Upload avatar to storage and get URL
   Future<String?> _uploadAvatar() async {
     if (_avatarFile.value == null) return null;
 
@@ -222,7 +222,7 @@ class CompleteProfileController extends GetxController {
       return avatarUrl;
     } catch (e) {
       _customSnackbar.showErrorSnackbar(
-       AuthErrorModel.uploadAvatarFailed().message,
+        AuthErrorModel.uploadAvatarFailed().message,
       );
       return null;
     }
@@ -238,9 +238,8 @@ class CompleteProfileController extends GetxController {
     // Check if user is authenticated
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) {
-      
-        AuthErrorModel.failedLoadUser();
-      
+      AuthErrorModel.failedLoadUser();
+
       // Get.offAllNamed(AppRoutes.signUp);
       return;
     }
@@ -249,27 +248,34 @@ class CompleteProfileController extends GetxController {
       _isLoading.value = true;
 
       String? newAvatarUrl;
-    if (_avatarFile.value != null) {
-      print('Avatar file exists: ${_avatarFile.value!.path}');
-      print('File size: ${await _avatarFile.value!.length()} bytes');
-      
-      newAvatarUrl = await _uploadAvatar();
-      
-      if (newAvatarUrl == null) {
-        print('Avatar upload failed!');
-        _isLoading.value = false;
-        return;
+      if (_avatarFile.value != null) {
+        log('Avatar file exists: ${_avatarFile.value!.path}');
+        log('File size: ${await _avatarFile.value!.length()} bytes');
+
+        newAvatarUrl = await _uploadAvatar();
+
+        if (newAvatarUrl == null) {
+          _customSnackbar.showErrorSnackbar(
+            AuthErrorModel.uploadAvatarFailed().message,
+          );
+          _isLoading.value = false;
+          return;
+        }
+        _customSnackbar.showSuccessSnackbar(
+          AuthErrorModel.uploadAvatarSuccess().message,
+        );
+      } else {
+        _customSnackbar.showErrorSnackbar(
+          AuthErrorModel.uploadAvatarFailed().message,
+        );
+        log('No avatar file selected');
       }
-      print('Avatar uploaded successfully: $newAvatarUrl');
-    } else {
-      print('No avatar file selected');
-    }
 
       // Complete profile via repository
       await _repository.completeProfile(
         userId: userId,
         fullName: nameController.text.trim(),
-        avatarFile: avatarFile,
+        avatarFile: _avatarFile.value,
       );
 
       _customSnackbar.showSuccessSnackbar(
