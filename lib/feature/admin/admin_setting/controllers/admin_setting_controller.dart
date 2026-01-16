@@ -1,11 +1,15 @@
+import 'dart:math';
 import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/models/admin_setting_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/services/admin_setting_service.dart';
+import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 
 class AdminSettingController extends GetxController {
   final AdminSettingService _service = AdminSettingService();
+  final _customSnackBar = CustomSnackbar();
 
   final Rx<AdminSettingModel?> userProfile = Rx<AdminSettingModel?>(null);
   final RxBool isLoading = false.obs;
@@ -20,21 +24,23 @@ class AdminSettingController extends GetxController {
   Future<void> loadUserProfile() async {
     try {
       isLoading.value = true;
-      errorMessage.value = '';
-
       final profile = await _service.getUserProfile();
-      
+
       if (profile != null) {
         userProfile.value = profile;
+        _customSnackBar.showInfoSnackbar(
+          AuthErrorModel.loadUserSuccess().message,
+        );
       } else {
-        errorMessage.value = 'No user profile found';
+        // log('No user profile found');
+        _customSnackBar.showErrorSnackbar(
+          AuthErrorModel.failedLoadUser().message,
+        );
       }
     } catch (e) {
-      errorMessage.value = 'Failed to load profile: $e';
-      Get.snackbar(
-        'Error',
-        errorMessage.value,
-        snackPosition: SnackPosition.BOTTOM,
+      log('Failed to load user profile: No data found' as num);
+      _customSnackBar.showErrorSnackbar(
+        AuthErrorModel.failedLoadUser().message,
       );
     } finally {
       isLoading.value = false;
@@ -44,7 +50,8 @@ class AdminSettingController extends GetxController {
   Future<void> refreshProfile() async {
     await loadUserProfile();
   }
-   void goToEditProfile() {
+
+  void goToEditProfile() {
     Get.toNamed(AppRoutes.editProfile);
   }
 
@@ -53,12 +60,11 @@ class AdminSettingController extends GetxController {
     Get.toNamed(AppRoutes.thermalPrinterSettings);
   }
 
-  void goToManageQrisPayment(){
+  void goToManageQrisPayment() {
     Get.toNamed(AppRoutes.paymentSettings);
   }
 
-
-  void goToManageDiscounts(){
+  void goToManageDiscounts() {
     Get.toNamed(AppRoutes.adminAddDiscount);
   }
 
@@ -67,38 +73,28 @@ class AdminSettingController extends GetxController {
     Get.toNamed(AppRoutes.adminManageControl);
   }
 
-  Future<void> logout() async {
+  // SignOUt
+  Future<void> signOut() async {
     try {
-      final confirmed = await Get.dialog<bool>(
-        Get.defaultDialog(
-          title: 'Logout',
-          middleText: 'Are you sure you want to logout?',
-          textCancel: 'Cancel',
-          textConfirm: 'Logout',
-          confirmTextColor: Get.theme.colorScheme.onError,
-          buttonColor: Get.theme.colorScheme.error,
-          onCancel: () => Get.back(result: false),
-          onConfirm: () => Get.back(result: true),
-        ) as Widget,
-      );
-
-      if (confirmed == true) {
-        await _service.signOut();
-        Get.offAllNamed('/login');
-      }
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal logout: $e',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
+      await _service.signOut();
+      Get.offAllNamed(AppRoutes.signIn);
+    } catch (e) {}
   }
 
   String formatDate(DateTime date) {
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }

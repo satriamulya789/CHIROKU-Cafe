@@ -2,29 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTypography {
-  // ==================== Display Text (Extra Large) ====================
-
-  /// Display Large - For hero sections and splash screens
-  static TextStyle displayLarge = GoogleFonts.montserrat(
-    fontSize: 57,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.25,
-  );
-
-  /// Display Medium - For prominent headers
-  static TextStyle displayMedium = GoogleFonts.montserrat(
-    fontSize: 45,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 0,
-  );
-
-  /// Display Small - For section headers
-  static TextStyle displaySmall = GoogleFonts.montserrat(
-    fontSize: 36,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0,
-  );
-
   // ==================== Headings ====================
 
   /// Heading 1 - Main page titles

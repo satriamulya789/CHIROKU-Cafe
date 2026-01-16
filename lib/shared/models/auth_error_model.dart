@@ -216,6 +216,14 @@ class AuthErrorModel {
     );
   }
 
+   factory AuthErrorModel.loadUserSuccess() {
+    return AuthErrorModel(
+      message: 'User data loaded successfully.',
+      code: 'load_user_success',
+      statusCode: 200,
+    );
+  }
+
   // ==================== Avatar & Profile Errors ====================
 
   /// Success message when image is selected

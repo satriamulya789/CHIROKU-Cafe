@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:chiroku_cafe/feature/admin/admin_setting/models/admin_setting_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -18,9 +19,11 @@ class AdminSettingRepository {
 
       if (response == null) return null;
 
+
       return AdminSettingModel.fromJson(response);
     } catch (e) {
-      throw Exception('Failed to get user profile: $e');
+      log('Error fetching user profile');
+      rethrow;
     }
   }
 
@@ -37,8 +40,10 @@ class AdminSettingRepository {
           .maybeSingle();
 
       return response?['avatar_url'] as String?;
+      
     } catch (e) {
-      return null;
+      log('Error fetching avatar URL');
+     rethrow;
     }
   }
 
@@ -57,7 +62,8 @@ class AdminSettingRepository {
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', currentUser.id);
     } catch (e) {
-      throw Exception('Failed to update profile: $e');
+      log('Failed to update user profile');
+      rethrow;
     }
   }
 
@@ -66,7 +72,8 @@ class AdminSettingRepository {
     try {
       await supabase.auth.signOut();
     } catch (e) {
-      throw Exception('Failed to sign out: $e');
+      log('Failed to sign out: $e');
+      rethrow;
     }
   }
 }

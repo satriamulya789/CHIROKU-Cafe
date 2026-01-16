@@ -18,7 +18,7 @@ class CustomSnackbar {
       margin: const EdgeInsets.all(16),
       titleText: Text(
         'Success',
-        style: AppTypography.h5.copyWith(color: AppColors.white),
+        style: AppTypography.success.copyWith(color: AppColors.white),
       ),
       messageText: Text(
         message,
@@ -41,7 +41,7 @@ class CustomSnackbar {
       margin: const EdgeInsets.all(16),
       titleText: Text(
         'Error',
-        style: AppTypography.h5.copyWith(color: AppColors.white),
+        style: AppTypography.error.copyWith(color: AppColors.white),
       ),
       messageText: Text(
         message,
@@ -64,7 +64,7 @@ class CustomSnackbar {
       margin: const EdgeInsets.all(16),
       titleText: Text(
         'Warning',
-        style: AppTypography.h5.copyWith(color: AppColors.white),
+        style: AppTypography.warning.copyWith(color: AppColors.white),
       ),
       messageText: Text(
         message,
@@ -88,7 +88,7 @@ class CustomSnackbar {
       margin: const EdgeInsets.all(16),
       titleText: Text(
         'Info',
-        style: AppTypography.h5.copyWith(color: AppColors.white),
+        style: AppTypography.info.copyWith(color: AppColors.white),
       ),
       messageText: Text(
         message,

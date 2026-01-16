@@ -142,7 +142,7 @@ class AdminSettingView extends GetView<AdminSettingController> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: controller.logout,
+                    onPressed: controller.signOut,
                     icon: const Icon(Icons.logout, color: Colors.white),
                     label: Text(
                       'Logout',

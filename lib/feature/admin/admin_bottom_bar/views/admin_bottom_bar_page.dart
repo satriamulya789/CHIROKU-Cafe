@@ -26,8 +26,8 @@ class BottomBar extends StatelessWidget {
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: c.selectedIndex.value,
-          selectedItemColor: AppColors.brownDarker,
-          unselectedItemColor: AppColors.brownNormal.withOpacity(0.5),
+          selectedItemColor: AppColors.brownDark,
+          unselectedItemColor: AppColors.greyNormalActive,
           selectedFontSize: 12,
           unselectedFontSize: 12,
           onTap: c.changeIndex,
@@ -36,6 +36,7 @@ class BottomBar extends StatelessWidget {
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home),
               label: 'Home',
+              
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.admin_panel_settings_outlined),
