@@ -16,8 +16,7 @@ class ResetPasswordButton extends GetView<ResetPasswordController> {
           onPressed: controller.isLoading.value ? null : controller.resetPassword,
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: AppColors.brownNormal,
-            shape: RoundedRectangleBorder(
+            backgroundColor: AppColors.brownDark,         shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
@@ -32,7 +31,7 @@ class ResetPasswordButton extends GetView<ResetPasswordController> {
                 )
               : Text(
                   'Reset Password',
-                  style: AppTypography.bodyLarge.copyWith(
+                  style: AppTypography.button.copyWith(
                     color: AppColors.brownLight
                     ),
                 ),

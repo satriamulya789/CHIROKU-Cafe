@@ -16,7 +16,7 @@ class ForgotPasswordButton extends GetView<ForgotPasswordController> {
           onPressed: controller.isLoading.value ? null : controller.verifyEmail,
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: AppColors.brownNormal,
+            backgroundColor: AppColors.brownDark,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -32,7 +32,7 @@ class ForgotPasswordButton extends GetView<ForgotPasswordController> {
                 )
               : Text(
                   'Forgot Password',
-                  style: AppTypography.button.copyWith(color: AppColors.white),
+                  style: AppTypography.button.copyWith(color: AppColors.brownLight),
                 ),
         ),
       ),

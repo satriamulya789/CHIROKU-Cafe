@@ -21,7 +21,7 @@ class SignInPage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Get.toNamed(AppRoutes.signUp),
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(Icons.arrow_back_ios_new,color: AppColors.brownDarkActive,),
         ),
       ),
       body: SafeArea(

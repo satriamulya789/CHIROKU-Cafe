@@ -18,7 +18,7 @@ class ResetPasswordPage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(Icons.arrow_back_ios_new,color: AppColors.brownDarkActive,),
         ),
       ),
       body: SafeArea(
@@ -32,13 +32,13 @@ class ResetPasswordPage extends StatelessWidget {
                 Text(
                   'Reset Your Password',
                   style: AppTypography.h2.copyWith(
-                    color: AppColors.brownDarker,
+                    color: AppColors.brownDarkActive,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   'Please enter your new password below to reset your account password.',
-                  style: AppTypography.bodyMedium.copyWith(
+                  style: AppTypography.subtitleSmall.copyWith(
                     color: AppColors.brownNormal,
                   ),
                 ),

@@ -17,7 +17,7 @@ class ForgotPasswordPage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(Icons.arrow_back_ios_new,color: AppColors.brownDarkActive,),
         ),
       ),
       body: SafeArea(
@@ -31,13 +31,13 @@ class ForgotPasswordPage extends StatelessWidget {
                 Text(
                   'Forgot Your Password ?',
                   style: AppTypography.h2.copyWith(
-                    color: AppColors.brownDarker,
+                    color: AppColors.brownDarkActive,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   'Don\'t worry! It happens. Please enter the email address associated with your account.',
-                  style: AppTypography.bodyMedium.copyWith(
+                  style: AppTypography.subtitleSmall.copyWith(
                     color: AppColors.brownNormal,
                   ),
                 ),
