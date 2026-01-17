@@ -198,6 +198,14 @@ class AuthErrorModel {
     );
   }
 
+   factory AuthErrorModel.signoutError() {
+    return AuthErrorModel(
+      message: 'Failed to sign out. Please try again.',
+      code: 'signout_error',
+      statusCode: 409,
+    );
+  }
+
   // succes mesege when user login
   factory AuthErrorModel.accountSignInSuccess() {
     return AuthErrorModel(

@@ -31,11 +31,11 @@ class OnBoardView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          Text(title, style: AppTypography.h2.copyWith(color: AppColors.brownDarker), textAlign: TextAlign.center),
+          Text(title, style: AppTypography.h2.copyWith(color: AppColors.brownDarkActive), textAlign: TextAlign.center),
           const SizedBox(height: 12),
           Text(
             subtitle,
-            style: AppTypography.subtitleLarge.copyWith(color: AppColors.brownDark),
+            style: AppTypography.subtitleSmall.copyWith(color: AppColors.brownNormal),
             textAlign: TextAlign.center,
           ),
         ],

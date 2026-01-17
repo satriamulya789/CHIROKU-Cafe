@@ -23,7 +23,7 @@ class OnBoardPages extends GetView<OnBoardController> {
                     onPressed: controller.skip,
                     child: Text(
                       "Skip",
-                      style: AppTypography.appBarSubtitle.copyWith(
+                      style: AppTypography.appBarActionSmall.copyWith(
                         color: AppColors.brownDark,
                       ),
                     ),
@@ -36,7 +36,7 @@ class OnBoardPages extends GetView<OnBoardController> {
             const SizedBox(width: 6),
             Text(
               'Chiroku Cafe',
-              style: AppTypography.appBarTitleLarge.copyWith(color: AppColors.brownDarker),
+              style: AppTypography.appBarTitleLarge.copyWith(color: AppColors.brownDarkActive),
             ),
           ],
         ),
@@ -96,7 +96,7 @@ class OnBoardPages extends GetView<OnBoardController> {
                   child: ElevatedButton(
                     key: ValueKey(controller.pageIndex.value),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.brownNormal,
+                      backgroundColor: AppColors.brownDark,
                       foregroundColor: AppColors.brownLight,
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(

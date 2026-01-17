@@ -78,7 +78,9 @@ class AdminSettingController extends GetxController {
     try {
       await _service.signOut();
       Get.offAllNamed(AppRoutes.signIn);
-    } catch (e) {}
+    } catch (e) {
+      _customSnackBar.showErrorSnackbar(AuthErrorModel.signoutError().message);
+    }
   }
 
   String formatDate(DateTime date) {

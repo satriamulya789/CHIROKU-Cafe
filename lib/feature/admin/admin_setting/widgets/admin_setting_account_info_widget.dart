@@ -18,14 +18,14 @@ class AccountInfoWidget extends GetView<AdminSettingController> {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.withOpacity(0.18)),
+          border: Border.all(color: AppColors.brownDark.withOpacity(0.18)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(Icons.info_outline, color: AppColors.blueNormal, size: 20),
+                Icon(Icons.info_outline, color: AppColors.blueDark, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   'Account Information',
@@ -59,7 +59,7 @@ class AccountInfoWidget extends GetView<AdminSettingController> {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: Colors.grey[600]),
+          Icon(icon, size: 16, color: AppColors.blueDark),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
