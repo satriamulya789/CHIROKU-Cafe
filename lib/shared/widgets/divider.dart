@@ -13,7 +13,7 @@ class DividerWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'or',
-            style: AppTypography.labelLarge.copyWith(color:  AppColors.brownNormal),
+            style: AppTypography.labelLarge.copyWith(color:  AppColors.brownDarkActive),
             ),
           ),
         const Expanded(child: Divider()),

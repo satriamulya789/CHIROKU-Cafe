@@ -35,17 +35,17 @@ class SignInPage extends StatelessWidget {
                 Text(
                   'Sign in to your\nAccount',
                   style: AppTypography.h2.copyWith(
-                    color: AppColors.brownDarker,
+                    color: AppColors.brownDarkActive,
                   ),
                 ),
                 SizedBox(height: 6),
                 Text(
                   'Enter your email and password to sign in ',
-                  style: AppTypography.bodyMedium.copyWith(
+                  style: AppTypography.subtitleSmall.copyWith(
                     color: AppColors.brownNormal,
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 32),
 
                 //Text Field
                 // Email Field
@@ -54,7 +54,6 @@ class SignInPage extends StatelessWidget {
                   hintText: 'Enter your email',
                   controller: controller.emailController,
                   type: TextFieldType.email,
-                  prefixIcon: Icons.email_outlined,
                 ),
                 const SizedBox(height: 20),
 
@@ -64,16 +63,16 @@ class SignInPage extends StatelessWidget {
                   hintText: 'Enter your password',
                   controller: controller.passwordController,
                   type: TextFieldType.password,
-                  prefixIcon: Icons.lock_outline,
+                    prefixIcon: Icons.lock_outline,
                   isPasswordVisible: controller.isPasswordObscured,
                 ),
                 const SizedBox(height: 20),
                 SignInForgotPassword(),
-                const SizedBox(height: 20),
+                const SizedBox(height: 25),
                 SignInButton(),
-                const SizedBox(height: 40),
+                const SizedBox(height: 32),
                 DividerWidget(),
-                const SizedBox(height: 40),
+                const SizedBox(height: 32),
                 SignInDontHaveAccount()
               ],
             ),

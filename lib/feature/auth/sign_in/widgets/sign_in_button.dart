@@ -16,7 +16,7 @@ class SignInButton extends GetView<SignInController> {
           onPressed: controller.isLoading.value ? null : controller.signIn,
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: AppColors.brownNormal,
+            backgroundColor: AppColors.brownDark,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -32,7 +32,7 @@ class SignInButton extends GetView<SignInController> {
                 )
               : Text(
                   'Sign In',
-                  style: AppTypography.buttonLarge.copyWith(
+                  style: AppTypography.button.copyWith(
                     color: AppColors.brownLight
                     ),
                 ),
