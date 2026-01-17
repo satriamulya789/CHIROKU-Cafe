@@ -48,20 +48,17 @@ class SignUpPasswordRequirement extends StatelessWidget {
         children: [
           Text(
             'Password Requirements',
-            style: AppTypography.labelLarge.copyWith(
+            style: AppTypography.label.copyWith(
               color: AppColors.brownDarker,
-              fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 12),
-          _buildRequirementItem('At least 6 characters', hasMinLength),
-          const SizedBox(height: 8),
-          _buildRequirementItem('One uppercase letter (A-Z)', hasUppercase),
-          const SizedBox(height: 8),
-          _buildRequirementItem('One lowercase letter (a-z)', hasLowercase),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
+          _buildRequirementItem('At least 8 characters', hasMinLength),
+          const SizedBox(height: 6),
+          _buildRequirementItem('One uppercase & lowercase letter (A-Z & a-z)', hasUppercase && hasLowercase),
+          const SizedBox(height: 6),
           _buildRequirementItem('One number (0-9)', hasNumber),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           _buildRequirementItem(
             'One special character (!@#\$%^&*)',
             hasSpecialChar,
@@ -76,8 +73,8 @@ class SignUpPasswordRequirement extends StatelessWidget {
       children: [
         // Icon indicator
         Container(
-          width: 20,
-          height: 20,
+          width: 10,
+          height: 10,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: isMet
@@ -86,7 +83,7 @@ class SignUpPasswordRequirement extends StatelessWidget {
           ),
           child: Icon(
             isMet ? Icons.check : Icons.close,
-            size: 14,
+            size: 8,
             color: AppColors.white,
           ),
         ),
@@ -95,7 +92,7 @@ class SignUpPasswordRequirement extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: AppTypography.bodySmall.copyWith(
+            style: AppTypography.captionSmall.copyWith(
               color: isMet ? AppColors.successDark : AppColors.greyNormalHover,
               fontWeight: isMet ? FontWeight.w500 : FontWeight.w400,
             ),

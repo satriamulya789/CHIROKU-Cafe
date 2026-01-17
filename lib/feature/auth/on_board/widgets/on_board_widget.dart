@@ -36,7 +36,7 @@ class OnBoardPages extends GetView<OnBoardController> {
             const SizedBox(width: 6),
             Text(
               'Chiroku Cafe',
-              style: AppTypography.appBarTitleLarge.copyWith(color: AppColors.brownDarkActive),
+              style: AppTypography.appBarTitle.copyWith(color: AppColors.brownDarkActive),
             ),
           ],
         ),

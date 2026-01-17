@@ -26,7 +26,7 @@ class _SignUpPageState extends State<SignUpPage> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(Icons.arrow_back_ios_new,color: AppColors.brownDarkActive,),
         ),
       ),
       body: SafeArea(
@@ -35,7 +35,7 @@ class _SignUpPageState extends State<SignUpPage> {
           children: [
             // Fixed Header (Not Scrollable)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -43,7 +43,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   Text(
                     'Create an Account',
                     style: AppTypography.h2.copyWith(
-                      color: AppColors.brownDarker,
+                      color: AppColors.brownDarkActive,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -51,14 +51,14 @@ class _SignUpPageState extends State<SignUpPage> {
                   // Subtitle
                   Text(
                     'Create an account to continue!',
-                    style: AppTypography.subtitleLarge.copyWith(
+                    style: AppTypography.subtitleSmall.copyWith(
                       color: AppColors.brownNormal,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             // Scrollable Form
             Expanded(
@@ -75,9 +75,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         hintText: 'Enter your email',
                         controller: controller.emailController,
                         type: TextFieldType.email,
-                        prefixIcon: Icons.email_outlined,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 18),
 
                       // Password Field
                       CustomTextField(
@@ -85,18 +84,11 @@ class _SignUpPageState extends State<SignUpPage> {
                         hintText: 'Enter your password',
                         controller: controller.passwordController,
                         type: TextFieldType.password,
-                        prefixIcon: Icons.lock_outline,
                         isPasswordVisible: controller.isPasswordObscured,
                       ),
                       const SizedBox(height: 16),
 
                       // Password Requirements Widget
-                      Obx(
-                        () => SignUpPasswordRequirement(
-                          password: controller.passwordText.value,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
 
                       // Confirm Password Field
                       CustomTextField(
@@ -104,7 +96,6 @@ class _SignUpPageState extends State<SignUpPage> {
                         hintText: 'Re-enter your password',
                         controller: controller.confirmPasswordController,
                         type: TextFieldType.password,
-                        prefixIcon: Icons.lock_outline,
                         isPasswordVisible: controller.isConfirmPasswordObscured,
                         customValidator: (value) {
                           return controller.validator.validateConfirmPassword(
@@ -113,11 +104,17 @@ class _SignUpPageState extends State<SignUpPage> {
                           );
                         },
                       ),
+                      const SizedBox(height: 16),
+                        Obx(
+                        () => SignUpPasswordRequirement(
+                          password: controller.passwordText.value,
+                        ),
+                      ),
                       const SizedBox(height: 30),
 
                       // Sign Up Button
                       const ButtonSignUp(),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 30),
 
                       // Divider
                       const DividerWidget(),

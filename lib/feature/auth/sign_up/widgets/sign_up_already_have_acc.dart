@@ -14,16 +14,17 @@ class AlreadyHaveAccount extends StatelessWidget {
       children: [
         Text(
           'Already have an account? ',
-          style: AppTypography.subtitleMedium.copyWith(
-            color: AppColors.brownNormal,
+          style: AppTypography.bodySmall.copyWith(
+            color: AppColors.brownDark,
           ),
         ),
+        SizedBox(width: 4,),
         GestureDetector(
           onTap: () => Get.toNamed(AppRoutes.signIn),
           child: Text(
             'Sign In',
-            style: AppTypography.bodyLargeBold.copyWith(
-              color: AppColors.brownDarker
+            style: AppTypography.bodyMediumBold.copyWith(
+              color: AppColors.brownDarkActive
             ),
           ),
         ),
