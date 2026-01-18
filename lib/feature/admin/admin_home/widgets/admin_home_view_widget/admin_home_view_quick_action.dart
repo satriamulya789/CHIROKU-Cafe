@@ -31,7 +31,7 @@ class QuickActionsWidget extends StatelessWidget {
                 'Create New Order',
                 'Start a new transaction',
                 Icons.add_shopping_cart,
-                AppColors.brownNormal,
+                AppColors.brownDarkActive,
                 () => Get.toNamed('/create-order'),
               ),
               const Divider(height: 1),
@@ -40,7 +40,7 @@ class QuickActionsWidget extends StatelessWidget {
                 'Manage customer orders',
                 Icons.list_alt,
                 AppColors.successNormal,
-                () => Get.toNamed('/orders'),
+                () => Get.toNamed(AppRoutes.adminReport),
               ),
               const Divider(height: 1),
               _buildQuickActionItem(
@@ -96,7 +96,7 @@ class QuickActionsWidget extends StatelessWidget {
                     title,
                     style: AppTypography.bodyMedium.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.brownDarker,
+                      color: AppColors.brownDarkActive,
                     ),
                   ),
                   const SizedBox(height: 2),

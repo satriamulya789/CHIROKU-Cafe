@@ -55,14 +55,13 @@ class AdminHomeViewAppBar extends StatelessWidget implements PreferredSizeWidget
             children: [
               Text(
                 'Chiroku Cafe',
-                style: AppTypography.h6.copyWith(
-                  color: AppColors.brownDarker,
-                  fontWeight: FontWeight.bold,
+                style: AppTypography.appBarTitle.copyWith(
+                  color: AppColors.brownDarkActive,
                 ),
               ),
               Text(
                 'Admin Dashboard',
-                style: AppTypography.bodySmall.copyWith(
+                style: AppTypography.bodyMedium.copyWith(
                   color: AppColors.brownNormal,
                 ),
               ),
@@ -75,7 +74,7 @@ class AdminHomeViewAppBar extends StatelessWidget implements PreferredSizeWidget
           children: [
             IconButton(
               icon: const Icon(Icons.notifications_outlined),
-              color: AppColors.brownDarker,
+              color: AppColors.brownDarkActive,
               onPressed: onNotificationTap,
             ),
             if (unreadCount > 0)
@@ -94,9 +93,9 @@ class AdminHomeViewAppBar extends StatelessWidget implements PreferredSizeWidget
                   ),
                   child: Center(
                     child: Text(
-                      unreadCount > 9 ? '9+' : unreadCount.toString(),
+                      unreadCount > 99 ? '99+' : unreadCount.toString(),
                       style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.white,
+                        color: AppColors.brownLight,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),

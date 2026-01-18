@@ -18,7 +18,7 @@ class WelcomeSectionWidget extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.brownNormal,
+            AppColors.brownDark,
             AppColors.brownNormal.withOpacity(0.8),
           ],
           begin: Alignment.topLeft,
@@ -27,7 +27,7 @@ class WelcomeSectionWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.brownNormal.withOpacity(0.3),
+            color: AppColors.brownDark.withOpacity(0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -118,7 +118,7 @@ class WelcomeSectionWidget extends StatelessWidget {
                           Text(
                             'Online',
                             style: AppTypography.bodySmall.copyWith(
-                              color: AppColors.white,
+                              color: AppColors.brownLight,
                               fontWeight: FontWeight.w600,
                               fontSize: 10,
                             ),

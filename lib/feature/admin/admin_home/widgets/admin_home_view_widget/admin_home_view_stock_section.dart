@@ -54,7 +54,7 @@ class StockSectionWidget extends StatelessWidget {
                 child: Text(
                   'Manage Stock',
                   style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.brownNormal,
+                    color: AppColors.brownDarkActive,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

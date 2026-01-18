@@ -73,7 +73,7 @@ class NotificationCardWidget extends StatelessWidget {
                     notification.title,
                     style: AppTypography.bodyMedium.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.brownDarker,
+                      color: AppColors.brownDarkActive,
                     ),
                   ),
                   const SizedBox(height: 4),

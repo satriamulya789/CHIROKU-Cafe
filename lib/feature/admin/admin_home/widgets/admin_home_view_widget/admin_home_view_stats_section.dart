@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_dashboard_stats_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_stats_card_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
@@ -29,9 +30,9 @@ class StatsSectionWidget extends StatelessWidget {
                 title: 'Total Sales Today',
                 value: formatCurrency(stats!.totalRevenue),
                 icon: Icons.account_balance_wallet_outlined,
-                color: AppColors.brownNormal,
+                color: AppColors.pinkNormal,
                 backgroundColor: AppColors.white,
-                onTap: () => Get.toNamed('/reports'),
+                onTap: () => Get.toNamed(AppRoutes.adminReport),
               ),
             ),
             const SizedBox(width: 12),

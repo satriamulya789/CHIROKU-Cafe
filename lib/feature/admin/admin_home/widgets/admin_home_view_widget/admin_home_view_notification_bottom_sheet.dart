@@ -71,7 +71,7 @@ class NotificationsBottomSheet<T> extends StatelessWidget {
                       title,
                       style: AppTypography.h5.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.brownDarker,
+                        color: AppColors.brownDarkActive,
                       ),
                     ),
                   ],
@@ -79,7 +79,7 @@ class NotificationsBottomSheet<T> extends StatelessWidget {
                 IconButton(
                   onPressed: () => Get.back(),
                   icon: const Icon(Icons.close),
-                  color: AppColors.brownNormal,
+                  color: AppColors.brownDarkActive,
                 ),
               ],
             ),

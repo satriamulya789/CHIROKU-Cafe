@@ -27,30 +27,30 @@ class BottomBar extends StatelessWidget {
           type: BottomNavigationBarType.fixed,
           currentIndex: c.selectedIndex.value,
           selectedItemColor: AppColors.brownDark,
-          unselectedItemColor: AppColors.greyNormalActive,
+          unselectedItemColor: AppColors.greyNormal,
           selectedFontSize: 12,
           unselectedFontSize: 12,
           onTap: c.changeIndex,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
+              activeIcon: Icon(Icons.home_rounded),
               label: 'Home',
               
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.admin_panel_settings_outlined),
-              activeIcon: Icon(Icons.admin_panel_settings),
+              activeIcon: Icon(Icons.admin_panel_settings_rounded),
               label: 'Admin Control',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.assessment_outlined),
-              activeIcon: Icon(Icons.assessment),
+              activeIcon: Icon(Icons.assessment_rounded),
               label: 'Report',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings_outlined),
-              activeIcon: Icon(Icons.settings),
+              activeIcon: Icon(Icons.settings_rounded),
               label: 'Settings',
             ),
           ],

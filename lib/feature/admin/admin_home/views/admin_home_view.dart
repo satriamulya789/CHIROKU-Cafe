@@ -28,13 +28,13 @@ class AdminHomeView extends GetView<AdminHomeController> {
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(
-            child: CircularProgressIndicator(color: AppColors.brownNormal),
+            child: CircularProgressIndicator(color: AppColors.brownDark),
           );
         }
 
         return RefreshIndicator(
           onRefresh: controller.refreshData,
-          color: AppColors.brownNormal,
+          color: AppColors.brownDark,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(16),

@@ -40,7 +40,7 @@ class NotificationsSectionWidget extends StatelessWidget {
                 children: [
                   const Icon(
                     Icons.notifications_outlined,
-                    color: AppColors.brownNormal,
+                    color: AppColors.brownDarkActive,
                     size: 20,
                   ),
                   const SizedBox(width: 8),
@@ -78,7 +78,7 @@ class NotificationsSectionWidget extends StatelessWidget {
                 child: Text(
                   'View All',
                   style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.brownNormal,
+                    color: AppColors.brownDark,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

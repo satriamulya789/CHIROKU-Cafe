@@ -63,7 +63,6 @@ class SignInPage extends StatelessWidget {
                   hintText: 'Enter your password',
                   controller: controller.passwordController,
                   type: TextFieldType.password,
-                    prefixIcon: Icons.lock_outline,
                   isPasswordVisible: controller.isPasswordObscured,
                 ),
                 const SizedBox(height: 20),

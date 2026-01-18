@@ -17,7 +17,6 @@ class AdminBottomBarBinding extends Bindings {
       () => AdminHomeController(),
     ); 
     Get.lazyPut<AdminManageControlController>(() => AdminManageControlController());
-   Get.lazyPut(() => ReportAdminController());
     Get.lazyPut<ReportAdminController>(() => ReportAdminController());
   }
 }

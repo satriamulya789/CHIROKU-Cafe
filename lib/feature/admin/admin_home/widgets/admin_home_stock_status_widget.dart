@@ -55,7 +55,7 @@ class StockStatusWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(Icons.restaurant_menu,
-                color: AppColors.brownNormal, size: 20),
+                color: AppColors.brownDarkActive, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(
