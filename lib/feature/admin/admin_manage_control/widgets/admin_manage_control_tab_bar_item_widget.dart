@@ -26,7 +26,7 @@ class AdminTabItem extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: isSelected ? AppColors.brownNormal : Colors.transparent,
+                color: isSelected ? AppColors.brownDarkActive : AppColors.greyNormal,
                 width: 3,
               ),
             ),
@@ -37,7 +37,7 @@ class AdminTabItem extends StatelessWidget {
               Icon(
                 icon,
                 color: isSelected 
-                    ? AppColors.brownNormal 
+                    ? AppColors.brownDarkActive 
                     : AppColors.brownNormal.withOpacity(0.5),
                 size: 24,
               ),
@@ -46,7 +46,7 @@ class AdminTabItem extends StatelessWidget {
                 title,
                 style: AppTypography.label.copyWith(
                   color: isSelected 
-                      ? AppColors.brownNormal 
+                      ? AppColors.brownDarkActive 
                       : AppColors.brownNormal.withOpacity(0.5),
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 ),

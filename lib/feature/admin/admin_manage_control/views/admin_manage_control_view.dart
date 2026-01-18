@@ -25,13 +25,13 @@ class AdminManageControlView extends GetView<AdminManageControlController> {
               onRefresh: () async {
                 controller.refreshCurrentTab();
               },
-              color: AppColors.brownNormal,
+              color: AppColors.brownDark,
               backgroundColor: AppColors.white,
               child: CustomScrollView(
                 slivers: [
-                  // SliverToBoxAdapter(
-                  //   child: _buildStatsSection(),
-                  // ),
+                  SliverToBoxAdapter(
+                    child: _buildStatsSection(),
+                  ),
                   SliverToBoxAdapter(
                     child: AdminTabBar(controller: controller),
                   ),
@@ -81,84 +81,85 @@ class AdminManageControlView extends GetView<AdminManageControlController> {
   }
 }
 
-//   Widget _buildStatsSection() {
-//     return Container(
-//       padding: const EdgeInsets.all(16),
-//       decoration: BoxDecoration(
-//         color: AppColors.white,
-//         boxShadow: [
-//           BoxShadow(
-//             color: AppColors.black.withOpacity(0.05),
-//             blurRadius: 4,
-//             offset: const Offset(0, 2),
-//           ),
-//         ],
-//       ),
-//       child: Obx(() {
-//         if (controller.isLoadingStats.value) {
-//           return const Center(
-//             child: Padding(
-//               padding: EdgeInsets.all(24.0),
-//               child: CircularProgressIndicator(
-//                 color: AppColors.brownNormal,
-//               ),
-//             ),
-//           );
-//         }
+  Widget _buildStatsSection() {
+    final controller = Get.find<AdminManageControlController>();
 
-//         return Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text(
-//               'Statistics Overview',
-//               style: AppTypography.h6.copyWith(
-//                 color: AppColors.brownDark,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//             const SizedBox(height: 16),
-//             Row(
-//               children: [
-//                 Expanded(
-//                   child: AdminStatsCard(
-//                     title: 'Users',
-//                     count: controller.stats.value.totalUsers,
-//                     icon: Icons.people,
-//                     color: AppColors.blueNormal,
-//                   ),
-//                 ),
-//                 const SizedBox(width: 12),
-//                 Expanded(
-//                   child: AdminStatsCard(
-//                     title: 'Menus',
-//                     count: controller.stats.value.totalMenus,
-//                     icon: Icons.restaurant_menu,
-//                     color: AppColors.orangeNormal,
-//                   ),
-//                 ),
-//                 const SizedBox(width: 12),
-//                 Expanded(
-//                   child: AdminStatsCard(
-//                     title: 'Category',
-//                     count: controller.stats.value.totalCategories,
-//                     icon: Icons.category,
-//                     color: AppColors.purpleNormal,
-//                   ),
-//                 ),
-//                 const SizedBox(width: 12),
-//                 Expanded(
-//                   child: AdminStatsCard(
-//                     title: 'Tables',
-//                     count: controller.stats.value.totalTables,
-//                     icon: Icons.table_restaurant,
-//                     color: AppColors.successNormal,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ],
-//         );
-//       }),
-//     );
-//   }
-// }
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Obx(() {
+        if (controller.isLoadingStats.value) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: CircularProgressIndicator(
+                color: AppColors.brownNormal,
+              ),
+            ),
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Statistics Overview',
+              style: AppTypography.h6.copyWith(
+                color: AppColors.cyanNormal,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: AdminStatsCard(
+                    title: 'Users',
+                    count: controller.stats.value.totalUsers,
+                    icon: Icons.people,
+                    color: AppColors.blueNormal,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AdminStatsCard(
+                    title: 'Menus',
+                    count: controller.stats.value.totalMenus,
+                    icon: Icons.restaurant_menu,
+                    color: AppColors.orangeNormal,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AdminStatsCard(
+                    title: 'Category',
+                    count: controller.stats.value.totalCategories,
+                    icon: Icons.category,
+                    color: AppColors.purpleNormal,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AdminStatsCard(
+                    title: 'Tables',
+                    count: controller.stats.value.totalTables,
+                    icon: Icons.table_restaurant,
+                    color: AppColors.successNormal,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      }),
+    );
+  }
