@@ -28,7 +28,7 @@ class AvatarPickerWidget extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: AppColors.brownDarker,
+              color: AppColors.brownDark,
             ),
           ),
           const SizedBox(height: 24),
@@ -102,11 +102,11 @@ class AvatarPickerWidget extends StatelessWidget {
             height: 140,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.brownDarker.withOpacity(0.5),
+              color: AppColors.brownDarkActive.withOpacity(0.5),
             ),
             child: const Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.brownLight),
                 strokeWidth: 3,
               ),
             ),

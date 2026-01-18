@@ -16,7 +16,7 @@ class CompleteProfileButton extends GetView<CompleteProfileController> {
           onPressed: controller.isLoading ? null : controller.completeProfile,
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: AppColors.brownNormal,
+            backgroundColor: AppColors.brownDark,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),

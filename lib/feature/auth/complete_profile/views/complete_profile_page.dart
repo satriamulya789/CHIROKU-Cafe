@@ -19,7 +19,9 @@ class CompleteProfileView extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: const Icon(Icons.arrow_back_ios_new,
+            color: AppColors.brownDarkActive,
+          ),
         ),
       ),
       body: SafeArea(
@@ -33,13 +35,13 @@ class CompleteProfileView extends StatelessWidget {
                 Text(
                   'Complete Your Profile',
                   style: AppTypography.h2.copyWith(
-                    color: AppColors.brownDarker,
+                    color: AppColors.brownDarkActive,
                   ),
                 ),
                 SizedBox(height: 6),
                 Text(
                   'Let\'s create something amazing together',
-                  style: AppTypography.bodyMedium.copyWith(
+                  style: AppTypography.subtitleSmall.copyWith(
                     color: AppColors.brownNormal,
                   ),
                 ),
