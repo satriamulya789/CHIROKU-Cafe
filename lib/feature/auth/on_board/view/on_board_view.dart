@@ -25,7 +25,7 @@ class OnBoardView extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             child: Image.asset(
               image,
-              height: 475,
+              height: 450,
               width: 380,
               fit: BoxFit.cover,
             ),

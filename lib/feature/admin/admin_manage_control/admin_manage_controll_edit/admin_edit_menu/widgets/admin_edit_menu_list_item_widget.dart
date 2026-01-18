@@ -31,7 +31,7 @@ class MenuListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withOpacity(0.05),
+            color: AppColors.brownDarkActive.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -52,7 +52,7 @@ class MenuListItem extends StatelessWidget {
                       width: 60,
                       height: 60,
                       color: AppColors.brownLight,
-                      child: const Icon(Icons.fastfood, color: AppColors.brownNormal),
+                      child: const Icon(Icons.fastfood, color: AppColors.brownDarkActive),
                     );
                   },
                 )
@@ -60,7 +60,7 @@ class MenuListItem extends StatelessWidget {
                   width: 60,
                   height: 60,
                   color: AppColors.brownLight,
-                  child: const Icon(Icons.fastfood, color: AppColors.brownNormal),
+                  child: const Icon(Icons.fastfood, color: AppColors.brownDarkActive),
                 ),
         ),
         title: Text(

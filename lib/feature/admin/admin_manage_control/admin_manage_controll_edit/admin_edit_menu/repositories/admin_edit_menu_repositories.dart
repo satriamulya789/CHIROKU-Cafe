@@ -39,7 +39,7 @@ class MenuRepositories {
   Future<String> uploadImage(File imageFile, String fileName) async {
     try {
       // Upload to Supabase Storage
-      final String path = await _supabase.storage
+      await _supabase.storage
           .from(bucketName)
           .upload(fileName, imageFile);
 

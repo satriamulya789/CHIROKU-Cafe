@@ -61,7 +61,7 @@ class AdminHomeViewAppBar extends StatelessWidget implements PreferredSizeWidget
               ),
               Text(
                 'Admin Dashboard',
-                style: AppTypography.bodyMedium.copyWith(
+                style: AppTypography.appBarActionSmall.copyWith(
                   color: AppColors.brownNormal,
                 ),
               ),

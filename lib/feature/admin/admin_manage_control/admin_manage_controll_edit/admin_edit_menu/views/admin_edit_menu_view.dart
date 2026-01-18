@@ -1,4 +1,3 @@
-import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/controllers/admin_edit_menu_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/views/admin_edit_menu_form_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/widgets/admin_edit_menu_list_item_widget.dart';
@@ -22,7 +21,7 @@ class AdminEditMenuView extends GetView<AdminEditMenuController> {
               if (controller.isLoading.value && controller.menus.isEmpty) {
                 return const Center(
                   child: CircularProgressIndicator(
-                    color: AppColors.brownNormal,
+                    color: AppColors.brownDarkActive,
                   ),
                 );
               }
@@ -35,7 +34,7 @@ class AdminEditMenuView extends GetView<AdminEditMenuController> {
                       Icon(
                         Icons.restaurant_menu_outlined,
                         size: 80,
-                        color: AppColors.brownNormal.withOpacity(0.3),
+                        color: AppColors.brownDarkActive.withOpacity(0.3),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -51,7 +50,7 @@ class AdminEditMenuView extends GetView<AdminEditMenuController> {
 
               return RefreshIndicator(
                 onRefresh: controller.fetchMenus,
-                color: AppColors.brownNormal,
+                color: AppColors.brownDark,
                 child: ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: controller.filteredMenus.length,

@@ -53,7 +53,7 @@ class AdminMenuFormPage extends GetView<AdminEditMenuController> {
               IconButton(
                 icon: const Icon(
                   Icons.arrow_back_ios,
-                  color: AppColors.brownDarker,
+                  color: AppColors.brownDarkActive,
                   size: 20,
                 ),
                 onPressed: () {
@@ -65,7 +65,7 @@ class AdminMenuFormPage extends GetView<AdminEditMenuController> {
                 child: Text(
                   isEdit ? 'Edit Menu' : 'Add New Menu',
                   style: AppTypography.h5.copyWith(
-                    color: AppColors.brownDarker,
+                    color: AppColors.brownDarkActive,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
