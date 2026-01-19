@@ -33,12 +33,12 @@ class AdminStatsCard extends StatelessWidget {
           Icon(
             icon,
             color: color,
-            size: 28,
+            size: 18,
           ),
           const SizedBox(height: 8),
           Text(
             count.toString(),
-            style: AppTypography.h4.copyWith(
+            style: AppTypography.label.copyWith(
               color: color,
               fontWeight: FontWeight.bold,
             ),
@@ -46,7 +46,7 @@ class AdminStatsCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             title,
-            style: AppTypography.label.copyWith(
+            style: AppTypography.caption.copyWith(
               color: AppColors.brownDark,
             ),
             textAlign: TextAlign.center,

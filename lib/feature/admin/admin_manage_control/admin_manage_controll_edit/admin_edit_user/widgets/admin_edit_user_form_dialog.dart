@@ -60,6 +60,73 @@ class UserFormDialog extends GetView<AdminEditUserController> {
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16),
+            // Password input hanya untuk Add User
+            if (!isEdit) ...[
+              Obx(() {
+                return TextField(
+                  controller: controller.passwordController,
+                  obscureText: controller.isPasswordObscured.value,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    labelStyle: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.brownNormal,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: AppColors.brownNormal),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        controller.isPasswordObscured.value
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: AppColors.brownNormal,
+                      ),
+                      onPressed: () {
+                        controller.isPasswordObscured.value =
+                            !controller.isPasswordObscured.value;
+                      },
+                    ),
+                  ),
+                );
+              }),
+              const SizedBox(height: 16),
+              Obx(() {
+                return TextField(
+                  controller: controller.confirmPasswordController,
+                  obscureText: controller.isConfirmPasswordObscured.value,
+                  decoration: InputDecoration(
+                    labelText: 'Confirm Password',
+                    labelStyle: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.brownNormal,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: AppColors.brownNormal),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        controller.isConfirmPasswordObscured.value
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: AppColors.brownNormal,
+                      ),
+                      onPressed: () {
+                        controller.isConfirmPasswordObscured.value =
+                            !controller.isConfirmPasswordObscured.value;
+                      },
+                    ),
+                  ),
+                );
+              }),
+              const SizedBox(height: 16),
+            ],
             DropdownButtonFormField<String>(
               value: controller.roleController.text.isEmpty 
                   ? 'cashier' 
@@ -108,7 +175,13 @@ class UserFormDialog extends GetView<AdminEditUserController> {
         Obx(() => ElevatedButton(
           onPressed: controller.isLoading.value
               ? null
-              : () => controller.updateUser(userId),
+              : () {
+                  if (isEdit) {
+                    controller.updateUser(userId);
+                  } else {
+                    controller.createUser();
+                  }
+                },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.brownNormal,
             disabledBackgroundColor: AppColors.brownNormal.withOpacity(0.5),

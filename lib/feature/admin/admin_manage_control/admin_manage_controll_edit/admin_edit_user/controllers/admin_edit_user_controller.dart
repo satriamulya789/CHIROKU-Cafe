@@ -17,6 +17,9 @@ class AdminEditUserController extends GetxController {
   final confirmPasswordController = TextEditingController();
   final roleController = TextEditingController(text: 'cashier');
 
+  final isPasswordObscured = true.obs;
+final isConfirmPasswordObscured = true.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -29,6 +32,8 @@ class AdminEditUserController extends GetxController {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+     isPasswordObscured.close();
+  isConfirmPasswordObscured.close();
     roleController.dispose();
     super.onClose();
   }
@@ -217,6 +222,8 @@ class AdminEditUserController extends GetxController {
     emailController.clear();
     passwordController.clear();
     confirmPasswordController.clear();
+     isPasswordObscured.value = true;
+  isConfirmPasswordObscured.value = true;
     roleController.text = 'cashier';
   }
 

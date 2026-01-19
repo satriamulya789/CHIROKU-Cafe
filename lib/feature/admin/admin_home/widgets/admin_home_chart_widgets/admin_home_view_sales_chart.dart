@@ -247,10 +247,8 @@ class SalesChartSectionWidget extends StatelessWidget {
 
   String _getPeakHour() {
     if (stats.hourlySales.isEmpty) return '-';
-    
     final peak = stats.hourlySales.reduce((curr, next) =>
         curr.sales > next.sales ? curr : next);
-    
     return '${peak.hour} (${formatCurrency(peak.sales.toDouble())})';
   }
 }

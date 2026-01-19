@@ -63,15 +63,15 @@ class AdminHomeView extends GetView<AdminHomeController> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                Obx(
-                  () => NotificationsSectionWidget(
-                    notifications: controller.notifications.take(3).toList(),
-                    unreadCount: controller.unreadNotificationsCount,
-                    onViewAll: _showNotificationsBottomSheet,
-                    onTap: _handleNotificationTap,
-                  ),
-                ),
-                const SizedBox(height: 24),
+                // Obx(
+                //   () => NotificationsSectionWidget(
+                //     notifications: controller.notifications.take(3).toList(),
+                //     unreadCount: controller.unreadNotificationsCount,
+                //     onViewAll: _showNotificationsBottomSheet,
+                //     onTap: _handleNotificationTap,
+                //   ),
+                // ),
+                // const SizedBox(height: 20),
                 Obx(
                   () => StockSectionWidget(
                     stocks: controller.stockStatus.take(5).toList(),

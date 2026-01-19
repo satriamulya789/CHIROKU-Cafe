@@ -26,7 +26,7 @@ class AdminTabItem extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: isSelected ? AppColors.brownDarkActive : AppColors.greyNormal,
+                color: isSelected ? AppColors.brownDark : AppColors.greyNormal,
                 width: 3,
               ),
             ),
