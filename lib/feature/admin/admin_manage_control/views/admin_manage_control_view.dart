@@ -21,7 +21,6 @@ class AdminManageControlView extends GetView<AdminManageControlController> {
           // AppBar dengan tabTitle dinamis
           Obx(() => AdminManageControlAppBar(
                 currentTitle: controller.getCurrentTitle(),
-                onProfileTap: () => Get.toNamed('/admin/settings'),
               )),
           Expanded(
             child: RefreshIndicator(
@@ -32,9 +31,9 @@ class AdminManageControlView extends GetView<AdminManageControlController> {
               backgroundColor: AppColors.white,
               child: CustomScrollView(
                 slivers: [
-                  SliverToBoxAdapter(
-                    child: _buildStatsSection(),
-                  ),
+                  // SliverToBoxAdapter(
+                  //   child: _buildStatsSection(),
+                  // ),
                   SliverToBoxAdapter(
                     child: AdminTabBar(controller: controller),
                   ),
@@ -57,51 +56,6 @@ class AdminManageControlView extends GetView<AdminManageControlController> {
       ),
     );
   }
+  
 
-  Widget _buildStatsSection() {
-    final controller = Get.find<AdminManageControlController>();
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Obx(() {
-        if (controller.isLoadingStats.value) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(24.0),
-              child: CircularProgressIndicator(
-                color: AppColors.brownNormal,
-              ),
-            ),
-          );
-        }
-
-        // ...isi statistik sesuai kebutuhan...
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Statistics Overview',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: AppColors.brownDark,
-              ),
-            ),
-            const SizedBox(height: 16),
-            // ...stat cards...
-          ],
-        );
-      }),
-    );
-  }
 }

@@ -27,7 +27,7 @@ class CategoryListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withOpacity(0.05),
+            color: AppColors.brownDarkActive.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -36,8 +36,8 @@ class CategoryListItem extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         leading: Container(
-          width: 48,
-          height: 48,
+          width: 45,
+          height: 45,
           decoration: BoxDecoration(
             color: AppColors.brownLight,
             borderRadius: BorderRadius.circular(8),
@@ -49,7 +49,7 @@ class CategoryListItem extends StatelessWidget {
         ),
         title: Text(
           category.name,
-          style: AppTypography.h6.copyWith(
+          style: AppTypography.bodyMediumBold.copyWith(
             color: AppColors.brownDark,
           ),
         ),

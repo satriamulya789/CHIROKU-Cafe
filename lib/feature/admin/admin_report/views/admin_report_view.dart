@@ -1,6 +1,7 @@
 import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/controllers/admin_report_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/views/admin_report_top_product_view.dart';
+import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_app_bar_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_bar_chart_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_cashier_peformance_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_product_list_widget.dart';
@@ -19,21 +20,6 @@ class ReportAdminView extends GetView<ReportAdminController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.brownLight,
-      appBar: AppBar(
-        title: Text(
-          'Laporan Penjualan',
-          style: AppTypography.h4.copyWith(color: Colors.white),
-        ),
-        backgroundColor: AppColors.brownNormal,
-        elevation: 0,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: controller.fetchReport,
-          ),
-        ],
-      ),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -48,6 +34,7 @@ class ReportAdminView extends GetView<ReportAdminController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                AdminReportAppBar(),
                 // Date Range Filter Section
                 _buildDateRangeFilter(context),
                 const SizedBox(height: 16),
