@@ -1,5 +1,5 @@
 import 'package:chiroku_cafe/feature/admin/admin_report/controllers/admin_report_controller.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_bar_chart_widget.dart';
+import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_chart/admin_report_bar_chart_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_section_header_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:flutter/material.dart';

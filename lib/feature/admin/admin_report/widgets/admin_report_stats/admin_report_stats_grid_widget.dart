@@ -1,4 +1,4 @@
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_stats_widget.dart';
+import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_stats/admin_report_stats_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

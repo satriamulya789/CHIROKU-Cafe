@@ -1,7 +1,7 @@
 import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/controllers/admin_report_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_section_header_widget.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_transaction_list_widget.dart';
+import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_recent_transaction/admin_report_transaction_list_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
