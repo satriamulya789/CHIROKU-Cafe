@@ -1,6 +1,7 @@
 import 'package:chiroku_cafe/constant/assets_constant.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/controllers/admin_setting_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/widgets/admin_setting_account_info_widget.dart';
+import 'package:chiroku_cafe/feature/admin/admin_setting/widgets/admin_setting_dialog_signout_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/widgets/admin_setting_profile_section_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/widgets/admin_setting_setting_item_widget.dart';
 
@@ -67,14 +68,14 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   onTap: controller.goToThermalPrinterSettings,
                   iconColor: AppColors.blueNormal,
                 ),
-                   SettingItemWidget(
+                SettingItemWidget(
                   icon: Icons.qr_code,
                   title: 'Manage QRIS Payment',
                   subtitle: 'Configure QRIS payment settings',
                   onTap: controller.goToManageQrisPayment,
                   iconColor: AppColors.purpleDark,
                 ),
-                    SettingItemWidget(
+                SettingItemWidget(
                   icon: Icons.discount_rounded,
                   title: 'Manage Discounts',
                   subtitle: 'Configure discount settings',
@@ -118,7 +119,9 @@ class AdminSettingView extends GetView<AdminSettingController> {
                       snackPosition: SnackPosition.BOTTOM,
                     );
                   },
-                  iconColor: AppColors.blueDark ?? AppColors.blueNormal, // fallback if no teal defined
+                  iconColor:
+                      AppColors.blueDark ??
+                      AppColors.blueNormal, // fallback if no teal defined
                 ),
                 SettingItemWidget(
                   icon: Icons.info_outline,
@@ -142,11 +145,18 @@ class AdminSettingView extends GetView<AdminSettingController> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: controller.signOut,
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const SignOutDialogWidget(),
+                      );
+                    },
                     icon: const Icon(Icons.logout, color: Colors.white),
                     label: Text(
                       'Logout',
-                      style: AppTypography.button.copyWith(color: AppColors.white),
+                      style: AppTypography.button.copyWith(
+                        color: AppColors.white,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.alertNormal,
