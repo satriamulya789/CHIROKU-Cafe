@@ -1,4 +1,5 @@
 
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/constant/assets_constant.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_setting/controllers/cashier_setting_controller.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_setting/widgets/cashier_setting_account_info_widget.dart';
@@ -66,6 +67,15 @@ class CashierSettingView extends GetView<CashierSettingController> {
                     );
                   },
                   iconColor: AppColors.orangeNormal,
+                ),
+                  SettingItemWidget(
+                  icon: Icons.print_rounded,
+                  title: 'Manage Printers',
+                  subtitle: 'Configure thermal printers',
+                  onTap: () {
+                    Get.toNamed(AppRoutes.thermalPrinterSettings);
+                  },
+                  iconColor: AppColors.blueNormal,
                 ),
                 SettingItemWidget(
                   icon: Icons.notifications_outlined,
