@@ -62,24 +62,6 @@ class AdminReportAppBar extends StatelessWidget implements PreferredSizeWidget {
                         fontSize: 12,
                       ),
                     ),
-                    if (user != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        user!.fullName ?? '-',
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.brownDark,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
-                      ),
-                      Text(
-                        user!.role ?? 'Admin',
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.brownNormal.withOpacity(0.7),
-                          fontSize: 11,
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
