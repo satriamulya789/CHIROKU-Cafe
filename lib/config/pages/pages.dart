@@ -23,8 +23,8 @@ import 'package:chiroku_cafe/feature/admin/admin_report/views/admin_report_all_t
 import 'package:chiroku_cafe/feature/admin/admin_report/views/admin_report_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/binding/admin_setting_binding.dart' show AdminSettingBinding;
 import 'package:chiroku_cafe/feature/admin/admin_setting/views/admin_setting_view.dart';
-import 'package:chiroku_cafe/feature/admin/admin_setting_manage_printer/binding/thermal_printer_binding.dart';
-import 'package:chiroku_cafe/feature/admin/admin_setting_manage_printer/views/thermal_printer_view.dart';
+import 'package:chiroku_cafe/feature/setting_manage_printer/binding/thermal_printer_binding.dart';
+import 'package:chiroku_cafe/feature/setting_manage_printer/views/thermal_printer_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting_manage_qris/binding/admin_manage_qris_binding.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting_manage_qris/views/admin_manage_qris_view.dart';
 import 'package:chiroku_cafe/feature/auth/complete_profile/binding/complete_profile_binding.dart';

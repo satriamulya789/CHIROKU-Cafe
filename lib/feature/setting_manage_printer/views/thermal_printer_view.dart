@@ -1,7 +1,7 @@
-import 'package:chiroku_cafe/feature/admin/admin_setting_manage_printer/controllers/thermal_printer_controller.dart';
-import 'package:chiroku_cafe/feature/admin/admin_setting_manage_printer/models/thermal_printer_model.dart';
-import 'package:chiroku_cafe/feature/admin/admin_setting_manage_printer/widgets/thermal_printer_card.dart';
-import 'package:chiroku_cafe/feature/admin/admin_setting_manage_printer/widgets/thermal_printer_connecttion_status_widget.dart';
+import 'package:chiroku_cafe/feature/setting_manage_printer/controllers/thermal_printer_controller.dart';
+import 'package:chiroku_cafe/feature/setting_manage_printer/models/thermal_printer_model.dart';
+import 'package:chiroku_cafe/feature/setting_manage_printer/widgets/thermal_printer_card.dart';
+import 'package:chiroku_cafe/feature/setting_manage_printer/widgets/thermal_printer_connecttion_status_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';

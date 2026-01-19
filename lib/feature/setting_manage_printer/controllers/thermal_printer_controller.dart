@@ -1,5 +1,5 @@
-import 'package:chiroku_cafe/feature/admin/admin_setting_manage_printer/models/thermal_printer_model.dart';
-import 'package:chiroku_cafe/feature/admin/admin_setting_manage_printer/repositories/thermal_printer_repositories.dart';
+import 'package:chiroku_cafe/feature/setting_manage_printer/models/thermal_printer_model.dart';
+import 'package:chiroku_cafe/feature/setting_manage_printer/repositories/thermal_printer_repositories.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:get/get.dart';
 
