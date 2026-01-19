@@ -1,5 +1,6 @@
 import 'package:chiroku_cafe/feature/admin/admin_report/controllers/admin_report_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_app_bar_widget.dart';
+import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_chart/admin_report_view_sales_chart.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_date_range_filter_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_stats/admin_report_stats_grid_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_top_revenue_card_widget.dart';
@@ -94,7 +95,9 @@ class _ReportAdminViewState extends State<ReportAdminView> {
                   const SizedBox(height: 12),
                   StatsGrid(stat: controller.stat.value!),
                   const SizedBox(height: 24),
-                  SalesChartSection(controller: controller),
+                  ReportSalesChartSectionWidget(
+                    data: controller.productStats, 
+                  ),
                   const SizedBox(height: 24),
                 ],
                 if (controller.selectedCashierId == null) ...[
