@@ -47,4 +47,5 @@ abstract class AppRoutes {
   static const adminStockList = '/view-more';
 
   //cashier
+  static const cashierEditProfile = '/cashier-edit-profile';
 }

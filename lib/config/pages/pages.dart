@@ -51,6 +51,8 @@ import 'package:get/get.dart';
 import 'package:chiroku_cafe/feature/auth/on_board/binding/on_board_binding.dart';
 import 'package:chiroku_cafe/feature/auth/splash_screen/binding/splash_binding.dart';
 import 'package:chiroku_cafe/feature/auth/splash_screen/views/splash_view.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_edit_profile/binding/cashier_edit_profile_binding.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_edit_profile/views/cashier_edit_profile_view.dart';
 
 class Pages {
   static final routes = [
@@ -211,6 +213,11 @@ class Pages {
       name: AppRoutes.cashierCart,
       page: () => const CartPage(),
       binding: CartBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.cashierEditProfile,
+      page: () => const CashierEditProfileView(),
+      binding: CashierEditProfileBinding(),
     ),
   ];
 }

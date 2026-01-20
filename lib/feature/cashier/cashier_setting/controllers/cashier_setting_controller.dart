@@ -26,7 +26,7 @@ class CashierSettingController extends GetxController {
       errorMessage.value = '';
 
       final profile = await _service.getUserProfile();
-      
+
       if (profile != null) {
         userProfile.value = profile;
       } else {
@@ -48,6 +48,13 @@ class CashierSettingController extends GetxController {
     await loadUserProfile();
   }
 
+  void goToEditProfile() async {
+    final result = await Get.toNamed(AppRoutes.cashierEditProfile);
+    if (result == true) {
+      refreshProfile();
+    }
+  }
+
   // SignOUt
   Future<void> signOut() async {
     try {
@@ -60,8 +67,18 @@ class CashierSettingController extends GetxController {
 
   String formatDate(DateTime date) {
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
