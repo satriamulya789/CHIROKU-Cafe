@@ -21,7 +21,8 @@ import 'package:chiroku_cafe/feature/admin/admin_report/binding/admin_report_bin
 import 'package:chiroku_cafe/feature/admin/admin_report/controllers/admin_report_all_transaction_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/views/admin_report_all_transaction_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/views/admin_report_view.dart';
-import 'package:chiroku_cafe/feature/admin/admin_setting/binding/admin_setting_binding.dart' show AdminSettingBinding;
+import 'package:chiroku_cafe/feature/admin/admin_setting/binding/admin_setting_binding.dart'
+    show AdminSettingBinding;
 import 'package:chiroku_cafe/feature/admin/admin_setting/views/admin_setting_view.dart';
 import 'package:chiroku_cafe/feature/setting_manage_printer/binding/thermal_printer_binding.dart';
 import 'package:chiroku_cafe/feature/setting_manage_printer/views/thermal_printer_view.dart';
@@ -40,6 +41,8 @@ import 'package:chiroku_cafe/feature/auth/sign_up/binding/sign_up_binding.dart';
 import 'package:chiroku_cafe/feature/auth/sign_up/views/sign_up_page.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_bottom_bar/binding/cashier_bottom_bar_binding.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_bottom_bar/view/cashier_bottom_bar_page.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_cart/binding/cashier_cart_binding.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_cart/views/cashier_cart_view.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_order/binding/cashier_order_binding.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_order/views/cashier_order_view.dart';
 import 'package:chiroku_cafe/feature/push_notification/binding/push_notification_binding.dart';
@@ -89,7 +92,7 @@ class Pages {
       page: () => const CashierBottomBarView(),
       binding: CashierBottomBarBinding(),
     ),
-    
+
     // Admin Manage Control Routes
     GetPage(
       name: AppRoutes.adminManageControl,
@@ -116,7 +119,7 @@ class Pages {
       page: () => const AdminEditTableView(),
       binding: AdminEditTableBinding(),
     ),
-    
+
     // Admin Menu Form Routes
     GetPage(
       name: AppRoutes.adminAddMenu,
@@ -127,10 +130,7 @@ class Pages {
       name: AppRoutes.adminEditMenuForm,
       page: () {
         final menuId = Get.arguments as int?;
-        return AdminMenuFormPage(
-          menuId: menuId,
-          isEdit: true,
-        );
+        return AdminMenuFormPage(menuId: menuId, isEdit: true);
       },
       binding: AdminEditMenuBinding(),
     ),
@@ -142,11 +142,11 @@ class Pages {
       binding: EditProfileBinding(),
     ),
     GetPage(
-  name: AppRoutes.paymentSettings,
-  page: () => const PaymentSettingsView(),
-  binding: PaymentSettingsBinding(),
-),
-    
+      name: AppRoutes.paymentSettings,
+      page: () => const PaymentSettingsView(),
+      binding: PaymentSettingsBinding(),
+    ),
+
     // Thermal Printer Route
     GetPage(
       name: AppRoutes.thermalPrinterSettings,
@@ -155,51 +155,55 @@ class Pages {
     ),
     GetPage(
       name: AppRoutes.adminSettings,
-      page: () =>  AdminSettingView(),
+      page: () => AdminSettingView(),
       binding: AdminSettingBinding(),
     ),
     GetPage(
-  name: AppRoutes.adminReport,
-  page: () => const ReportAdminView(),
-  binding: ReportAdminBinding(),
-),
+      name: AppRoutes.adminReport,
+      page: () => const ReportAdminView(),
+      binding: ReportAdminBinding(),
+    ),
 
     //
     GetPage(
       name: AppRoutes.pushNotificationSettings,
       page: () => const PushNotificationView(),
       binding: PushNotificationBinding(),
-    ),  
+    ),
 
-   //all transactions
-   GetPage(
-  name: AppRoutes.adminAllTransactions,
-  page: () => const AllTransactionsView(), // <-- tanpa parameter
-  binding: BindingsBuilder(() {
-    final args = Get.arguments as Map<String, dynamic>;
-    Get.lazyPut<AllTransactionsController>(() => AllTransactionsController(
-      startDate: args['startDate'] as DateTime,
-      endDate: args['endDate'] as DateTime,
-      cashierId: args['cashierId'] as String?,
-    ));
-  }),
-),
+    //all transactions
+    GetPage(
+      name: AppRoutes.adminAllTransactions,
+      page: () => const AllTransactionsView(), // <-- tanpa parameter
+      binding: BindingsBuilder(() {
+        final args = Get.arguments as Map<String, dynamic>;
+        Get.lazyPut<AllTransactionsController>(
+          () => AllTransactionsController(
+            startDate: args['startDate'] as DateTime,
+            endDate: args['endDate'] as DateTime,
+            cashierId: args['cashierId'] as String?,
+          ),
+        );
+      }),
+    ),
 
-//add discount
-GetPage(
-  name: AppRoutes.adminAddDiscount,
-  page: () => const AddDiscountView(),
-  binding: DiscountBinding(),
-),
+    //add discount
+    GetPage(
+      name: AppRoutes.adminAddDiscount,
+      page: () => const AddDiscountView(),
+      binding: DiscountBinding(),
+    ),
 
-
-
-//cashier    
-GetPage(
+    //cashier
+    GetPage(
       name: AppRoutes.cashierOrder,
       page: () => OrderPage(),
       binding: OrderBinding(),
     ),
-   
+    GetPage(
+      name: AppRoutes.cashierCart,
+      page: () => const CartPage(),
+      binding: CartBinding(),
+    ),
   ];
 }

@@ -5,6 +5,7 @@ import '../models/cashier_order_menu_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:intl/intl.dart';
+import 'cashier_order_add_to_cart_button.dart';
 
 class OrderMenuGrid extends GetView<OrderController> {
   const OrderMenuGrid({super.key});
@@ -17,10 +18,7 @@ class OrderMenuGrid extends GetView<OrderController> {
       }
       if (controller.filteredMenus.isEmpty) {
         return Center(
-          child: Text(
-            'No menu found',
-            style: AppTypography.bodyMedium,
-          ),
+          child: Text('No menu found', style: AppTypography.bodyMedium),
         );
       }
       return RefreshIndicator(
@@ -88,13 +86,18 @@ class OrderMenuGrid extends GetView<OrderController> {
                 const SizedBox(height: 4),
                 Text(
                   currencyFormat.format(menu.price),
-                  style: AppTypography.priceSmall.copyWith(color: AppColors.brownNormal),
+                  style: AppTypography.priceSmall.copyWith(
+                    color: AppColors.brownNormal,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: menu.isAvailable
                             ? AppColors.successLight
@@ -111,7 +114,7 @@ class OrderMenuGrid extends GetView<OrderController> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const Spacer(),
                     Text(
                       'Stock: ${menu.stock}',
                       style: AppTypography.bodySmall.copyWith(
@@ -119,6 +122,12 @@ class OrderMenuGrid extends GetView<OrderController> {
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 8),
+                // Add to Cart Button
+                SizedBox(
+                  width: double.infinity,
+                  child: AddToCartButton(menu: menu),
                 ),
               ],
             ),
