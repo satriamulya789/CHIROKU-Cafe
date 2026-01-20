@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CashierSettingView extends GetView<CashierSettingController> {
-   CashierSettingView({super.key});
+  CashierSettingView({super.key});
   final _snackBar = CustomSnackbar();
 
   @override
@@ -58,7 +58,7 @@ class CashierSettingView extends GetView<CashierSettingController> {
                   title: 'Manage Printers',
                   subtitle: 'Configure thermal printers',
                   onTap: () {
-                    Get.toNamed(AppRoutes.thermalPrinterSettings);
+                    Get.toNamed(AppRoutes.managePrinter);
                   },
                   iconColor: AppColors.blueNormal,
                 ),
@@ -82,9 +82,7 @@ class CashierSettingView extends GetView<CashierSettingController> {
                   title: 'Help & Support',
                   subtitle: 'Get help and contact support',
                   onTap: () {
-                    _snackBar.showInfoSnackbar(
-                      'Feature coming soon',
-                    );
+                    _snackBar.showInfoSnackbar('Feature coming soon');
                   },
                   iconColor:
                       AppColors.blueDark ??
@@ -109,7 +107,7 @@ class CashierSettingView extends GetView<CashierSettingController> {
                   iconColor: AppColors.blueNormal,
                 ),
                 const SizedBox(height: 24),
-           SizedBox(
+                SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {

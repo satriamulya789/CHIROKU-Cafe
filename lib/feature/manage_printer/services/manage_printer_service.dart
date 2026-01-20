@@ -4,15 +4,18 @@ import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
-import '../models/thermal_printer_model.dart';
+import '../models/manage_printer_model.dart';
 
-class ThermalPrinterService {
-  static final ThermalPrinterService _instance = ThermalPrinterService._internal();
-  factory ThermalPrinterService() => _instance;
-  ThermalPrinterService._internal();
+class ManagePrinterService {
+  static final ManagePrinterService _instance =
+      ManagePrinterService._internal();
+  factory ManagePrinterService() => _instance;
+  ManagePrinterService._internal();
 
-  final _connectionStatusController = StreamController<PrinterConnectionStatus>.broadcast();
-  Stream<PrinterConnectionStatus> get connectionStatusStream => _connectionStatusController.stream;
+  final _connectionStatusController =
+      StreamController<PrinterConnectionStatus>.broadcast();
+  Stream<PrinterConnectionStatus> get connectionStatusStream =>
+      _connectionStatusController.stream;
 
   PrinterConnectionStatus _currentStatus = PrinterConnectionStatus.disconnected;
   BluetoothPrinterModel? _connectedPrinter;
@@ -48,7 +51,11 @@ class ThermalPrinterService {
 
   Future<List<BluetoothPrinterModel>> scanDevices() async {
     try {
-      final List<BluetoothInfo> devices = await PrintBluetoothThermal.pairedBluetooths;
+      // PrintBluetoothThermal.pairedBluetooths returns paired devices
+      // For all available (scanned), some plugins use a different method.
+      // print_bluetooth_thermal primarily works with paired devices.
+      final List<BluetoothInfo> devices =
+          await PrintBluetoothThermal.pairedBluetooths;
 
       return devices.map((device) {
         return BluetoothPrinterModel(
@@ -123,6 +130,9 @@ class ThermalPrinterService {
         _connectedPrinter = null;
         _currentStatus = PrinterConnectionStatus.disconnected;
         _connectionStatusController.add(PrinterConnectionStatus.disconnected);
+      } else {
+        _currentStatus = PrinterConnectionStatus.connected;
+        _connectionStatusController.add(PrinterConnectionStatus.connected);
       }
       return result;
     } catch (e) {
@@ -319,17 +329,14 @@ class ThermalPrinterService {
 
     bytes += generator.text(
       'Thank You',
-      styles: const PosStyles(
-        align: PosAlign.center,
-        bold: true,
-      ),
+      styles: const PosStyles(align: PosAlign.center, bold: true),
     );
     bytes += generator.text(
       'Please Come Again!',
       styles: const PosStyles(align: PosAlign.center),
     );
 
-    bytes += generator.feed(2);
+    bytes += generator.feed(3);
     bytes += generator.cut();
 
     return bytes;

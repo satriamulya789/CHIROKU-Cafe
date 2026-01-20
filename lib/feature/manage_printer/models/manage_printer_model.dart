@@ -44,17 +44,22 @@ class BluetoothPrinterModel {
   }
 
   @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BluetoothPrinterModel &&
+          runtimeType == other.runtimeType &&
+          macAddress == other.macAddress;
+
+  @override
+  int get hashCode => macAddress.hashCode;
+
+  @override
   String toString() {
     return 'BluetoothPrinterModel(name: $name, macAddress: $macAddress, type: $type, connected: $connected)';
   }
 }
 
-enum PrinterConnectionStatus {
-  disconnected,
-  connecting,
-  connected,
-  error,
-}
+enum PrinterConnectionStatus { disconnected, connecting, connected, error }
 
 class ReceiptItemModel {
   final String name;
@@ -155,11 +160,7 @@ class PrinterException implements Exception {
   final String? code;
   final dynamic stackTrace;
 
-  PrinterException({
-    required this.message,
-    this.code,
-    this.stackTrace,
-  });
+  PrinterException({required this.message, this.code, this.stackTrace});
 
   @override
   String toString() {

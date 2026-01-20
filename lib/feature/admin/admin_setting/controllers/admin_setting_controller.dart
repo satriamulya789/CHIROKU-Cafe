@@ -55,9 +55,9 @@ class AdminSettingController extends GetxController {
     Get.toNamed(AppRoutes.editProfile);
   }
 
-  // Navigate to Thermal Printer Settings
-  void goToThermalPrinterSettings() {
-    Get.toNamed(AppRoutes.thermalPrinterSettings);
+  // Navigate to Printer Management
+  void goToManagePrinter() {
+    Get.toNamed(AppRoutes.managePrinter);
   }
 
   void goToManageQrisPayment() {

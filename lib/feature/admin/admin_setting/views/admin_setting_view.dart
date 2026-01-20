@@ -13,8 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AdminSettingView extends GetView<AdminSettingController> {
-   AdminSettingView({super.key});
-    final _snackBar = CustomSnackbar();
+  AdminSettingView({super.key});
+  final _snackBar = CustomSnackbar();
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   title: 'Reset Password',
                   subtitle: 'Request password reset link',
                   onTap: () {
-                   _snackBar.showInfoSnackbar(
+                    _snackBar.showInfoSnackbar(
                       'Password reset feature coming soon',
                     );
                   },
@@ -57,7 +57,7 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   icon: Icons.print_rounded,
                   title: 'Manage Printers',
                   subtitle: 'Configure thermal printers',
-                  onTap: controller.goToThermalPrinterSettings,
+                  onTap: controller.goToManagePrinter,
                   iconColor: AppColors.blueNormal,
                 ),
                 SettingItemWidget(
@@ -86,7 +86,7 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   title: 'Notifications',
                   subtitle: 'Manage notification preferences',
                   onTap: () {
-                   _snackBar.showInfoSnackbar('Feature coming soon');
+                    _snackBar.showInfoSnackbar('Feature coming soon');
                   },
                   iconColor: AppColors.purpleNormal,
                 ),
@@ -101,9 +101,7 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   title: 'Help & Support',
                   subtitle: 'Get help and contact support',
                   onTap: () {
-                     _snackBar.showInfoSnackbar(
-                      'Feature coming soon',
-                    );
+                    _snackBar.showInfoSnackbar('Feature coming soon');
                   },
                   iconColor:
                       AppColors.blueDark ??

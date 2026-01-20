@@ -1,19 +1,23 @@
-import 'package:chiroku_cafe/feature/setting_manage_printer/models/thermal_printer_model.dart';
-import 'package:chiroku_cafe/feature/setting_manage_printer/repositories/thermal_printer_repositories.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:get/get.dart';
+import '../models/manage_printer_model.dart';
+import '../repositories/manage_printer_repository.dart';
 
-class ThermalPrinterController extends GetxController {
-  final ThermalPrinterRepository _repository = ThermalPrinterRepository();
+class ManagePrinterController extends GetxController {
+  final ManagePrinterRepository _repository = ManagePrinterRepository();
   final customSnackbar = CustomSnackbar();
 
   final RxList<BluetoothPrinterModel> availableDevices =
       <BluetoothPrinterModel>[].obs;
+  final RxList<BluetoothPrinterModel> connectedDevices =
+      <BluetoothPrinterModel>[].obs;
+
   final Rx<BluetoothPrinterModel?> selectedPrinter = Rx<BluetoothPrinterModel?>(
     null,
   );
   final Rx<PrinterConnectionStatus> connectionStatus =
       PrinterConnectionStatus.disconnected.obs;
+
   final RxBool isScanning = false.obs;
   final RxBool isPrinting = false.obs;
   final RxString errorMessage = ''.obs;
@@ -23,11 +27,16 @@ class ThermalPrinterController extends GetxController {
     super.onInit();
     _listenToConnectionStatus();
     checkBluetoothAvailability();
+    scanForPrinters(); // Auto scan on init
   }
 
   void _listenToConnectionStatus() {
     _repository.connectionStatusStream.listen((status) {
       connectionStatus.value = status;
+      if (status == PrinterConnectionStatus.disconnected) {
+        selectedPrinter.value = null;
+        _organizeDevices();
+      }
     });
   }
 
@@ -36,7 +45,10 @@ class ThermalPrinterController extends GetxController {
       final bool available = await _repository.isBluetoothAvailable();
       if (!available) {
         errorMessage.value = 'Bluetooth is not available or not enabled';
-        customSnackbar.showErrorSnackbar('Please enable Bluetooth first');
+        // Only show snackbar if user is explicitly on this page
+        if (Get.currentRoute.contains('manage-printer')) {
+          customSnackbar.showErrorSnackbar('Please enable Bluetooth first');
+        }
       }
     } catch (e) {
       errorMessage.value = e.toString();
@@ -49,8 +61,7 @@ class ThermalPrinterController extends GetxController {
       if (!granted) {
         errorMessage.value = 'Bluetooth permission denied';
         customSnackbar.showErrorSnackbar(
-          'Permission Denied'
-          'App requires Bluetooth permission to print',
+          'App requires Bluetooth permission to scan and print',
         );
       }
       return granted;
@@ -73,22 +84,19 @@ class ThermalPrinterController extends GetxController {
 
       final List<BluetoothPrinterModel> devices = await _repository
           .scanDevices();
-      availableDevices.value = devices;
+
+      // Update the devices and organize them
+      _allDevices = devices;
+      await _organizeDevices();
 
       if (devices.isEmpty) {
         customSnackbar.showSuccessSnackbar(
-          'Scan Complete'
-          'No printers found. Make sure the printer is paired in Bluetooth settings.',
-        );
-      } else {
-        customSnackbar.showSuccessSnackbar(
-          'Scan Complete'
-          'Found ${devices.length} printer(s)',
+          'No printers found. Make sure the printer is turned on and paired.',
         );
       }
     } on PrinterException catch (e) {
       errorMessage.value = e.message;
-      customSnackbar.showErrorSnackbar( e.message);
+      customSnackbar.showErrorSnackbar(e.message);
     } catch (e) {
       errorMessage.value = e.toString();
       customSnackbar.showErrorSnackbar(
@@ -99,17 +107,51 @@ class ThermalPrinterController extends GetxController {
     }
   }
 
+  List<BluetoothPrinterModel> _allDevices = [];
+
+  Future<void> _organizeDevices() async {
+    final bool currentlyConnected = await _repository.isConnected();
+    final BluetoothPrinterModel? activePrinter = _repository.connectedPrinter;
+
+    final List<BluetoothPrinterModel> connected = [];
+    final List<BluetoothPrinterModel> available = [];
+
+    for (var device in _allDevices) {
+      if (currentlyConnected &&
+          activePrinter != null &&
+          device.macAddress == activePrinter.macAddress) {
+        connected.add(device.copyWith(connected: true));
+        selectedPrinter.value = activePrinter;
+      } else {
+        available.add(device.copyWith(connected: false));
+      }
+    }
+
+    connectedDevices.value = connected;
+    availableDevices.value = available;
+  }
+
   Future<bool> connectToPrinter(BluetoothPrinterModel printer) async {
     try {
       errorMessage.value = '';
 
-      final bool connected = await _repository.connectToPrinter(printer);
+      // If already connected to this printer, do nothing
+      if (connectionStatus.value == PrinterConnectionStatus.connected &&
+          selectedPrinter.value?.macAddress == printer.macAddress) {
+        return true;
+      }
 
-      if (connected) {
-        selectedPrinter.value = printer;
-        customSnackbar.showSuccessSnackbar(
-          'Connected to ${printer.name}',
-        );
+      // If connected to another printer, disconnect first
+      if (connectionStatus.value == PrinterConnectionStatus.connected) {
+        await disconnectPrinter();
+      }
+
+      final bool success = await _repository.connectToPrinter(printer);
+
+      if (success) {
+        selectedPrinter.value = printer.copyWith(connected: true);
+        await _organizeDevices();
+        customSnackbar.showSuccessSnackbar('Connected to ${printer.name}');
         return true;
       } else {
         errorMessage.value = 'Failed to connect to printer';
@@ -124,9 +166,7 @@ class ThermalPrinterController extends GetxController {
       return false;
     } catch (e) {
       errorMessage.value = e.toString();
-      customSnackbar.showErrorSnackbar(
-        'Failed to connect: ${e.toString()}',
-      );
+      customSnackbar.showErrorSnackbar('Failed to connect: ${e.toString()}');
       return false;
     }
   }
@@ -136,23 +176,12 @@ class ThermalPrinterController extends GetxController {
       final bool disconnected = await _repository.disconnectPrinter();
       if (disconnected) {
         selectedPrinter.value = null;
-        customSnackbar.showErrorSnackbar(
-          'Printer connection closed',
-        );
+        await _organizeDevices();
+        customSnackbar.showSuccessSnackbar('Printer disconnected');
       }
     } catch (e) {
       errorMessage.value = e.toString();
-      customSnackbar.showErrorSnackbar(
-        'Failed to disconnect: ${e.toString()}',
-      );
-    }
-  }
-
-  Future<bool> checkConnection() async {
-    try {
-      return await _repository.isConnected();
-    } catch (e) {
-      return false;
+      customSnackbar.showErrorSnackbar('Failed to disconnect: ${e.toString()}');
     }
   }
 
@@ -161,10 +190,9 @@ class ThermalPrinterController extends GetxController {
       isPrinting.value = true;
       errorMessage.value = '';
 
-      final bool connected = await checkConnection();
+      final bool connected = await _repository.isConnected();
       if (!connected) {
         customSnackbar.showErrorSnackbar(
-          'Not Connected'
           'Printer is not connected. Please connect the printer first.',
         );
         return false;
@@ -173,29 +201,20 @@ class ThermalPrinterController extends GetxController {
       final bool success = await _repository.printReceipt(receiptData);
 
       if (success) {
-        customSnackbar.showSuccessSnackbar(
-          'Success'
-          'Receipt printed successfully',
-        );
+        customSnackbar.showSuccessSnackbar('Receipt printed successfully');
         return true;
       } else {
         errorMessage.value = 'Failed to print receipt';
-        customSnackbar.showErrorSnackbar(
-          'Failed'
-          'Failed to print receipt',
-        );
+        customSnackbar.showErrorSnackbar('Failed to print receipt');
         return false;
       }
     } on PrinterException catch (e) {
       errorMessage.value = e.message;
-      customSnackbar.showErrorSnackbar( e.message);
+      customSnackbar.showErrorSnackbar(e.message);
       return false;
     } catch (e) {
       errorMessage.value = e.toString();
-      customSnackbar.showErrorSnackbar(
-        'Error'
-        'Failed to print: ${e.toString()}',
-      );
+      customSnackbar.showErrorSnackbar('Failed to print: ${e.toString()}');
       return false;
     } finally {
       isPrinting.value = false;
@@ -204,24 +223,24 @@ class ThermalPrinterController extends GetxController {
 
   Future<void> testPrint() async {
     final testReceipt = ReceiptDataModel(
-      receiptNumber: 'TEST-001',
+      receiptNumber: 'TEST-${DateTime.now().millisecondsSinceEpoch}',
       dateTime: DateTime.now(),
-      cashierName: 'Test Cashier',
+      cashierName: 'Admin',
       items: [
         ReceiptItemModel(
-          name: 'Test Item',
+          name: 'Manual Test Item',
           quantity: 1,
-          price: 10000,
-          subtotal: 10000,
+          price: 15000,
+          subtotal: 15000,
         ),
       ],
-      subtotal: 10000,
-      tax: 1000,
+      subtotal: 15000,
+      tax: 1500,
       discount: 0,
-      total: 11000,
+      total: 16500,
       cash: 20000,
-      change: 9000,
-      notes: 'Test Print',
+      change: 3500,
+      notes: 'Testing connection...',
     );
 
     await printReceipt(testReceipt);

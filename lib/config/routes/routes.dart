@@ -30,8 +30,8 @@ abstract class AppRoutes {
   //push notif
   static const pushNotificationSettings = '/push-notification-settings';
 
-  // Thermal Printer
-  static const thermalPrinterSettings = '/thermal-printer-settings';
+  // Printer Management
+  static const managePrinter = '/manage-printer';
 
   //all transactions
   static const adminAllTransactions = '/admin/all-transactions';

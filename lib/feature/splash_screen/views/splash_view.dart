@@ -71,7 +71,7 @@ class SplashView extends GetView<SplashController> {
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: const EdgeInsets.bottom(40),
+                padding: const EdgeInsets.only(bottom: 40),
                 child: Obx(
                   () => Text(
                     'Version ${controller.appVersion.value}',
