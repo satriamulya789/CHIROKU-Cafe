@@ -3,7 +3,7 @@ import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:chiroku_cafe/feature/splash_screen/controllers/splash_controller.dart';
+import 'package:chiroku_cafe/feature/auth/splash_screen/controllers/splash_controller.dart';
 
 class SplashView extends GetView<SplashController> {
   const SplashView({super.key});

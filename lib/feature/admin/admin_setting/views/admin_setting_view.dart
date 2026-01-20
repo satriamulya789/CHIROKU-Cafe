@@ -54,6 +54,21 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   iconColor: AppColors.alertNormal,
                 ),
                 SettingItemWidget(
+                  icon: Icons.notifications_rounded,
+                  title: 'Notifications',
+                  subtitle: 'Manage notification preferences',
+                  onTap: () {
+                    _snackBar.showInfoSnackbar('Feature coming soon');
+                  },
+                  iconColor: AppColors.purpleNormal,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'App Settings',
+                  style: AppTypography.h6.copyWith(color: Colors.grey[700]),
+                ),
+                const SizedBox(height: 12),
+                SettingItemWidget(
                   icon: Icons.print_rounded,
                   title: 'Manage Printers',
                   subtitle: 'Configure thermal printers',
@@ -80,15 +95,6 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   subtitle: 'Manage users, menu, categories, and tables',
                   onTap: controller.goToManageControl,
                   iconColor: AppColors.orangeNormal,
-                ),
-                SettingItemWidget(
-                  icon: Icons.notifications_rounded,
-                  title: 'Notifications',
-                  subtitle: 'Manage notification preferences',
-                  onTap: () {
-                    _snackBar.showInfoSnackbar('Feature coming soon');
-                  },
-                  iconColor: AppColors.purpleNormal,
                 ),
                 const SizedBox(height: 24),
                 Text(

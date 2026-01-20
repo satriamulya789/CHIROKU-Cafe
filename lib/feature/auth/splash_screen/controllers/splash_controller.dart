@@ -1,5 +1,5 @@
 import 'package:chiroku_cafe/config/routes/routes.dart';
-import 'package:chiroku_cafe/feature/splash_screen/repositories/splash_repository.dart';
+import 'package:chiroku_cafe/feature/auth/splash_screen/repositories/splash_repository.dart';
 import 'package:chiroku_cafe/utils/enums/user_enum.dart';
 import 'package:get/get.dart';
 

@@ -13,6 +13,7 @@ class ManagePrinterRepository {
   Future<bool> requestBluetoothPermissions() =>
       _service.requestBluetoothPermissions();
   Future<List<BluetoothPrinterModel>> scanDevices() => _service.scanDevices();
+  Stream<BluetoothPrinterModel> discoverDevices() => _service.discoverDevices();
   Future<bool> connectToPrinter(BluetoothPrinterModel printer) =>
       _service.connectToPrinter(printer);
   Future<bool> disconnectPrinter() => _service.disconnectPrinter();

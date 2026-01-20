@@ -54,15 +54,6 @@ class CashierSettingView extends GetView<CashierSettingController> {
                   iconColor: AppColors.orangeNormal,
                 ),
                 SettingItemWidget(
-                  icon: Icons.print_rounded,
-                  title: 'Manage Printers',
-                  subtitle: 'Configure thermal printers',
-                  onTap: () {
-                    Get.toNamed(AppRoutes.managePrinter);
-                  },
-                  iconColor: AppColors.blueNormal,
-                ),
-                SettingItemWidget(
                   icon: Icons.notifications_outlined,
                   title: 'Notifications',
                   subtitle: 'Manage notification preferences',
@@ -70,6 +61,21 @@ class CashierSettingView extends GetView<CashierSettingController> {
                     _snackBar.showInfoSnackbar('Feature coming soon');
                   },
                   iconColor: AppColors.purpleNormal,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'App Settings',
+                  style: AppTypography.h6.copyWith(color: Colors.grey[700]),
+                ),
+                const SizedBox(height: 12),
+                SettingItemWidget(
+                  icon: Icons.print_rounded,
+                  title: 'Manage Printers',
+                  subtitle: 'Configure thermal printers',
+                  onTap: () {
+                    Get.toNamed(AppRoutes.managePrinter);
+                  },
+                  iconColor: AppColors.blueNormal,
                 ),
                 const SizedBox(height: 24),
                 Text(

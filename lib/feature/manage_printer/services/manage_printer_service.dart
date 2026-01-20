@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:bluetooth_classic/bluetooth_classic.dart';
 import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,6 +13,7 @@ class ManagePrinterService {
   factory ManagePrinterService() => _instance;
   ManagePrinterService._internal();
 
+  final BluetoothClassic _bluetoothClassic = BluetoothClassic();
   final _connectionStatusController =
       StreamController<PrinterConnectionStatus>.broadcast();
   Stream<PrinterConnectionStatus> get connectionStatusStream =>
@@ -51,13 +53,11 @@ class ManagePrinterService {
 
   Future<List<BluetoothPrinterModel>> scanDevices() async {
     try {
-      // PrintBluetoothThermal.pairedBluetooths returns paired devices
-      // For all available (scanned), some plugins use a different method.
-      // print_bluetooth_thermal primarily works with paired devices.
-      final List<BluetoothInfo> devices =
+      // Get paired devices
+      final List<BluetoothInfo> pairedDevices =
           await PrintBluetoothThermal.pairedBluetooths;
 
-      return devices.map((device) {
+      return pairedDevices.map((device) {
         return BluetoothPrinterModel(
           name: device.name,
           macAddress: device.macAdress,
@@ -71,6 +71,42 @@ class ManagePrinterService {
         code: 'SCAN_ERROR',
         stackTrace: e,
       );
+    }
+  }
+
+  /// Specialized scan that returns a stream of found devices to be more responsive
+  Stream<BluetoothPrinterModel> discoverDevices() async* {
+    // 1. Return paired devices first (immediate result)
+    final List<BluetoothInfo> paired =
+        await PrintBluetoothThermal.pairedBluetooths;
+    for (var d in paired) {
+      yield BluetoothPrinterModel(
+        name: d.name,
+        macAddress: d.macAdress,
+        type: 1,
+        connected: false,
+      );
+    }
+
+    // 2. Start Bluetooth discovery for unpaired devices
+    if (Platform.isAndroid) {
+      try {
+        await _bluetoothClassic.startScan();
+
+        // Listen to discovery stream
+        await for (final device in _bluetoothClassic.onDeviceDiscovered()) {
+          yield BluetoothPrinterModel(
+            name: device.name ?? "Unknown Device",
+            macAddress: device.address,
+            type: 1,
+            connected: false,
+          );
+        }
+      } catch (e) {
+        // Log or handle error if needed
+      } finally {
+        await _bluetoothClassic.stopScan();
+      }
     }
   }
 

@@ -82,27 +82,34 @@ class ManagePrinterController extends GetxController {
         return;
       }
 
-      final List<BluetoothPrinterModel> devices = await _repository
-          .scanDevices();
-
-      // Update the devices and organize them
-      _allDevices = devices;
-      await _organizeDevices();
-
-      if (devices.isEmpty) {
-        customSnackbar.showSuccessSnackbar(
-          'No printers found. Make sure the printer is turned on and paired.',
-        );
+      // Clear previous discoveries but keep connected one
+      _allDevices = [];
+      if (selectedPrinter.value != null) {
+        _allDevices.add(selectedPrinter.value!);
       }
+
+      // Listen to discovery stream
+      _repository.discoverDevices().listen(
+        (device) {
+          if (!_allDevices.any((d) => d.macAddress == device.macAddress)) {
+            _allDevices.add(device);
+            _organizeDevices();
+          }
+        },
+        onDone: () {
+          isScanning.value = false;
+          if (_allDevices.isEmpty) {
+            customSnackbar.showInfoSnackbar('No Bluetooth devices found.');
+          }
+        },
+      );
     } on PrinterException catch (e) {
       errorMessage.value = e.message;
       customSnackbar.showErrorSnackbar(e.message);
+      isScanning.value = false;
     } catch (e) {
       errorMessage.value = e.toString();
-      customSnackbar.showErrorSnackbar(
-        'Failed to scan printers: ${e.toString()}',
-      );
-    } finally {
+      customSnackbar.showErrorSnackbar('Scan failed: ${e.toString()}');
       isScanning.value = false;
     }
   }

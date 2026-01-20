@@ -1,4 +1,4 @@
-import 'package:chiroku_cafe/feature/splash_screen/services/splash_service.dart';
+import 'package:chiroku_cafe/feature/auth/splash_screen/services/splash_service.dart';
 import 'package:chiroku_cafe/utils/enums/user_enum.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
