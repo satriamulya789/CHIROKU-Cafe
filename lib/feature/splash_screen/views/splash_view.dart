@@ -28,7 +28,7 @@ class SplashView extends GetView<SplashController> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Spacer(flex: 3),
+            const Spacer(flex: 2),
             // Logo with hero animation potential or just clean spacing
             Hero(
               tag: 'app_logo',
@@ -40,9 +40,9 @@ class SplashView extends GetView<SplashController> {
               'CHIROKU CAFE',
               style: AppTypography.h1.copyWith(
                 color: AppColors.brownDark,
-                fontSize: 40,
-                letterSpacing: 6,
-                fontWeight: FontWeight.w900,
+                fontSize: 32,
+                letterSpacing: 4,
+                fontWeight: FontWeight.w800,
               ),
             ),
             const SizedBox(height: 12),
@@ -54,7 +54,7 @@ class SplashView extends GetView<SplashController> {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const Spacer(flex: 2),
+            const Spacer(flex: 3),
             // Premium Loading Indicator
             const SizedBox(
               width: 40,
