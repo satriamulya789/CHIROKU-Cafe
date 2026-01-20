@@ -15,11 +15,6 @@ class CashierBottomBarView extends StatelessWidget {
     final List<Widget> pages = [
       const OrderPage(),
       CartPage(),
-      // CashierDashboardPage(),
-      // OrderPage(),
-      // ReportPage(),
-      // CartPage(),
-      // SettingsPage(),
       CashierSettingView()
     ];
 
@@ -29,8 +24,8 @@ class CashierBottomBarView extends StatelessWidget {
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: c.selectedIndex.value,
-          selectedItemColor: AppColors.brownDarker,
-          unselectedItemColor: AppColors.brownNormal,
+          selectedItemColor: AppColors.brownDark,
+          unselectedItemColor: AppColors.greyNormal,
           selectedFontSize: 12,
           unselectedFontSize: 12,
           onTap: c.changeIndex,

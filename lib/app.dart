@@ -14,7 +14,9 @@ class MyApp extends StatelessWidget {
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('Notification Permission'),
-          content: const Text('To receive notifications, please enable notification permission in your device settings.'),
+          content: const Text(
+            'To receive notifications, please enable notification permission in your device settings.',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
@@ -24,7 +26,6 @@ class MyApp extends StatelessWidget {
         ),
       );
     }
-
   }
 
   @override
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Chiroku Cafe',
-      initialRoute: AppRoutes.onboard,
+      initialRoute: AppRoutes.splash,
       getPages: Pages.routes,
     );
   }

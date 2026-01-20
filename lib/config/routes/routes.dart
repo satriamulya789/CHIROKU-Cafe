@@ -1,4 +1,5 @@
 abstract class AppRoutes {
+  static const splash = '/splash';
   static const onboard = '/onboard';
   static const signIn = '/signin';
   static const signUp = '/signup';
@@ -46,6 +47,4 @@ abstract class AppRoutes {
   static const adminStockList = '/view-more';
 
   //cashier
- 
-  
 }

@@ -49,9 +49,16 @@ import 'package:chiroku_cafe/feature/push_notification/binding/push_notification
 import 'package:chiroku_cafe/feature/push_notification/views/push_notification_view.dart';
 import 'package:get/get.dart';
 import 'package:chiroku_cafe/feature/auth/on_board/binding/on_board_binding.dart';
+import 'package:chiroku_cafe/feature/splash_screen/binding/splash_binding.dart';
+import 'package:chiroku_cafe/feature/splash_screen/views/splash_view.dart';
 
 class Pages {
   static final routes = [
+    GetPage(
+      name: AppRoutes.splash,
+      page: () => const SplashView(),
+      binding: SplashBinding(),
+    ),
     GetPage(
       name: AppRoutes.onboard,
       page: () => const OnBoardPages(),
