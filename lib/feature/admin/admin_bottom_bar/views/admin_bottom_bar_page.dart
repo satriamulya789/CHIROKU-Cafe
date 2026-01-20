@@ -13,10 +13,10 @@ class BottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = Get.put(BottomBarController());
-    final List<Widget> pages = const [
-      AdminHomeView(),
-      AdminManageControlView(),
-      ReportAdminView(),
+    final List<Widget> pages = [
+      const AdminHomeView(),
+      const AdminManageControlView(),
+      const ReportAdminView(),
       AdminSettingView(),
     ];
 

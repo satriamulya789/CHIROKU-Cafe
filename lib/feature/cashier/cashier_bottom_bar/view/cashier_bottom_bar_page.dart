@@ -11,8 +11,8 @@ class CashierBottomBarView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = Get.put(CashierBottomBarController());
-    final List<Widget> pages = const [
-      OrderPage(),
+    final List<Widget> pages = [
+      const OrderPage(),
       // CashierDashboardPage(),
       // OrderPage(),
       // ReportPage(),

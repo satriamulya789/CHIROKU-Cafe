@@ -8,11 +8,13 @@ import 'package:chiroku_cafe/feature/admin/admin_setting/widgets/admin_setting_s
 
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AdminSettingView extends GetView<AdminSettingController> {
-  const AdminSettingView({super.key});
+   AdminSettingView({super.key});
+    final _snackBar = CustomSnackbar();
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +47,8 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   title: 'Reset Password',
                   subtitle: 'Request password reset link',
                   onTap: () {
-                    Get.snackbar(
-                      'Reset Password',
+                   _snackBar.showInfoSnackbar(
                       'Password reset feature coming soon',
-                      snackPosition: SnackPosition.BOTTOM,
                     );
                   },
                   iconColor: AppColors.alertNormal,
@@ -86,11 +86,7 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   title: 'Notifications',
                   subtitle: 'Manage notification preferences',
                   onTap: () {
-                    Get.snackbar(
-                      'Notifications',
-                      'Feature coming soon',
-                      snackPosition: SnackPosition.BOTTOM,
-                    );
+                   _snackBar.showInfoSnackbar('Feature coming soon');
                   },
                   iconColor: AppColors.purpleNormal,
                 ),
@@ -105,10 +101,8 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   title: 'Help & Support',
                   subtitle: 'Get help and contact support',
                   onTap: () {
-                    Get.snackbar(
-                      'Help & Support',
+                     _snackBar.showInfoSnackbar(
                       'Feature coming soon',
-                      snackPosition: SnackPosition.BOTTOM,
                     );
                   },
                   iconColor:

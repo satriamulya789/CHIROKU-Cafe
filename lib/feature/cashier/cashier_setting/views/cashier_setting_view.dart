@@ -1,38 +1,25 @@
-
 import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/constant/assets_constant.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_setting/controllers/cashier_setting_controller.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_setting/widgets/cashier_setting_account_info_widget.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_setting/widgets/cashier_setting_app_bar_widget.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_setting/widgets/cashier_setting_item_widget.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_setting/widgets/cashier_setting_profile_section_widget.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_setting/widgets/cashier_setting_sign_out_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CashierSettingView extends GetView<CashierSettingController> {
-  const CashierSettingView({super.key});
+   CashierSettingView({super.key});
+  final _snackBar = CustomSnackbar();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Settings',
-          style: AppTypography.h6.copyWith(fontWeight: FontWeight.w700),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: AppColors.white,
-        foregroundColor: Colors.black87,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
-            onPressed: controller.refreshProfile,
-          ),
-        ],
-      ),
+      appBar: CashierSettingAppBarWidget(),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -60,15 +47,13 @@ class CashierSettingView extends GetView<CashierSettingController> {
                   title: 'Reset Password',
                   subtitle: 'Request password reset link',
                   onTap: () {
-                    Get.snackbar(
-                      'Reset Password',
+                    _snackBar.showInfoSnackbar(
                       'Password reset feature coming soon',
-                      snackPosition: SnackPosition.BOTTOM,
                     );
                   },
                   iconColor: AppColors.orangeNormal,
                 ),
-                  SettingItemWidget(
+                SettingItemWidget(
                   icon: Icons.print_rounded,
                   title: 'Manage Printers',
                   subtitle: 'Configure thermal printers',
@@ -82,11 +67,7 @@ class CashierSettingView extends GetView<CashierSettingController> {
                   title: 'Notifications',
                   subtitle: 'Manage notification preferences',
                   onTap: () {
-                    Get.snackbar(
-                      'Notifications',
-                      'Feature coming soon',
-                      snackPosition: SnackPosition.BOTTOM,
-                    );
+                    _snackBar.showInfoSnackbar('Feature coming soon');
                   },
                   iconColor: AppColors.purpleNormal,
                 ),
@@ -101,13 +82,13 @@ class CashierSettingView extends GetView<CashierSettingController> {
                   title: 'Help & Support',
                   subtitle: 'Get help and contact support',
                   onTap: () {
-                    Get.snackbar(
-                      'Help & Support',
+                    _snackBar.showInfoSnackbar(
                       'Feature coming soon',
-                      snackPosition: SnackPosition.BOTTOM,
                     );
                   },
-                  iconColor: AppColors.blueDark ?? AppColors.blueNormal, // fallback if no teal defined
+                  iconColor:
+                      AppColors.blueDark ??
+                      AppColors.blueNormal, // fallback if no teal defined
                 ),
                 SettingItemWidget(
                   icon: Icons.info_outline,
@@ -128,14 +109,21 @@ class CashierSettingView extends GetView<CashierSettingController> {
                   iconColor: AppColors.blueNormal,
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
+           SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: controller.logout,
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const SignOutDialogWidget(),
+                      );
+                    },
                     icon: const Icon(Icons.logout, color: Colors.white),
                     label: Text(
                       'Logout',
-                      style: AppTypography.button.copyWith(color: AppColors.white),
+                      style: AppTypography.button.copyWith(
+                        color: AppColors.white,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.alertNormal,
