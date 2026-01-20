@@ -1,6 +1,7 @@
 import 'package:chiroku_cafe/constant/assets_constant.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/controllers/admin_setting_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/widgets/admin_setting_account_info_widget.dart';
+import 'package:chiroku_cafe/feature/admin/admin_setting/widgets/admin_setting_app_bar_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/widgets/admin_setting_dialog_signout_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/widgets/admin_setting_profile_section_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/widgets/admin_setting_setting_item_widget.dart';
@@ -16,16 +17,7 @@ class AdminSettingView extends GetView<AdminSettingController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Settings',
-          style: AppTypography.h6.copyWith(fontWeight: FontWeight.w700),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: AppColors.white,
-        foregroundColor: Colors.black87,
-      ),
+      appBar: AdminSettingsAppBar(),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
