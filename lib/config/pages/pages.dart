@@ -155,7 +155,7 @@ class Pages {
     ),
     GetPage(
       name: AppRoutes.adminSettings,
-      page: () => const AdminSettingView(),
+      page: () =>  AdminSettingView(),
       binding: AdminSettingBinding(),
     ),
     GetPage(

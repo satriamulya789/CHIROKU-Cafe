@@ -12,7 +12,7 @@ class SignOutDialogWidget extends GetView<AdminSettingController> {
     return AlertDialog(
       backgroundColor: AppColors.brownLight,
       title: Text('Sign Out',
-        style: AppTypography.labelLarge.copyWith(
+        style: AppTypography.bodyLargeBold.copyWith(
           color: AppColors.brownDark,
         )
       ),
@@ -32,7 +32,7 @@ class SignOutDialogWidget extends GetView<AdminSettingController> {
           ),
         ), child: Text(
           'Cancel',
-          style: AppTypography.button.copyWith(color: AppColors.brownLight),
+          style: AppTypography.buttonSmall.copyWith(color: AppColors.brownLight),
         ),
         ),
         SizedBox(width: 10),
@@ -55,7 +55,7 @@ class SignOutDialogWidget extends GetView<AdminSettingController> {
                   )
                 : Text(
                     'Logout',
-                    style: AppTypography.button.copyWith(color: AppColors.brownLight),
+                    style: AppTypography.buttonSmall.copyWith(color: AppColors.brownLight),
                   ),
           );
         })
