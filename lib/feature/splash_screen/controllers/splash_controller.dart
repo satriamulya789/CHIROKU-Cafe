@@ -11,32 +11,47 @@ class SplashController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    print('🚀 SplashController: onInit called');
     _startApp();
   }
 
   Future<void> _startApp() async {
-    // Add a small delay for splash visual
-    await Future.delayed(const Duration(seconds: 2));
+    print('🚀 SplashController: Starting app timer...');
+    // Adjusted duration to 3 seconds for a more premium transition
+    await Future.delayed(const Duration(seconds: 3));
+    print('🚀 SplashController: Timer finished, checking auth...');
     await _checkAuthStatus();
   }
 
   Future<void> _checkAuthStatus() async {
-    final session = _repository.currentSession;
-    final user = _repository.currentUser;
+    try {
+      final session = _repository.currentSession;
+      final user = _repository.currentUser;
 
-    if (session != null && user != null) {
-      final role = await _repository.getUserRole(user.id);
+      print('🚀 Auth Check: session=${session != null}, user=${user?.id}');
 
-      if (role == UserRole.admin) {
-        Get.offAllNamed(AppRoutes.bottomBarAdmin);
-      } else if (role == UserRole.cashier) {
-        Get.offAllNamed(AppRoutes.bottomBarCashier);
+      if (session != null && user != null) {
+        print('🚀 Auth Check: Fetching user role for ${user.id}...');
+        final role = await _repository.getUserRole(user.id);
+        print('🚀 Auth Check: Role found: $role');
+
+        if (role == UserRole.admin) {
+          print('🚀 Auth Check: Navigating to Admin Dashboard');
+          Get.offAllNamed(AppRoutes.bottomBarAdmin);
+        } else if (role == UserRole.cashier) {
+          print('🚀 Auth Check: Navigating to Cashier Dashboard');
+          Get.offAllNamed(AppRoutes.bottomBarCashier);
+        } else {
+          print('🚀 Auth Check: Unknown role, going to onboard');
+          Get.offAllNamed(AppRoutes.onboard);
+        }
       } else {
-        // If role is null or unknown, go to onboard
+        print('🚀 Auth Check: No session, navigating to onboard');
         Get.offAllNamed(AppRoutes.onboard);
       }
-    } else {
-      // User not logged in, go to onboard
+    } catch (e) {
+      print('❌ Auth Check Error: $e');
+      // On error, go to onboard to prevent stuck splash
       Get.offAllNamed(AppRoutes.onboard);
     }
   }

@@ -10,36 +10,68 @@ class SplashView extends GetView<SplashController> {
 
   @override
   Widget build(BuildContext context) {
+    // Ensure controller is initialized
+    controller.onInit;
+
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: Center(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppColors.white, AppColors.brownLight.withOpacity(0.3)],
+          ),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Logo
-            Image.asset(AssetsConstant.logo, width: 150, height: 150),
-            const SizedBox(height: 24),
-            // App Name or Tagline
+            const Spacer(flex: 3),
+            // Logo with hero animation potential or just clean spacing
+            Hero(
+              tag: 'app_logo',
+              child: Image.asset(AssetsConstant.logo, width: 180, height: 180),
+            ),
+            const SizedBox(height: 32),
+            // Big Title
             Text(
               'CHIROKU CAFE',
-              style: AppTypography.h4.copyWith(
-                color: AppColors.brownNormal,
-                letterSpacing: 2,
+              style: AppTypography.h1.copyWith(
+                color: AppColors.brownDark,
+                fontSize: 40,
+                letterSpacing: 6,
+                fontWeight: FontWeight.w900,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
+            // Tagline
             Text(
-              'Premium Coffee & More',
-              style: AppTypography.bodySmall.copyWith(
-                color: AppColors.greyNormal,
+              'PREMIUM COFFEE & DELIGHTS',
+              style: AppTypography.overlineLarge.copyWith(
+                color: AppColors.brownNormal,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(flex: 2),
+            // Premium Loading Indicator
+            const SizedBox(
+              width: 40,
+              height: 40,
+              child: CircularProgressIndicator(
+                color: AppColors.brownNormal,
+                strokeWidth: 2,
               ),
             ),
             const SizedBox(height: 48),
-            // Loading Indicator
-            const CircularProgressIndicator(
-              color: AppColors.brownNormal,
-              strokeWidth: 3,
+            Text(
+              'v1.0.0',
+              style: AppTypography.captionSmall.copyWith(
+                color: AppColors.greyNormal,
+              ),
             ),
+            const SizedBox(height: 24),
           ],
         ),
       ),
