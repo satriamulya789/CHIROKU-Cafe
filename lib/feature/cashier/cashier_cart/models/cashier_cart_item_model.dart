@@ -4,6 +4,7 @@ class CartItemModel {
   final String productName;
   final double price;
   final int quantity;
+  final int stock; // Stock dari database
   final String? imageUrl;
   final String? category;
   final String? note;
@@ -14,6 +15,7 @@ class CartItemModel {
     required this.productName,
     required this.price,
     required this.quantity,
+    required this.stock,
     this.imageUrl,
     this.category,
     this.note,
@@ -26,6 +28,7 @@ class CartItemModel {
       productName: json['product_name'] as String? ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       quantity: (json['quantity'] as num?)?.toInt() ?? 1,
+      stock: (json['stock'] as num?)?.toInt() ?? 0,
       imageUrl: json['image_url'] as String?,
       category: json['category'] as String?,
       note: json['note'] as String?,
@@ -39,6 +42,7 @@ class CartItemModel {
       'product_name': productName,
       'price': price,
       'quantity': quantity,
+      'stock': stock,
       'image_url': imageUrl,
       'category': category,
       'note': note,
@@ -51,6 +55,7 @@ class CartItemModel {
     String? productName,
     double? price,
     int? quantity,
+    int? stock,
     String? imageUrl,
     String? category,
     String? note,
@@ -61,6 +66,7 @@ class CartItemModel {
       productName: productName ?? this.productName,
       price: price ?? this.price,
       quantity: quantity ?? this.quantity,
+      stock: stock ?? this.stock,
       imageUrl: imageUrl ?? this.imageUrl,
       category: category ?? this.category,
       note: note ?? this.note,

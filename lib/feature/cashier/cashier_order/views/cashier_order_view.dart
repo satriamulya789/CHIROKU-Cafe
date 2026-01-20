@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_order/widgets/cashier_order_category_filter_widget.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_order/widgets/cashier_order_menu_grid_widget.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_order/widgets/cashier_order_search_bar_widget.dart';
@@ -34,7 +35,7 @@ class OrderPage extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.shopping_cart_outlined),
                     onPressed: () {
-                      Get.toNamed('/cashier/cart');
+                      Get.toNamed(AppRoutes.cashierCart);
                     },
                     tooltip: 'View Cart',
                   ),
@@ -53,7 +54,7 @@ class OrderPage extends StatelessWidget {
                           minHeight: 18,
                         ),
                         child: Text(
-                          itemCount > 99 ? '99+' : '$itemCount',
+                          itemCount > 9 ? '9+' : '$itemCount',
                           style: AppTypography.badge.copyWith(
                             color: AppColors.white,
                             fontSize: 10,

@@ -44,4 +44,8 @@ abstract class AppRoutes {
 
   //view more
   static const adminStockList = '/view-more';
+
+  //cashier
+ 
+  
 }

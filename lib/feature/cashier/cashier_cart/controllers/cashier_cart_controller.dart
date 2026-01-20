@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:chiroku_cafe/feature/cashier/cashier_cart/models/cashier_cart_item_model.dart';
-import 'package:chiroku_cafe/feature/cashier/cashier_cart/repositories/cashier_cart_repositories.dart' show CartRepository;
+import 'package:chiroku_cafe/feature/cashier/cashier_cart/models/discount_model.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_cart/repositories/cashier_cart_repositories.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_cart/services/discount_service.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_order/models/cashier_order_menu_model.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:get/get.dart';
@@ -9,23 +11,30 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CartController extends GetxController {
   final CartRepository _repository = CartRepository();
+  final DiscountService _discountService = DiscountService();
   final CustomSnackbar _snackbar = CustomSnackbar();
 
   final RxList<CartItemModel> cartItems = <CartItemModel>[].obs;
+  final RxList<DiscountModel> availableDiscounts = <DiscountModel>[].obs;
+  final Rx<DiscountModel?> selectedDiscount = Rx<DiscountModel?>(null);
   final RxBool isLoading = false.obs;
+  final RxBool isLoadingDiscounts = false.obs;
   final RxString orderNote = ''.obs;
-  final RxDouble discountPercentage = 0.0.obs;
 
   // Computed values
   double get subtotal => _repository.calculateSubtotal(cartItems);
   double get taxAmount => _repository.calculateTax(subtotal);
-  double get discountAmount =>
-      _repository.calculateDiscount(subtotal, discountPercentage.value);
+
+  double get discountAmount {
+    if (selectedDiscount.value == null) return 0.0;
+    return selectedDiscount.value!.calculateDiscount(subtotal);
+  }
+
   double get total => _repository.calculateTotal(
-        subtotal: subtotal,
-        tax: taxAmount,
-        discount: discountAmount,
-      );
+    subtotal: subtotal,
+    tax: taxAmount,
+    discount: discountAmount,
+  );
 
   int get itemCount => cartItems.fold(0, (sum, item) => sum + item.quantity);
 
@@ -33,13 +42,14 @@ class CartController extends GetxController {
   void onInit() {
     super.onInit();
     fetchCartItems();
+    fetchDiscounts();
   }
 
   Future<void> fetchCartItems() async {
     try {
       isLoading.value = true;
       final userId = Supabase.instance.client.auth.currentUser?.id ?? '';
-      
+
       if (userId.isEmpty) {
         log('⚠️ No user logged in');
         return;
@@ -56,12 +66,33 @@ class CartController extends GetxController {
     }
   }
 
+  Future<void> fetchDiscounts() async {
+    try {
+      isLoadingDiscounts.value = true;
+      final discountsData = await _discountService.getActiveDiscounts();
+      availableDiscounts.assignAll(
+        discountsData.map((e) => DiscountModel.fromJson(e)).toList(),
+      );
+      log('✅ Discounts loaded: ${availableDiscounts.length}');
+    } catch (e) {
+      log('❌ Error fetching discounts: $e');
+    } finally {
+      isLoadingDiscounts.value = false;
+    }
+  }
+
   Future<void> addToCart(MenuModel menu, {int quantity = 1}) async {
     try {
       final userId = Supabase.instance.client.auth.currentUser?.id ?? '';
-      
+
       if (userId.isEmpty) {
         _snackbar.showErrorSnackbar('Please login first');
+        return;
+      }
+
+      // Check if menu is available
+      if (!menu.isAvailable) {
+        _snackbar.showWarningSnackbar('${menu.name} is not available');
         return;
       }
 
@@ -74,22 +105,31 @@ class CartController extends GetxController {
         // Update quantity if item exists
         final existingItem = cartItems[existingIndex];
         final newQuantity = existingItem.quantity + quantity;
-        
+
         // Check stock availability
         if (newQuantity > menu.stock) {
           _snackbar.showWarningSnackbar(
-            'Cannot add more. Only ${menu.stock} items available in stock',
+            'Insufficient stock! Only ${menu.stock} items available',
           );
           return;
         }
 
-        await updateQuantity(existingItem.id, newQuantity);
+        await updateQuantity(
+          existingItem.id,
+          newQuantity,
+          maxStock: menu.stock,
+        );
       } else {
-        // Check stock availability
+        // Check stock availability for new item
         if (quantity > menu.stock) {
           _snackbar.showWarningSnackbar(
-            'Cannot add. Only ${menu.stock} items available in stock',
+            'Insufficient stock! Only ${menu.stock} items available',
           );
+          return;
+        }
+
+        if (menu.stock <= 0) {
+          _snackbar.showWarningSnackbar('Out of stock!');
           return;
         }
 
@@ -100,12 +140,13 @@ class CartController extends GetxController {
           productName: menu.name,
           price: menu.price,
           quantity: quantity,
+          stock: menu.stock, // Add stock from menu
           imageUrl: menu.imageUrl,
           category: menu.category?.name,
         );
 
         cartItems.add(newItem);
-        
+
         // Persist to backend (if implemented)
         await _repository.addToCart(
           userId: userId,
@@ -122,14 +163,26 @@ class CartController extends GetxController {
       log('✅ Added to cart: ${menu.name} x$quantity');
     } catch (e) {
       log('❌ Error adding to cart: $e');
-      _snackbar.showErrorSnackbar('Failed to add item to cart');
+      _snackbar.showErrorSnackbar('Failed to add to cart');
     }
   }
 
-  Future<void> updateQuantity(String itemId, int newQuantity) async {
+  Future<void> updateQuantity(
+    String itemId,
+    int newQuantity, {
+    int? maxStock,
+  }) async {
     try {
       if (newQuantity <= 0) {
         await removeItem(itemId);
+        return;
+      }
+
+      // Validate stock if maxStock is provided
+      if (maxStock != null && newQuantity > maxStock) {
+        _snackbar.showWarningSnackbar(
+          'Insufficient stock! Maximum $maxStock items',
+        );
         return;
       }
 
@@ -151,8 +204,8 @@ class CartController extends GetxController {
     }
   }
 
-  Future<void> increaseQuantity(CartItemModel item) async {
-    await updateQuantity(item.id, item.quantity + 1);
+  Future<void> increaseQuantity(CartItemModel item, {int? maxStock}) async {
+    await updateQuantity(item.id, item.quantity + 1, maxStock: maxStock);
   }
 
   Future<void> decreaseQuantity(CartItemModel item) async {
@@ -178,10 +231,13 @@ class CartController extends GetxController {
   Future<void> clearCart() async {
     try {
       final userId = Supabase.instance.client.auth.currentUser?.id ?? '';
-      
+
       if (userId.isEmpty) return;
 
       cartItems.clear();
+      selectedDiscount.value = null;
+      orderNote.value = '';
+
       await _repository.clearCart(userId);
       _snackbar.showSuccessSnackbar('Cart cleared');
       log('✅ Cart cleared');
@@ -195,7 +251,12 @@ class CartController extends GetxController {
     orderNote.value = note;
   }
 
-  void setDiscount(double percentage) {
-    discountPercentage.value = percentage;
+  void setDiscount(DiscountModel? discount) {
+    selectedDiscount.value = discount;
+    log('✅ Discount set: ${discount?.name ?? "None"}');
+  }
+
+  void clearDiscount() {
+    selectedDiscount.value = null;
   }
 }

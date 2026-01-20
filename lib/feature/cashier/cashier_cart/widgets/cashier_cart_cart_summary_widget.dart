@@ -8,10 +8,7 @@ import 'package:intl/intl.dart';
 class CartSummaryWidget extends StatelessWidget {
   final CartController controller;
 
-  const CartSummaryWidget({
-    super.key,
-    required this.controller,
-  });
+  const CartSummaryWidget({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +31,7 @@ class CartSummaryWidget extends StatelessWidget {
           TextField(
             onChanged: (value) => controller.setOrderNote(value),
             decoration: InputDecoration(
-              labelText: 'Order Note (Optional)',
+              labelText: 'Order Notes (Optional)',
               labelStyle: AppTypography.labelLarge.copyWith(
                 color: AppColors.greyNormalHover,
               ),
@@ -97,12 +94,11 @@ class CartSummaryWidget extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: AppColors.orangeLight,
                               borderRadius: BorderRadius.circular(4),
-                              border: Border.all(
-                                color: AppColors.orangeNormal,
-                              ),
+                              border: Border.all(color: AppColors.orangeNormal),
                             ),
                             child: Text(
-                              '${controller.discountPercentage.value.toInt()}%',
+                              controller.selectedDiscount.value?.displayText ??
+                                  '0%',
                               style: AppTypography.badge.copyWith(
                                 color: AppColors.orangeDark,
                               ),
@@ -186,9 +182,7 @@ class CartSummaryWidget extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTypography.bodyMedium.copyWith(
-            color: AppColors.greyDark,
-          ),
+          style: AppTypography.bodyMedium.copyWith(color: AppColors.greyDark),
         ),
         Text(
           _formatCurrency(amount),
@@ -204,49 +198,68 @@ class CartSummaryWidget extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          'Apply Discount',
-          style: AppTypography.h5.copyWith(
-            color: AppColors.brownDark,
-          ),
+          'Select Discount',
+          style: AppTypography.h5.copyWith(color: AppColors.brownDark),
         ),
-        content: Obx(
-          () => Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildDiscountOption(controller, 0, 'No Discount'),
-              _buildDiscountOption(controller, 10, '10% Off'),
-              _buildDiscountOption(controller, 20, '20% Off'),
-              _buildDiscountOption(controller, 50, '50% Off'),
-            ],
-          ),
-        ),
+        content: Obx(() {
+          if (controller.isLoadingDiscounts.value) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: CircularProgressIndicator(color: AppColors.brownNormal),
+              ),
+            );
+          }
+
+          if (controller.availableDiscounts.isEmpty) {
+            return Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(
+                'No discounts available',
+                style: AppTypography.bodyMedium.copyWith(
+                  color: AppColors.greyNormalHover,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildDiscountOption(controller, null, 'No Discount'),
+                ...controller.availableDiscounts.map(
+                  (discount) => _buildDiscountOption(
+                    controller,
+                    discount,
+                    '${discount.name} (${discount.displayText})',
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }
 
   Widget _buildDiscountOption(
     CartController controller,
-    double percentage,
+    dynamic discount,
     String label,
   ) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      title: Text(
-        label,
-        style: AppTypography.bodyMedium,
-      ),
-      leading: Radio<double>(
-        value: percentage,
-        groupValue: controller.discountPercentage.value,
+      title: Text(label, style: AppTypography.bodyMedium),
+      leading: Radio<dynamic>(
+        value: discount,
+        groupValue: controller.selectedDiscount.value,
         activeColor: AppColors.brownNormal,
         onChanged: (value) {
-          if (value != null) {
-            controller.setDiscount(value);
-          }
+          controller.setDiscount(value);
           Get.back();
         },
       ),

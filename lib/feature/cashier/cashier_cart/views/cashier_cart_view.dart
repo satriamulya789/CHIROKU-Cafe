@@ -19,9 +19,7 @@ class CartPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Shopping Cart',
-          style: AppTypography.appBarTitle.copyWith(
-            color: AppColors.white,
-          ),
+          style: AppTypography.appBarTitle.copyWith(color: AppColors.white),
         ),
         centerTitle: true,
         elevation: 0,
@@ -42,9 +40,7 @@ class CartPage extends StatelessWidget {
         // Loading state
         if (controller.isLoading.value) {
           return const Center(
-            child: CircularProgressIndicator(
-              color: AppColors.brownNormal,
-            ),
+            child: CircularProgressIndicator(color: AppColors.brownNormal),
           );
         }
 
@@ -70,9 +66,18 @@ class CartPage extends StatelessWidget {
                     final item = controller.cartItems[index];
                     return CartItemWidget(
                       item: item,
-                      onIncrease: () => controller.increaseQuantity(item),
+                      onIncrease: () => controller.increaseQuantity(
+                        item,
+                        maxStock: item.stock,
+                      ),
                       onDecrease: () => controller.decreaseQuantity(item),
                       onRemove: () => controller.removeItem(item.id),
+                      onQuantityChanged: (newQty) => controller.updateQuantity(
+                        item.id,
+                        newQty,
+                        maxStock: item.stock,
+                      ),
+                      maxStock: item.stock, // Use actual stock from database
                     );
                   },
                 ),
@@ -91,14 +96,10 @@ class CartPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Clear Cart?',
-          style: AppTypography.h5.copyWith(
-            color: AppColors.brownDark,
-          ),
+          style: AppTypography.h5.copyWith(color: AppColors.brownDark),
         ),
         content: Text(
           'Are you sure you want to remove all items from your cart?',
@@ -129,9 +130,7 @@ class CartPage extends StatelessWidget {
             ),
             child: Text(
               'Clear',
-              style: AppTypography.button.copyWith(
-                color: AppColors.white,
-              ),
+              style: AppTypography.button.copyWith(color: AppColors.white),
             ),
           ),
         ],

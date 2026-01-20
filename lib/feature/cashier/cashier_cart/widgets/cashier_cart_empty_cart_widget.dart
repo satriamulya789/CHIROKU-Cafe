@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +21,7 @@ class EmptyCartWidget extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             'Your cart is empty',
-            style: AppTypography.h5.copyWith(
-              color: AppColors.greyNormalHover,
-            ),
+            style: AppTypography.h5.copyWith(color: AppColors.greyNormalHover),
           ),
           const SizedBox(height: 8),
           Text(
@@ -34,21 +33,19 @@ class EmptyCartWidget extends StatelessWidget {
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () {
-              Get.toNamed('/cashier/order');
+              Get.toNamed(AppRoutes.cashierOrder);
             },
-            icon: const Icon(Icons.shopping_bag_outlined),
+            icon: const Icon(
+              Icons.shopping_bag_outlined,
+              color: AppColors.white,
+            ),
             label: Text(
               'Browse Menu',
-              style: AppTypography.button.copyWith(
-                color: AppColors.white,
-              ),
+              style: AppTypography.button.copyWith(color: AppColors.white),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.brownNormal,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 12,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
