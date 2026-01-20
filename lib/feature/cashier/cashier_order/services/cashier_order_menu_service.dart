@@ -3,32 +3,43 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class MenuService {
   final _supabase = Supabase.instance.client;
 
-  /// Get all categories
   Future<List<Map<String, dynamic>>> getCategories() async {
     try {
+      print('🔍 Fetching categories from database...');
       final response = await _supabase
           .from('categories')
           .select()
           .order('name', ascending: true);
 
+      print('📦 Categories response: $response');
+      print('📦 Categories count: ${(response as List).length}');
+
       return List<Map<String, dynamic>>.from(response);
-    } catch (e) {
-      throw Exception('Failed to load categories: $e');
+    } catch (e, stackTrace) {
+      print('❌ Error fetching categories: $e');
+      print('Stack trace: $stackTrace');
+      rethrow;
     }
   }
 
-  /// Get all menus with category information
   Future<List<Map<String, dynamic>>> getMenus() async {
     try {
+      print('🔍 Fetching menus from database...');
       final response = await _supabase
           .from('menu')
           .select('*, categories(name)')
           .eq('is_available', true)
           .order('name', ascending: true);
 
+      print('📦 Raw response: $response');
+      print('📦 Response type: ${response.runtimeType}');
+      print('📦 Response length: ${(response as List).length}');
+
       return List<Map<String, dynamic>>.from(response);
-    } catch (e) {
-      throw Exception('Failed to load menus: $e');
+    } catch (e, stackTrace) {
+      print('❌ Error fetching menus: $e');
+      print('Stack trace: $stackTrace');
+      rethrow;
     }
   }
 
@@ -79,4 +90,3 @@ class MenuService {
     }
   }
 }
-

@@ -1,26 +1,18 @@
-import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/models/admin_edit_category_model.dart';
-import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/models/admin_edit_menu_model.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_order/models/cashier_order_category_model.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_order/models/cashier_order_menu_model.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_order/services/cashier_order_menu_service.dart';
 
 class MenuRepository {
   final MenuService _menuService = MenuService();
 
-  Future<List<CategoryModel>> getCategories() async {
-    try {
-      final data = await _menuService.getCategories();
-      return data.map((json) => CategoryModel.fromJson(json)).toList();
-    } catch (e) {
-      throw Exception('Repository: Failed to get categories - $e');
-    }
+  Future<List<CategoryMenuModel>> getCategories() async {
+    final data = await _menuService.getCategories();
+    return data.map((e) => CategoryMenuModel.fromJson(e)).toList();
   }
 
   Future<List<MenuModel>> getMenus() async {
-    try {
-      final data = await _menuService.getMenus();
-      return data.map((json) => MenuModel.fromJson(json)).toList();
-    } catch (e) {
-      throw Exception('Repository: Failed to get menus - $e');
-    }
+    final data = await _menuService.getMenus();
+    return data.map((e) => MenuModel.fromJson(e)).toList();
   }
 
   Future<List<MenuModel>> getMenusByCategory(int categoryId) async {
@@ -57,11 +49,13 @@ class MenuRepository {
     String? categoryName,
   }) {
     return menus.where((menu) {
-      final matchesSearch = searchQuery == null ||
+      final matchesSearch =
+          searchQuery == null ||
           searchQuery.isEmpty ||
           menu.name.toLowerCase().contains(searchQuery.toLowerCase());
 
-      final matchesCategory = categoryName == null ||
+      final matchesCategory =
+          categoryName == null ||
           categoryName == 'all' ||
           (menu.category?.name == categoryName);
 
@@ -69,7 +63,9 @@ class MenuRepository {
     }).toList();
   }
 
- List<MenuModel> getAvailableMenus(List<MenuModel> menus) {
-  return menus.where((menu) => menu.isAvailable == true && (menu.stock > 0)).toList();
-}
+  List<MenuModel> getAvailableMenus(List<MenuModel> menus) {
+    return menus
+        .where((menu) => menu.isAvailable == true && (menu.stock > 0))
+        .toList();
+  }
 }

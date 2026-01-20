@@ -1,10 +1,14 @@
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_setting/models/cashier_setting_models.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_setting/services/cashier_setting_service.dart';
+import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 
 class CashierSettingController extends GetxController {
   final CashierSettingService _service = CashierSettingService();
+  final _customSnackBar = CustomSnackbar();
 
   final Rx<CashierSettingModel?> userProfile = Rx<CashierSettingModel?>(null);
   final RxBool isLoading = false.obs;
@@ -44,31 +48,13 @@ class CashierSettingController extends GetxController {
     await loadUserProfile();
   }
 
-  Future<void> logout() async {
+  // SignOUt
+  Future<void> signOut() async {
     try {
-      final confirmed = await Get.dialog<bool>(
-        Get.defaultDialog(
-          title: 'Logout',
-          middleText: 'Are you sure you want to logout?',
-          textCancel: 'Cancel',
-          textConfirm: 'Logout',
-          confirmTextColor: Get.theme.colorScheme.onError,
-          buttonColor: Get.theme.colorScheme.error,
-          onCancel: () => Get.back(result: false),
-          onConfirm: () => Get.back(result: true),
-        ) as Widget,
-      );
-
-      if (confirmed == true) {
-        await _service.signOut();
-        Get.offAllNamed('/login');
-      }
+      await _service.signOut();
+      Get.offAllNamed(AppRoutes.signIn);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal logout: $e',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      _customSnackBar.showErrorSnackbar(AuthErrorModel.signoutError().message);
     }
   }
 

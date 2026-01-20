@@ -1,31 +1,19 @@
-class CategoryModel {
+class CategoryMenuModel {
   final int id;
   final String name;
-  final DateTime createdAt;
-  final DateTime updatedAt;
 
-  CategoryModel({
-    required this.id,
-    required this.name,
-    required this.createdAt,
-    required this.updatedAt,
-  });
+  CategoryMenuModel({required this.id, required this.name});
 
-  factory CategoryModel.fromJson(Map<String, dynamic> json) {
-    return CategoryModel(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: DateTime.parse(json['updated_at'] as String),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
-    };
+  factory CategoryMenuModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return CategoryMenuModel(
+        id: (json['id'] as num?)?.toInt() ?? 0,
+        name: json['name'] as String? ?? '',
+      );
+    } catch (e) {
+      print('❌ Error parsing CategoryMenuModel: $e');
+      print('📦 JSON data: $json');
+      rethrow;
+    }
   }
 }

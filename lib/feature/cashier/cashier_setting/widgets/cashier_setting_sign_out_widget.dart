@@ -1,10 +1,11 @@
-import 'package:chiroku_cafe/feature/admin/admin_setting/controllers/admin_setting_controller.dart';
+
+import 'package:chiroku_cafe/feature/cashier/cashier_setting/controllers/cashier_setting_controller.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SignOutDialogWidget extends GetView<AdminSettingController> {
+class SignOutDialogWidget extends GetView<CashierSettingController> {
   const SignOutDialogWidget({super.key});
 
   @override
