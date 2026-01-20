@@ -47,9 +47,7 @@ class CashierSettingView extends GetView<CashierSettingController> {
                   title: 'Reset Password',
                   subtitle: 'Request password reset link',
                   onTap: () {
-                    _snackBar.showInfoSnackbar(
-                      'Password reset feature coming soon',
-                    );
+                    Get.toNamed(AppRoutes.forgotPassword);
                   },
                   iconColor: AppColors.orangeNormal,
                 ),

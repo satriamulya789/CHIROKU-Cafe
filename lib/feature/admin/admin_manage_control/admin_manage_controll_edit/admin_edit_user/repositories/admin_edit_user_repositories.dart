@@ -11,8 +11,10 @@ class UserRepositories {
           .from(ApiConstant.usersTable)
           .select()
           .order('created_at', ascending: false);
-      
-      return (response as List).map((json) => UserModel.fromJson(json)).toList();
+
+      return (response as List)
+          .map((json) => UserModel.fromJson(json))
+          .toList();
     } catch (e) {
       throw Exception('Failed to load users: $e');
     }
@@ -25,7 +27,7 @@ class UserRepositories {
           .select()
           .eq('id', id)
           .single();
-      
+
       return UserModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to load user: $e');
@@ -39,22 +41,26 @@ class UserRepositories {
     required String role,
   }) async {
     try {
+      // Use a temporary client to create user to avoid signing out the current admin
+      // This client will have its own auth state and won't affect the global Supabase.instance
+      final tempClient = SupabaseClient(
+        ApiConstant.supabaseUrl,
+        ApiConstant.supabaseAnonKey,
+      );
+
       // Create user in auth
-      final authResponse = await _supabase.auth.signUp(
+      final authResponse = await tempClient.auth.signUp(
         email: email,
         password: password,
-        data: {
-          'full_name': fullName,
-          'role': role,
-        },
+        data: {'full_name': fullName, 'role': role},
       );
 
       if (authResponse.user == null) {
         throw Exception('Failed to create user account');
       }
 
-      // Update user profile in users table
-      await _supabase.from(ApiConstant.usersTable).upsert({
+      // Update user profile in users table using the temp client (authenticated as new user)
+      await tempClient.from(ApiConstant.usersTable).upsert({
         'id': authResponse.user!.id,
         'full_name': fullName,
         'email': email,
@@ -62,6 +68,9 @@ class UserRepositories {
         'created_at': DateTime.now().toIso8601String(),
         'updated_at': DateTime.now().toIso8601String(),
       });
+
+      // Attempt to dispose if possible to clean up resources
+      // tempClient.dispose();
     } catch (e) {
       throw Exception('Failed to create user: $e');
     }
@@ -70,10 +79,7 @@ class UserRepositories {
   Future<void> updateUser(String id, Map<String, dynamic> data) async {
     try {
       data['updated_at'] = DateTime.now().toIso8601String();
-      await _supabase
-          .from(ApiConstant.usersTable)
-          .update(data)
-          .eq('id', id);
+      await _supabase.from(ApiConstant.usersTable).update(data).eq('id', id);
     } catch (e) {
       throw Exception('Failed to update user: $e');
     }
@@ -82,11 +88,8 @@ class UserRepositories {
   Future<void> deleteUser(String id) async {
     try {
       // Delete from users table
-      await _supabase
-          .from(ApiConstant.usersTable)
-          .delete()
-          .eq('id', id);
-      
+      await _supabase.from(ApiConstant.usersTable).delete().eq('id', id);
+
       // Note: Deleting from auth.users requires admin API
       // You might need to use Supabase Admin API for this
     } catch (e) {

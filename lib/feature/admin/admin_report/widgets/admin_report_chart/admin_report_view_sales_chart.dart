@@ -1,22 +1,22 @@
 import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_stats_model.dart';
+import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_chart/admin_report_bar_chart_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_chart/admin_report_empty_chart_widget.dart';
 import 'package:flutter/material.dart';
 
 class ReportSalesChartSectionWidget extends StatefulWidget {
   final List<ReportProductStat> data;
 
-  const ReportSalesChartSectionWidget({
-    super.key,
-    required this.data,
-  });
+  const ReportSalesChartSectionWidget({super.key, required this.data});
 
   @override
-  State<ReportSalesChartSectionWidget> createState() => _ReportSalesChartSectionWidgetState();
+  State<ReportSalesChartSectionWidget> createState() =>
+      _ReportSalesChartSectionWidgetState();
 }
 
-class _ReportSalesChartSectionWidgetState extends State<ReportSalesChartSectionWidget> {
+class _ReportSalesChartSectionWidgetState
+    extends State<ReportSalesChartSectionWidget> {
   String chartType = 'bar';
 
   @override
@@ -58,9 +58,7 @@ class _ReportSalesChartSectionWidgetState extends State<ReportSalesChartSectionW
           SizedBox(
             height: 220,
             child: hasData
-                ? (chartType == 'bar'
-                    ? _buildBarChart()
-                    : _buildLineChart())
+                ? (chartType == 'bar' ? _buildBarChart() : _buildLineChart())
                 : _buildEmptyChart(),
           ),
         ],
@@ -117,51 +115,7 @@ class _ReportSalesChartSectionWidgetState extends State<ReportSalesChartSectionW
   }
 
   Widget _buildBarChart() {
-    return BarChart(
-      BarChartData(
-        alignment: BarChartAlignment.spaceAround,
-        barGroups: widget.data.take(7).toList().asMap().entries.map((entry) {
-          final i = entry.key;
-          final stat = entry.value;
-          return BarChartGroupData(
-            x: i,
-            barRods: [
-              BarChartRodData(
-                toY: stat.totalQty.toDouble(),
-                color: AppColors.brownNormal,
-                width: 18,
-                borderRadius: BorderRadius.circular(6),
-              ),
-            ],
-            showingTooltipIndicators: [0],
-          );
-        }).toList(),
-        titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: true, reservedSize: 28),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                final idx = value.toInt();
-                if (idx < widget.data.length) {
-                  return Text(
-                    widget.data[idx].name.length > 8
-                        ? widget.data[idx].name.substring(0, 8) + '...'
-                        : widget.data[idx].name,
-                    style: AppTypography.bodySmall,
-                  );
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-          ),
-        ),
-        borderData: FlBorderData(show: false),
-        gridData: FlGridData(show: false),
-      ),
-    );
+    return ReportAdminBarChart(data: widget.data);
   }
 
   Widget _buildLineChart() {
@@ -175,11 +129,6 @@ class _ReportSalesChartSectionWidgetState extends State<ReportSalesChartSectionW
   }
 
   Widget _buildEmptyChart() {
-    return Center(
-      child: Text(
-        'No product sales data yet',
-        style: AppTypography.bodyMedium.copyWith(color: Colors.grey),
-      ),
-    );
+    return ReportEmptyChartWidget(chartType: chartType);
   }
 }

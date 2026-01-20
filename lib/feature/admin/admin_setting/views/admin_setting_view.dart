@@ -1,3 +1,4 @@
+import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/constant/assets_constant.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/controllers/admin_setting_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_setting/widgets/admin_setting_account_info_widget.dart';
@@ -47,9 +48,7 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   title: 'Reset Password',
                   subtitle: 'Request password reset link',
                   onTap: () {
-                    _snackBar.showInfoSnackbar(
-                      'Password reset feature coming soon',
-                    );
+                    Get.toNamed(AppRoutes.forgotPassword);
                   },
                   iconColor: AppColors.alertNormal,
                 ),

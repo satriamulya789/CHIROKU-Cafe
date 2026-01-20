@@ -24,10 +24,7 @@ class TransactionDateFilterSection extends StatelessWidget {
       children: [
         Text(
           'Transaction Date Filter',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -93,42 +90,10 @@ class TransactionDateFilterSection extends StatelessWidget {
   }
 }
 
-class DateRangeButtonWidget extends StatelessWidget {
-  final String label;
-  final DateTime? date;
-  final VoidCallback onTap;
-
-  const DateRangeButtonWidget({
-    super.key,
-    required this.label,
-    required this.date,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      icon: const Icon(Icons.date_range),
-      label: Text(
-        date == null ? label : '$label: ${_formatDate(date!)}',
-        style: AppTypography.bodyMedium,
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.brownNormal,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      onPressed: onTap,
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-  }
-}
-
-Future<DateTimeRange?> showDateRangePopup(BuildContext context, DateTimeRange? initialRange) async {
+Future<DateTimeRange?> showDateRangePopup(
+  BuildContext context,
+  DateTimeRange? initialRange,
+) async {
   DateTime? start = initialRange?.start;
   DateTime? end = initialRange?.end;
 
@@ -137,11 +102,29 @@ Future<DateTimeRange?> showDateRangePopup(BuildContext context, DateTimeRange? i
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Select Date Range'),
+          backgroundColor: AppColors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          contentPadding: const EdgeInsets.only(
+            top: 24,
+            left: 24,
+            right: 24,
+            bottom: 8,
+          ),
+          title: Text(
+            'Select Date',
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.brownNormal,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              DateRangeButtonWidget(
+              _buildDateSelector(
+                context,
                 label: 'Start Date',
                 date: start,
                 onTap: () async {
@@ -158,6 +141,12 @@ Future<DateTimeRange?> showDateRangePopup(BuildContext context, DateTimeRange? i
                           surface: Colors.white,
                           onSurface: AppColors.brownDarker,
                         ),
+                        textButtonTheme: TextButtonThemeData(
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                                AppColors.brownNormal, // Button text color
+                          ),
+                        ),
                       ),
                       child: child!,
                     ),
@@ -170,8 +159,9 @@ Future<DateTimeRange?> showDateRangePopup(BuildContext context, DateTimeRange? i
                   }
                 },
               ),
-              const SizedBox(height: 12),
-              DateRangeButtonWidget(
+              const Divider(height: 1),
+              _buildDateSelector(
+                context,
                 label: 'End Date',
                 date: end,
                 onTap: () async {
@@ -187,6 +177,12 @@ Future<DateTimeRange?> showDateRangePopup(BuildContext context, DateTimeRange? i
                           onPrimary: Colors.white,
                           surface: Colors.white,
                           onSurface: AppColors.brownDarker,
+                        ),
+                        textButtonTheme: TextButtonThemeData(
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                                AppColors.brownNormal, // Button text color
+                          ),
                         ),
                       ),
                       child: child!,
@@ -205,20 +201,73 @@ Future<DateTimeRange?> showDateRangePopup(BuildContext context, DateTimeRange? i
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.brownNormal,
+              child: Text(
+                'Cancel',
+                style: AppTypography.button.copyWith(
+                  color: AppColors.brownNormal,
+                ),
               ),
+            ),
+            TextButton(
               onPressed: (start != null && end != null)
-                  ? () => Navigator.pop(context, DateTimeRange(start: start!, end: end!))
+                  ? () => Navigator.pop(
+                      context,
+                      DateTimeRange(start: start!, end: end!),
+                    )
                   : null,
-              child: const Text('OK'),
+              child: Text(
+                'OK',
+                style: AppTypography.button.copyWith(
+                  color: AppColors.brownNormal,
+                ),
+              ),
             ),
           ],
         ),
       );
     },
+  );
+}
+
+Widget _buildDateSelector(
+  BuildContext context, {
+  required String label,
+  required DateTime? date,
+  required VoidCallback onTap,
+}) {
+  return InkWell(
+    onTap: onTap,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.brownNormal.withOpacity(0.6),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                date != null
+                    // Format: Mon, Jan 19
+                    ? DateFormat('EEE, MMM d').format(date)
+                    : 'Select Date',
+                style: AppTypography.h4.copyWith(
+                  color: AppColors.brownDarker,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 32,
+                ),
+              ),
+            ],
+          ),
+          Icon(Icons.edit, size: 20, color: AppColors.brownNormal),
+        ],
+      ),
+    ),
   );
 }
