@@ -22,56 +22,68 @@ class SplashView extends GetView<SplashController> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppColors.white, AppColors.brownLight.withOpacity(0.3)],
+            colors: [AppColors.white, AppColors.brownLight.withOpacity(0.2)],
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            const Spacer(flex: 2),
-            // Logo with hero animation potential or just clean spacing
-            Hero(
-              tag: 'app_logo',
-              child: Image.asset(AssetsConstant.logo, width: 180, height: 180),
-            ),
-            const SizedBox(height: 32),
-            // Big Title
-            Text(
-              'CHIROKU CAFE',
-              style: AppTypography.h1.copyWith(
-                color: AppColors.brownDark,
-                fontSize: 32,
-                letterSpacing: 4,
-                fontWeight: FontWeight.w800,
+            // Main Content - Perfectly Centered
+            Align(
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Hero(
+                    tag: 'app_logo',
+                    child: Image.asset(
+                      AssetsConstant.logo,
+                      width: 180,
+                      height: 180,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'CHIROKU CAFE',
+                    style: AppTypography.h1.copyWith(
+                      color: AppColors.brownDark,
+                      fontSize: 32,
+                      letterSpacing: 4,
+                      fontWeight: FontWeight.w800,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'PREMIUM COFFEE & DELIGHTS',
+                    style: AppTypography.overlineLarge.copyWith(
+                      color: AppColors.brownNormal,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            // Tagline
-            Text(
-              'PREMIUM COFFEE & DELIGHTS',
-              style: AppTypography.overlineLarge.copyWith(
-                color: AppColors.brownNormal,
-                fontWeight: FontWeight.w600,
+
+            // App Version at the very bottom
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.bottom(40),
+                child: Obx(
+                  () => Text(
+                    'Version ${controller.appVersion.value}',
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.greyNormal,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ),
             ),
-            const Spacer(flex: 3),
-            // Premium Loading Indicator
-            const SizedBox(
-              width: 40,
-              height: 40,
-              child: CircularProgressIndicator(
-                color: AppColors.brownNormal,
-                strokeWidth: 2,
-              ),
-            ),
-            const SizedBox(height: 48),
-            Text(
-              'v1.0.0',
-              style: AppTypography.captionSmall.copyWith(
-                color: AppColors.greyNormal,
-              ),
-            ),
-            const SizedBox(height: 24),
           ],
         ),
       ),

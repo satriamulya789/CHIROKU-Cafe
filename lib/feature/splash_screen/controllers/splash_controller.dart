@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 class SplashController extends GetxController {
   final SplashRepository _repository;
+  final RxString appVersion = '1.1.1'.obs;
 
   SplashController(this._repository);
 
