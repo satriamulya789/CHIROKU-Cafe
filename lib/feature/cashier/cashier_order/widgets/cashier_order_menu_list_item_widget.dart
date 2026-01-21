@@ -8,11 +8,7 @@ class CashierMenuListItem extends StatelessWidget {
   final MenuModel menu;
   final VoidCallback? onTap;
 
-  const CashierMenuListItem({
-    super.key,
-    required this.menu,
-    this.onTap,
-  });
+  const CashierMenuListItem({super.key, required this.menu, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +46,10 @@ class CashierMenuListItem extends StatelessWidget {
                       width: 60,
                       height: 60,
                       color: AppColors.brownLight,
-                      child: const Icon(Icons.fastfood, color: AppColors.brownDarkActive),
+                      child: const Icon(
+                        Icons.fastfood,
+                        color: AppColors.brownDarkActive,
+                      ),
                     );
                   },
                 )
@@ -58,14 +57,15 @@ class CashierMenuListItem extends StatelessWidget {
                   width: 60,
                   height: 60,
                   color: AppColors.brownLight,
-                  child: const Icon(Icons.fastfood, color: AppColors.brownDarkActive),
+                  child: const Icon(
+                    Icons.fastfood,
+                    color: AppColors.brownDarkActive,
+                  ),
                 ),
         ),
         title: Text(
           menu.name,
-          style: AppTypography.h6.copyWith(
-            color: AppColors.brownDark,
-          ),
+          style: AppTypography.h6.copyWith(color: AppColors.brownDark),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,18 +82,23 @@ class CashierMenuListItem extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
-                    color: menu.isAvailable 
-                        ? AppColors.successLight 
+                    color: (menu.isAvailable && menu.stock > 0)
+                        ? AppColors.successLight
                         : AppColors.alertLight,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    menu.isAvailable ? 'Available' : 'Not Available',
+                    (menu.isAvailable && menu.stock > 0)
+                        ? 'Available'
+                        : 'Not Available',
                     style: AppTypography.label.copyWith(
-                      color: menu.isAvailable 
-                          ? AppColors.successNormal 
+                      color: (menu.isAvailable && menu.stock > 0)
+                          ? AppColors.successNormal
                           : AppColors.alertNormal,
                       fontWeight: FontWeight.w600,
                     ),

@@ -15,6 +15,7 @@ class ReceiptModel {
   final double? cashReceived;
   final double? changeAmount;
   final String? note;
+  final String status;
 
   ReceiptModel({
     required this.orderId,
@@ -33,6 +34,7 @@ class ReceiptModel {
     this.cashReceived,
     this.changeAmount,
     this.note,
+    required this.status,
   });
 
   factory ReceiptModel.fromOrderData(Map<String, dynamic> orderData) {
@@ -45,7 +47,7 @@ class ReceiptModel {
           DateTime.tryParse(orderData['created_at'] ?? '') ?? DateTime.now(),
       customerName: orderData['customer_name'],
       tableName: orderData['tables']?['table_name'],
-      cashierName: orderData['cashier_name'] ?? 'Kasir',
+      cashierName: orderData['cashier_name'] ?? 'Cashier',
       items: orderItems.map((item) => ReceiptItemModel.fromJson(item)).toList(),
       subtotal: (orderData['subtotal'] as num?)?.toDouble() ?? 0.0,
       serviceFee: (orderData['service_fee'] as num?)?.toDouble() ?? 0.0,
@@ -56,6 +58,7 @@ class ReceiptModel {
       cashReceived: (orderData['cash_received'] as num?)?.toDouble(),
       changeAmount: (orderData['change_amount'] as num?)?.toDouble(),
       note: orderData['note'],
+      status: orderData['order_status'] ?? 'pending',
     );
   }
 }

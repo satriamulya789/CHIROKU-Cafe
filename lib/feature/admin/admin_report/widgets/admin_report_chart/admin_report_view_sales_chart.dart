@@ -1,3 +1,5 @@
+import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_hourly_sales.dart';
+import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_chart_widgets/admin_home_line_chart_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_stats_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_chart/admin_report_bar_chart_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
@@ -6,9 +8,14 @@ import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_cha
 import 'package:flutter/material.dart';
 
 class ReportSalesChartSectionWidget extends StatefulWidget {
-  final List<ReportProductStat> data;
+  final List<ReportProductStat> productData;
+  final List<HourlySalesData> timeData;
 
-  const ReportSalesChartSectionWidget({super.key, required this.data});
+  const ReportSalesChartSectionWidget({
+    super.key,
+    required this.productData,
+    required this.timeData,
+  });
 
   @override
   State<ReportSalesChartSectionWidget> createState() =>
@@ -21,7 +28,7 @@ class _ReportSalesChartSectionWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final hasData = widget.data.isNotEmpty;
+    final hasData = widget.productData.isNotEmpty || widget.timeData.isNotEmpty;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -115,17 +122,14 @@ class _ReportSalesChartSectionWidgetState
   }
 
   Widget _buildBarChart() {
-    return ReportAdminBarChart(data: widget.data);
+    return ReportAdminBarChart(data: widget.productData);
   }
 
   Widget _buildLineChart() {
-    // Dummy line chart for product stats (you can customize this)
-    return Center(
-      child: Text(
-        'Line chart not implemented for product stats.',
-        style: AppTypography.bodySmall.copyWith(color: Colors.grey),
-      ),
-    );
+    if (widget.timeData.isEmpty) {
+      return _buildEmptyChart();
+    }
+    return LineChartWidget(data: widget.timeData);
   }
 
   Widget _buildEmptyChart() {

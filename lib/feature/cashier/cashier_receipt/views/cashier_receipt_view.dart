@@ -14,7 +14,7 @@ class ReceiptView extends GetView<ReceiptController> {
       backgroundColor: AppColors.greyLight,
       appBar: AppBar(
         title: Text(
-          'Struk Pembayaran',
+          'Payment Receipt',
           style: AppTypography.appBarTitle.copyWith(color: AppColors.white),
         ),
         backgroundColor: AppColors.brownDark,
@@ -39,7 +39,7 @@ class ReceiptView extends GetView<ReceiptController> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Data struk tidak tersedia',
+                  'Receipt data not available',
                   style: AppTypography.bodyLarge.copyWith(
                     color: AppColors.greyNormal,
                   ),
@@ -81,13 +81,13 @@ class ReceiptView extends GetView<ReceiptController> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Jl. Contoh No. 123, Kota',
+                          'Example St. No. 123, City',
                           style: AppTypography.bodyMedium.copyWith(
                             color: AppColors.greyNormal,
                           ),
                         ),
                         Text(
-                          'Telp: (021) 1234-5678',
+                          'Phone: (021) 1234-5678',
                           style: AppTypography.bodyMedium.copyWith(
                             color: AppColors.greyNormal,
                           ),
@@ -102,9 +102,9 @@ class ReceiptView extends GetView<ReceiptController> {
                         const SizedBox(height: 16),
 
                         // Order Info
-                        _buildInfoRow('No. Order:', receipt.orderNumber),
+                        _buildInfoRow('Order No:', receipt.orderNumber),
                         _buildInfoRow(
-                          'Tanggal:',
+                          'Date:',
                           DateFormat(
                             'dd/MM/yyyy HH:mm',
                           ).format(receipt.createdAt),
@@ -113,8 +113,8 @@ class ReceiptView extends GetView<ReceiptController> {
                             receipt.customerName!.isNotEmpty)
                           _buildInfoRow('Customer:', receipt.customerName!),
                         if (receipt.tableName != null)
-                          _buildInfoRow('Meja:', receipt.tableName!),
-                        _buildInfoRow('Kasir:', receipt.cashierName),
+                          _buildInfoRow('Table:', receipt.tableName!),
+                        _buildInfoRow('Cashier:', receipt.cashierName),
 
                         const SizedBox(height: 16),
                         Container(
@@ -188,11 +188,8 @@ class ReceiptView extends GetView<ReceiptController> {
                             color: AppColors.greyNormal.withOpacity(0.3),
                           ),
                           const SizedBox(height: 12),
-                          _buildTotalRow('Tunai:', receipt.cashReceived!),
-                          _buildTotalRow(
-                            'Kembalian:',
-                            receipt.changeAmount ?? 0,
-                          ),
+                          _buildTotalRow('Cash:', receipt.cashReceived!),
+                          _buildTotalRow('Change:', receipt.changeAmount ?? 0),
                         ],
 
                         const SizedBox(height: 24),
@@ -205,7 +202,7 @@ class ReceiptView extends GetView<ReceiptController> {
 
                         // Footer
                         Text(
-                          'Terima kasih atas kunjungan Anda!',
+                          'Thank you for your visit!',
                           style: AppTypography.bodyLarge.copyWith(
                             fontWeight: FontWeight.w600,
                             color: AppColors.brownDark,
@@ -214,7 +211,7 @@ class ReceiptView extends GetView<ReceiptController> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Selamat menikmati',
+                          'Enjoy your meal',
                           style: AppTypography.bodyMedium.copyWith(
                             color: AppColors.greyNormal,
                           ),
@@ -277,10 +274,10 @@ class ReceiptView extends GetView<ReceiptController> {
                             : const Icon(Icons.print),
                         label: Text(
                           controller.isPrinting.value
-                              ? 'Mencetak...'
+                              ? 'Printing...'
                               : controller.isSaving.value
-                              ? 'Menyimpan...'
-                              : 'Cetak Struk',
+                              ? 'Saving...'
+                              : 'Print Receipt',
                           style: AppTypography.button.copyWith(
                             color: AppColors.white,
                           ),
@@ -322,8 +319,8 @@ class ReceiptView extends GetView<ReceiptController> {
                             : const Icon(Icons.check_circle),
                         label: Text(
                           controller.isProcessing.value
-                              ? 'Memproses...'
-                              : 'Selesai',
+                              ? 'Processing...'
+                              : 'Done',
                           style: AppTypography.button.copyWith(
                             color: AppColors.white,
                           ),
@@ -452,7 +449,7 @@ class ReceiptView extends GetView<ReceiptController> {
           children: [
             const Icon(Icons.print, color: AppColors.brownDark),
             const SizedBox(width: 12),
-            Text('Pilih Opsi Cetak', style: AppTypography.h5),
+            Text('Select Print Option', style: AppTypography.h5),
           ],
         ),
         content: Column(
@@ -460,9 +457,9 @@ class ReceiptView extends GetView<ReceiptController> {
           children: [
             ListTile(
               leading: const Icon(Icons.print, color: AppColors.brownNormal),
-              title: Text('Cetak Struk', style: AppTypography.bodyLarge),
+              title: Text('Print Receipt', style: AppTypography.bodyLarge),
               subtitle: Text(
-                'Cetak ke printer',
+                'Print to printer',
                 style: AppTypography.bodySmall.copyWith(
                   color: AppColors.greyNormal,
                 ),
@@ -475,9 +472,9 @@ class ReceiptView extends GetView<ReceiptController> {
                 Icons.picture_as_pdf,
                 color: AppColors.brownNormal,
               ),
-              title: Text('Simpan PDF', style: AppTypography.bodyLarge),
+              title: Text('Save PDF', style: AppTypography.bodyLarge),
               subtitle: Text(
-                'Simpan sebagai file PDF',
+                'Save as PDF file',
                 style: AppTypography.bodySmall.copyWith(
                   color: AppColors.greyNormal,
                 ),
@@ -490,7 +487,7 @@ class ReceiptView extends GetView<ReceiptController> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Batal',
+              'Cancel',
               style: AppTypography.button.copyWith(color: AppColors.greyNormal),
             ),
           ),

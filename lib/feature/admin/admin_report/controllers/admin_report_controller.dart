@@ -1,5 +1,6 @@
 // lib/feature/admin/admin_report/controllers/admin_report_controller.dart
 
+import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_hourly_sales.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_cashier_stats_mode.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_stats_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_transaction_summary_model.dart';
@@ -19,6 +20,7 @@ class ReportAdminController extends GetxController {
   var productStats = <ReportProductStat>[].obs;
   var cashierStats = <ReportCashierStat>[].obs;
   var recentTransactions = <ReportTransaction>[].obs;
+  var hourlySales = <HourlySalesData>[].obs;
 
   DateTimeRange? dateRange;
   String? selectedCashierId;
@@ -74,6 +76,9 @@ class ReportAdminController extends GetxController {
 
       // Product stats
       await _loadProductStats(items);
+
+      // Hourly/Daily sales for chart
+      await _loadTimeSalesData(orders);
 
       // Cashier performance (only if no cashier filter)
       if (selectedCashierId == null) {
@@ -179,6 +184,56 @@ class ReportAdminController extends GetxController {
       cashierStats.value = sorted;
     } catch (e) {
       print('Error loading cashier performance: $e');
+    }
+  }
+
+  Future<void> _loadTimeSalesData(List<Map<String, dynamic>> orders) async {
+    try {
+      final isSingleDay =
+          startDate.year == endDate.year &&
+          startDate.month == endDate.month &&
+          startDate.day == endDate.day;
+
+      Map<String, HourlySalesData> groupedMap = {};
+
+      for (var order in orders) {
+        final createdAt = DateTime.parse(order['created_at']);
+        final total = (order['total'] as num?)?.toDouble() ?? 0.0;
+
+        String key;
+        if (isSingleDay) {
+          key = '${createdAt.hour.toString().padLeft(2, '0')}:00';
+        } else {
+          key = '${createdAt.day}/${createdAt.month}';
+        }
+
+        if (groupedMap.containsKey(key)) {
+          final existing = groupedMap[key]!;
+          groupedMap[key] = HourlySalesData(
+            hour: key,
+            sales: existing.sales + total.toInt(),
+            orderCount: existing.orderCount + 1,
+          );
+        } else {
+          groupedMap[key] = HourlySalesData(
+            hour: key,
+            sales: total.toInt(),
+            orderCount: 1,
+          );
+        }
+      }
+
+      final sorted = groupedMap.values.toList();
+      if (isSingleDay) {
+        sorted.sort((a, b) => a.hour.compareTo(b.hour));
+      } else {
+        // Simple sort for date strings might be tricky, but works for DD/MM if years are same
+        sorted.sort((a, b) => a.hour.compareTo(b.hour));
+      }
+
+      hourlySales.value = sorted;
+    } catch (e) {
+      print('Error loading time sales data: $e');
     }
   }
 

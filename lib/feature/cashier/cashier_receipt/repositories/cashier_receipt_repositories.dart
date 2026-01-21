@@ -23,11 +23,11 @@ class ReceiptRepository {
             ),
             pw.SizedBox(height: 4),
             pw.Text(
-              'Jl. Contoh No. 123, Kota',
+              'Example St. No. 123, City',
               style: const pw.TextStyle(fontSize: 10),
             ),
             pw.Text(
-              'Telp: (021) 1234-5678',
+              'Phone: (021) 1234-5678',
               style: const pw.TextStyle(fontSize: 10),
             ),
             pw.SizedBox(height: 12),
@@ -35,17 +35,17 @@ class ReceiptRepository {
             pw.SizedBox(height: 8),
 
             // Order Info
-            _buildInfoRow('No. Order:', receipt.orderNumber),
+            _buildInfoRow('Order No:', receipt.orderNumber),
             _buildInfoRow(
-              'Tanggal:',
+              'Date:',
               DateFormat('dd/MM/yyyy HH:mm').format(receipt.createdAt),
             ),
             if (receipt.customerName != null &&
                 receipt.customerName!.isNotEmpty)
               _buildInfoRow('Customer:', receipt.customerName!),
             if (receipt.tableName != null)
-              _buildInfoRow('Meja:', receipt.tableName!),
-            _buildInfoRow('Kasir:', receipt.cashierName),
+              _buildInfoRow('Table:', receipt.tableName!),
+            _buildInfoRow('Cashier:', receipt.cashierName),
 
             pw.SizedBox(height: 8),
             pw.Divider(),
@@ -159,8 +159,8 @@ class ReceiptRepository {
               pw.SizedBox(height: 8),
               pw.Divider(),
               pw.SizedBox(height: 4),
-              _buildTotalRow('Tunai:', receipt.cashReceived!),
-              _buildTotalRow('Kembalian:', receipt.changeAmount ?? 0),
+              _buildTotalRow('Cash:', receipt.cashReceived!),
+              _buildTotalRow('Change:', receipt.changeAmount ?? 0),
             ],
 
             pw.SizedBox(height: 12),
@@ -169,13 +169,13 @@ class ReceiptRepository {
 
             // Footer
             pw.Text(
-              'Terima kasih atas kunjungan Anda!',
+              'Thank you for your visit!',
               style: const pw.TextStyle(fontSize: 10),
               textAlign: pw.TextAlign.center,
             ),
             pw.SizedBox(height: 4),
             pw.Text(
-              'Selamat menikmati',
+              'Enjoy your meal',
               style: const pw.TextStyle(fontSize: 10),
               textAlign: pw.TextAlign.center,
             ),

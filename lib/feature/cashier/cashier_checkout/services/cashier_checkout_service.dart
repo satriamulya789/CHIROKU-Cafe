@@ -79,6 +79,7 @@ class CheckoutService {
     double? cashReceived,
     double? changeAmount,
     String? note,
+    bool isPaid = true,
   }) async {
     try {
       // 0. Validate stock availability first
@@ -100,25 +101,54 @@ class CheckoutService {
 
       final orderId = order['id'] as int;
 
-      // 2. Create payment
-      await _repository.createPayment(
-        orderId: orderId,
-        paymentMethod: paymentMethod,
-        amount: total,
-        cashReceived: cashReceived,
-        changeAmount: changeAmount,
-      );
+      // 2. Deduct stock manually for all items
+      // We do this manually here so that 'pending' orders also reduce stock.
+      // NOTE: If you have a database trigger on 'paid' status, you might want to
+      // disable it to avoid double-deduction, or modify it to exclude already deducted items.
+      for (final item in cartItems) {
+        await _stockService.deductStock(item.menuId, item.quantity);
+      }
 
-      // 3. Update order status to 'paid' (this will trigger stock update via database trigger)
-      await _repository.updateOrderStatus(orderId, 'paid');
+      if (isPaid) {
+        // 3. Create payment
+        await _repository.createPayment(
+          orderId: orderId,
+          paymentMethod: paymentMethod,
+          amount: total,
+          cashReceived: cashReceived,
+          changeAmount: changeAmount,
+        );
+
+        // 4. Update order status to 'paid'
+        await _repository.updateOrderStatus(orderId, 'paid');
+      }
 
       // 4. Reserve table if selected
       if (tableId != null) {
         await reserveTable(tableId);
       }
 
+      // 5. Fetch full order details with joined items for receipt
+      final fullOrder = await _repository.getOrderDetails(orderId);
+
+      if (fullOrder == null) {
+        throw CashierErrorModel(
+          message: 'Failed to fetch order details for receipt',
+          code: 'fetch_order_failed',
+          statusCode: 500,
+        );
+      }
+
       log('✅ Checkout processed successfully for Order #$orderId');
-      return order;
+
+      // Ensure the correct status is reflected in the response
+      if (isPaid) {
+        fullOrder['order_status'] = 'paid';
+      } else {
+        fullOrder['order_status'] = 'pending';
+      }
+
+      return fullOrder;
     } catch (e) {
       log('❌ Error processing checkout: $e');
       rethrow;

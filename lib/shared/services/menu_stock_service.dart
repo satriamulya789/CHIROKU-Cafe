@@ -68,18 +68,34 @@ class MenuStockService {
   /// Update menu stock manually (for admin)
   Future<void> updateMenuStock(int menuId, int newStock) async {
     try {
+      final safeStock = newStock < 0 ? 0 : newStock;
       await _supabase
           .from('menu')
           .update({
-            'stock': newStock,
-            'is_available': newStock > 0,
+            'stock': safeStock,
+            'is_available': safeStock > 0,
             'updated_at': DateTime.now().toIso8601String(),
           })
           .eq('id', menuId);
 
-      log('✅ Menu stock updated: ID=$menuId, Stock=$newStock');
+      log('✅ Menu stock updated: ID=$menuId, Stock=$safeStock');
     } catch (e) {
       log('❌ Error updating menu stock: $e');
+      rethrow;
+    }
+  }
+
+  /// Deduct menu stock (for orders)
+  Future<void> deductStock(int menuId, int quantity) async {
+    try {
+      final menu = await checkMenuStock(menuId);
+      final currentStock = menu['stock'] as int;
+      final newStock = currentStock - quantity;
+
+      await updateMenuStock(menuId, newStock);
+      log('✅ Stock deducted: ID=$menuId, -$quantity = $newStock');
+    } catch (e) {
+      log('❌ Error deducting stock: $e');
       rethrow;
     }
   }

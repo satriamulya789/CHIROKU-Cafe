@@ -52,7 +52,10 @@ class MenuListItem extends StatelessWidget {
                       width: 60,
                       height: 60,
                       color: AppColors.brownLight,
-                      child: const Icon(Icons.fastfood, color: AppColors.brownDarkActive),
+                      child: const Icon(
+                        Icons.fastfood,
+                        color: AppColors.brownDarkActive,
+                      ),
                     );
                   },
                 )
@@ -60,14 +63,15 @@ class MenuListItem extends StatelessWidget {
                   width: 60,
                   height: 60,
                   color: AppColors.brownLight,
-                  child: const Icon(Icons.fastfood, color: AppColors.brownDarkActive),
+                  child: const Icon(
+                    Icons.fastfood,
+                    color: AppColors.brownDarkActive,
+                  ),
                 ),
         ),
         title: Text(
           menu.name,
-          style: AppTypography.h6.copyWith(
-            color: AppColors.brownDark,
-          ),
+          style: AppTypography.h6.copyWith(color: AppColors.brownDark),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,27 +85,32 @@ class MenuListItem extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            Row(
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
-                    color: menu.isAvailable 
-                        ? AppColors.successLight 
+                    color: menu.isAvailable
+                        ? AppColors.successLight
                         : AppColors.alertLight,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
                     menu.isAvailable ? 'Available' : 'Not Available',
                     style: AppTypography.label.copyWith(
-                      color: menu.isAvailable 
-                          ? AppColors.successNormal 
+                      color: menu.isAvailable
+                          ? AppColors.successNormal
                           : AppColors.alertNormal,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
                 Text(
                   'Stock: ${menu.stock}',
                   style: AppTypography.bodySmall.copyWith(

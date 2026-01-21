@@ -5,6 +5,7 @@ import 'package:chiroku_cafe/feature/cashier/cashier_checkout/models/cashier_pay
 import 'package:chiroku_cafe/feature/cashier/cashier_checkout/models/cashier_table_model.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_checkout/services/cashier_checkout_service.dart';
 import 'package:chiroku_cafe/shared/models/cashier_error_model.dart';
+import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -177,6 +178,76 @@ class CheckoutController extends GetxController {
     return true;
   }
 
+  /// Cancel current order
+  Future<void> cancelOrder(BuildContext context) async {
+    final confirmed = await Get.dialog<bool>(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Cancel Order'),
+        content: const Text(
+          'Are you sure you want to cancel this order? The cart will be cleared.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Close'),
+          ),
+          ElevatedButton(
+            onPressed: () => Get.back(result: true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.alertNormal,
+              foregroundColor: AppColors.white,
+            ),
+            child: const Text('Cancel Order'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await cartController.clearCart();
+      Get.back(); // Back to menu/bottom bar
+      _snackbar.showSuccessSnackbar('Order has been cancelled');
+    }
+  }
+
+  /// Save order as pending
+  Future<void> saveAsPending(BuildContext context) async {
+    // Basic validation for pending (no payment needed)
+    if (cartController.cartItems.isEmpty) {
+      _snackbar.showErrorSnackbar(CashierErrorModel.cartEmpty().message);
+      return;
+    }
+
+    final confirmed = await Get.dialog<bool>(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Save as Pending'),
+        content: const Text(
+          'Order will be saved as pending/unpaid. You can print a billing receipt.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Get.back(result: true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.brownNormal,
+              foregroundColor: AppColors.white,
+            ),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await processCheckout(isPaid: false);
+    }
+  }
+
   /// Show checkout confirmation dialog
   Future<void> showCheckoutConfirmation(BuildContext context) async {
     if (!_validateCheckout()) return;
@@ -184,20 +255,20 @@ class CheckoutController extends GetxController {
     final confirmed = await Get.dialog<bool>(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Konfirmasi Pembayaran'),
+        title: const Text('Payment Confirmation'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildConfirmationRow('Total', 'Rp ${total.toStringAsFixed(0)}'),
-            _buildConfirmationRow('Metode', _getPaymentMethodLabel()),
+            _buildConfirmationRow('Method', _getPaymentMethodLabel()),
             if (customerName.value.isNotEmpty)
-              _buildConfirmationRow('Pelanggan', customerName.value),
+              _buildConfirmationRow('Customer', customerName.value),
             if (selectedTable.value != null)
-              _buildConfirmationRow('Meja', selectedTable.value!.tableName),
+              _buildConfirmationRow('Table', selectedTable.value!.tableName),
             if (paymentMethod.value == 'cash')
               _buildConfirmationRow(
-                'Kembalian',
+                'Change',
                 'Rp ${changeAmount.value.toStringAsFixed(0)}',
               ),
           ],
@@ -205,24 +276,24 @@ class CheckoutController extends GetxController {
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () => Get.back(result: true),
-            child: const Text('Proses'),
+            child: const Text('Process'),
           ),
         ],
       ),
     );
 
     if (confirmed == true) {
-      await processCheckout();
+      await processCheckout(isPaid: true);
     }
   }
 
   /// Process checkout
-  Future<void> processCheckout() async {
-    if (!_validateCheckout()) return;
+  Future<void> processCheckout({bool isPaid = true}) async {
+    if (isPaid && !_validateCheckout()) return;
 
     try {
       isProcessing.value = true;
@@ -238,9 +309,14 @@ class CheckoutController extends GetxController {
         discountAmount: discountAmount,
         total: total,
         paymentMethod: paymentMethod.value,
-        cashReceived: paymentMethod.value == 'cash' ? cashReceived.value : null,
-        changeAmount: paymentMethod.value == 'cash' ? changeAmount.value : null,
+        cashReceived: (isPaid && paymentMethod.value == 'cash')
+            ? cashReceived.value
+            : null,
+        changeAmount: (isPaid && paymentMethod.value == 'cash')
+            ? changeAmount.value
+            : null,
         note: cartController.orderNote.value,
+        isPaid: isPaid,
       );
 
       // Clear cart after successful checkout
@@ -284,11 +360,11 @@ class CheckoutController extends GetxController {
   String _getPaymentMethodLabel() {
     switch (paymentMethod.value) {
       case 'cash':
-        return 'Tunai';
+        return 'Cash';
       case 'qris':
         return 'QRIS';
       case 'card':
-        return 'Kartu Debit/Kredit';
+        return 'Debit/Credit Card';
       default:
         return paymentMethod.value;
     }

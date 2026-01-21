@@ -5,7 +5,7 @@ import 'package:chiroku_cafe/feature/auth/complete_profile/repositories/complete
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
-import 'package:chiroku_cafe/utils/services/permission_service.dart';
+import 'package:chiroku_cafe/shared/services/permission_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';

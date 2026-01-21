@@ -9,7 +9,7 @@ class CashierBottomBarBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<CashierBottomBarController>(() => CashierBottomBarController());
     Get.lazyPut<CashierSettingController>(() => CashierSettingController());
-    Get.lazyPut<OrderController>(() => OrderController());
-    Get.lazyPut<CartController>(() => CartController());
+    Get.lazyPut<OrderController>(() => OrderController(), fenix: true);
+    Get.lazyPut<CartController>(() => CartController(), fenix: true);
   }
 }

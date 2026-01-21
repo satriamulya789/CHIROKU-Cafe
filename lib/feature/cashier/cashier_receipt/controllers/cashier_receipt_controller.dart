@@ -26,7 +26,7 @@ class ReceiptController extends GetxController {
 
       if (orderData == null) {
         log('❌ No order data provided');
-        _snackbar.showErrorSnackbar('Data order tidak ditemukan');
+        _snackbar.showErrorSnackbar('Order data not found');
         return;
       }
 
@@ -34,7 +34,7 @@ class ReceiptController extends GetxController {
       log('✅ Receipt data loaded: Order #${receipt.value?.orderNumber}');
     } catch (e) {
       log('❌ Error loading receipt data: $e');
-      _snackbar.showErrorSnackbar('Gagal memuat data struk');
+      _snackbar.showErrorSnackbar('Failed to load receipt data');
     }
   }
 
@@ -48,17 +48,17 @@ class ReceiptController extends GetxController {
   /// Print receipt
   Future<void> printReceipt() async {
     if (receipt.value == null) {
-      _snackbar.showErrorSnackbar('Data struk tidak tersedia');
+      _snackbar.showErrorSnackbar('Receipt data not available');
       return;
     }
 
     try {
       isPrinting.value = true;
       await _service.printReceipt(receipt.value!);
-      _snackbar.showSuccessSnackbar('Struk berhasil dicetak');
+      _snackbar.showSuccessSnackbar('Receipt printed successfully');
     } catch (e) {
       log('❌ Error printing receipt: $e');
-      _snackbar.showErrorSnackbar('Gagal mencetak struk');
+      _snackbar.showErrorSnackbar('Failed to print receipt');
     } finally {
       isPrinting.value = false;
     }
@@ -74,10 +74,10 @@ class ReceiptController extends GetxController {
     try {
       isSaving.value = true;
       await _service.saveReceiptPDF(receipt.value!);
-      _snackbar.showSuccessSnackbar('Struk berhasil disimpan');
+      _snackbar.showSuccessSnackbar('Receipt saved successfully');
     } catch (e) {
       log('❌ Error saving receipt: $e');
-      _snackbar.showErrorSnackbar('Gagal menyimpan struk');
+      _snackbar.showErrorSnackbar('Failed to save receipt');
     } finally {
       isSaving.value = false;
     }
@@ -87,20 +87,23 @@ class ReceiptController extends GetxController {
   Future<void> completeOrder() async {
     try {
       isProcessing.value = true;
-
-      // Show success message
-      _snackbar.showSuccessSnackbar('Transaksi selesai');
+      final status = receipt.value?.status;
+      if (status == 'pending') {
+        _snackbar.showSuccessSnackbar('Order disimpan sebagai pending');
+      } else {
+        _snackbar.showSuccessSnackbar('Transaksi selesai');
+      }
 
       // Wait a bit for the snackbar to show
       await Future.delayed(const Duration(milliseconds: 500));
 
-      // Navigate back to cashier order menu
-      Get.offAllNamed('/cashier-order');
+      // Navigate back to cashier bottom bar (which shows order page by default)
+      Get.offAllNamed('/bottom-bar-cashier');
 
-      log('✅ Order completed successfully');
+      log('✅ Order process completed');
     } catch (e) {
       log('❌ Error completing order: $e');
-      _snackbar.showErrorSnackbar('Gagal menyelesaikan transaksi');
+      _snackbar.showErrorSnackbar('Failed to complete transaction');
     } finally {
       isProcessing.value = false;
     }

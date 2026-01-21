@@ -111,13 +111,15 @@ class OrderMenuGrid extends GetView<OrderController> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: menu.isAvailable
+                      color: (menu.isAvailable && menu.stock > 0)
                           ? AppColors.successNormal.withOpacity(0.9)
                           : AppColors.alertNormal.withOpacity(0.9),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      menu.isAvailable ? 'Available' : 'Sold Out',
+                      (menu.isAvailable && menu.stock > 0)
+                          ? 'Available'
+                          : 'Not Available',
                       style: AppTypography.captionSmall.copyWith(
                         color: AppColors.white,
                         fontWeight: FontWeight.bold,
