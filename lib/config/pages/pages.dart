@@ -43,6 +43,10 @@ import 'package:chiroku_cafe/feature/cashier/cashier_bottom_bar/binding/cashier_
 import 'package:chiroku_cafe/feature/cashier/cashier_bottom_bar/view/cashier_bottom_bar_page.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_cart/binding/cashier_cart_binding.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_cart/views/cashier_cart_view.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_checkout/binding/cashier_checkout_binding.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_checkout/views/cashier_checkout_view.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_receipt/binding/cashier_receipt_binding.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_receipt/views/cashier_receipt_view.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_order/binding/cashier_order_binding.dart';
 import 'package:chiroku_cafe/feature/cashier/cashier_order/views/cashier_order_view.dart';
 import 'package:chiroku_cafe/feature/push_notification/binding/push_notification_binding.dart';
@@ -213,6 +217,20 @@ class Pages {
       name: AppRoutes.cashierCart,
       page: () => const CartPage(),
       binding: CartBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.cashierCheckout,
+      page: () => const CheckoutView(),
+      binding: CheckoutBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
+    GetPage(
+      name: AppRoutes.cashierReceipt,
+      page: () => const ReceiptView(),
+      binding: ReceiptBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: const Duration(milliseconds: 300),
     ),
     GetPage(
       name: AppRoutes.cashierEditProfile,
