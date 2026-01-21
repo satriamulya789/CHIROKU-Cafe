@@ -6,10 +6,12 @@ import 'package:chiroku_cafe/feature/admin/admin_setting_manage_qris/widgets/adm
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:chiroku_cafe/feature/crop_image/services/crop_image_service.dart';
 
 class PaymentSettingsController extends GetxController {
   final PaymentSettingsRepository _repository = PaymentSettingsRepository();
   final ImagePicker _picker = ImagePicker();
+  final _cropService = CropImageService();
 
   final isLoading = false.obs;
   final isUploadingImage = false.obs;
@@ -28,9 +30,7 @@ class PaymentSettingsController extends GetxController {
       final settings = await _repository.getPaymentSettings();
       paymentSettings.value = settings;
     } catch (e) {
-      CustomSnackbar().showErrorSnackbar(
-        'Failed to load payment settings: $e',
-      );
+      CustomSnackbar().showErrorSnackbar('Failed to load payment settings: $e');
     } finally {
       isLoading.value = false;
     }
@@ -46,13 +46,17 @@ class PaymentSettingsController extends GetxController {
       );
 
       if (pickedFile != null) {
-        selectedImage.value = File(pickedFile.path);
-        await uploadQrisImage();
+        final processedFile = await _cropService.processImage(
+          imageFile: File(pickedFile.path),
+          isCircle: false,
+        );
+        if (processedFile != null) {
+          selectedImage.value = processedFile;
+          await uploadQrisImage();
+        }
       }
     } catch (e) {
-      CustomSnackbar().showErrorSnackbar(
-        'Failed to pick image: $e',
-      );
+      CustomSnackbar().showErrorSnackbar('Failed to pick image: $e');
     }
   }
 
@@ -66,13 +70,17 @@ class PaymentSettingsController extends GetxController {
       );
 
       if (pickedFile != null) {
-        selectedImage.value = File(pickedFile.path);
-        await uploadQrisImage();
+        final processedFile = await _cropService.processImage(
+          imageFile: File(pickedFile.path),
+          isCircle: false,
+        );
+        if (processedFile != null) {
+          selectedImage.value = processedFile;
+          await uploadQrisImage();
+        }
       }
     } catch (e) {
-      CustomSnackbar().showErrorSnackbar(
-        'Failed to take photo: $e',
-      );
+      CustomSnackbar().showErrorSnackbar('Failed to take photo: $e');
     }
   }
 
@@ -93,9 +101,7 @@ class PaymentSettingsController extends GetxController {
           updatedAt: DateTime.now(),
         );
 
-        CustomSnackbar().showSuccessSnackbar(
-          'QRIS image updated successfully',
-        );
+        CustomSnackbar().showSuccessSnackbar('QRIS image updated successfully');
       }
     } catch (e) {
       CustomSnackbar().showErrorSnackbar(
@@ -125,9 +131,7 @@ class PaymentSettingsController extends GetxController {
           updatedAt: DateTime.now(),
         );
 
-        CustomSnackbar().showSuccessSnackbar(
-          'QRIS image removed successfully',
-        );
+        CustomSnackbar().showSuccessSnackbar('QRIS image removed successfully');
       }
     } catch (e) {
       CustomSnackbar().showErrorSnackbar(

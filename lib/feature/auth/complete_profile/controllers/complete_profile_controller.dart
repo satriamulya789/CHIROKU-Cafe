@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:chiroku_cafe/feature/crop_image/services/crop_image_service.dart';
 
 class CompleteProfileController extends GetxController {
   //================== Dependencies ===================//
@@ -18,6 +19,7 @@ class CompleteProfileController extends GetxController {
   final _permissionService = PermissionService();
   final _customSnackbar = CustomSnackbar();
   final supabase = Supabase.instance.client;
+  final _cropService = CropImageService();
 
   //================== Form ===================//
   final nameController = TextEditingController();
@@ -72,10 +74,16 @@ class CompleteProfileController extends GetxController {
       );
 
       if (pickedFile != null) {
-        _avatarFile.value = File(pickedFile.path);
-        _customSnackbar.showSuccessSnackbar(
-          AuthErrorModel.imageSelectedSuccess().message,
+        final processedFile = await _cropService.processImage(
+          imageFile: File(pickedFile.path),
+          isCircle: true,
         );
+        if (processedFile != null) {
+          _avatarFile.value = processedFile;
+          _customSnackbar.showSuccessSnackbar(
+            AuthErrorModel.imageSelectedSuccess().message,
+          );
+        }
       }
     } catch (e) {
       _customSnackbar.showErrorSnackbar(
@@ -106,10 +114,16 @@ class CompleteProfileController extends GetxController {
       );
 
       if (pickedFile != null) {
-        _avatarFile.value = File(pickedFile.path);
-        _customSnackbar.showSuccessSnackbar(
-          AuthErrorModel.photoCapturedSuccess().message,
+        final processedFile = await _cropService.processImage(
+          imageFile: File(pickedFile.path),
+          isCircle: true,
         );
+        if (processedFile != null) {
+          _avatarFile.value = processedFile;
+          _customSnackbar.showSuccessSnackbar(
+            AuthErrorModel.photoCapturedSuccess().message,
+          );
+        }
       }
     } catch (e) {
       _customSnackbar.showErrorSnackbar(

@@ -61,6 +61,9 @@ dependencies:
   flutter_local_notifications: ^19.5.0
   package_info_plus: ^9.0.0
   bluetooth_classic: ^0.0.4
+  image_cropper: ^11.0.0
+  flutter_image_compress: ^2.4.0
+  url_launcher: ^6.3.2
 
 
 

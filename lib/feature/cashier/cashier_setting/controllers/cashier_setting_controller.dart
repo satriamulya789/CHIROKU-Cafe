@@ -3,7 +3,8 @@ import 'package:chiroku_cafe/feature/cashier/cashier_setting/models/cashier_sett
 import 'package:chiroku_cafe/feature/cashier/cashier_setting/services/cashier_setting_service.dart';
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:get/get.dart';
 
 class CashierSettingController extends GetxController {
@@ -13,11 +14,32 @@ class CashierSettingController extends GetxController {
   final Rx<CashierSettingModel?> userProfile = Rx<CashierSettingModel?>(null);
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
+  final RxString appVersion = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
     loadUserProfile();
+    loadAppInfo();
+  }
+
+  Future<void> loadAppInfo() async {
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    appVersion.value = packageInfo.version;
+  }
+
+  Future<void> contactSupport() async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: 'satriamulya456@gmail.com',
+      queryParameters: {'subject': 'Support Request - Chiroku Cafe'},
+    );
+
+    if (await canLaunchUrl(emailLaunchUri)) {
+      await launchUrl(emailLaunchUri);
+    } else {
+      _customSnackBar.showErrorSnackbar('Could not launch email app');
+    }
   }
 
   Future<void> loadUserProfile() async {

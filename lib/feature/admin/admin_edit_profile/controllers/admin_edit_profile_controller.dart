@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:chiroku_cafe/feature/crop_image/services/crop_image_service.dart';
 
 class EditProfileController extends GetxController {
   final UserProfileRepository _repository = UserProfileRepository();
   final ImagePicker _picker = ImagePicker();
+  final _cropService = CropImageService();
   final customSnackbar = CustomSnackbar();
 
   final fullNameController = TextEditingController();
@@ -21,7 +23,8 @@ class EditProfileController extends GetxController {
   final userProfile = Rxn<UserProfileModel>();
   final selectedImage = Rxn<File>();
 
-  String get currentUserId => Supabase.instance.client.auth.currentUser?.id ?? '';
+  String get currentUserId =>
+      Supabase.instance.client.auth.currentUser?.id ?? '';
 
   @override
   void onInit() {
@@ -61,13 +64,17 @@ class EditProfileController extends GetxController {
       );
 
       if (pickedFile != null) {
-        selectedImage.value = File(pickedFile.path);
-        await uploadAvatar();
+        final processedFile = await _cropService.processImage(
+          imageFile: File(pickedFile.path),
+          isCircle: true,
+        );
+        if (processedFile != null) {
+          selectedImage.value = processedFile;
+          await uploadAvatar();
+        }
       }
     } catch (e) {
-      customSnackbar.showErrorSnackbar(
-        'Failed to pick image: $e',
-      );
+      customSnackbar.showErrorSnackbar('Failed to pick image: $e');
     }
   }
 
@@ -81,13 +88,17 @@ class EditProfileController extends GetxController {
       );
 
       if (pickedFile != null) {
-        selectedImage.value = File(pickedFile.path);
-        await uploadAvatar();
+        final processedFile = await _cropService.processImage(
+          imageFile: File(pickedFile.path),
+          isCircle: true,
+        );
+        if (processedFile != null) {
+          selectedImage.value = processedFile;
+          await uploadAvatar();
+        }
       }
     } catch (e) {
-      customSnackbar.showErrorSnackbar(
-        'Failed to take photo: $e',
-      );
+      customSnackbar.showErrorSnackbar('Failed to take photo: $e');
     }
   }
 
@@ -107,10 +118,8 @@ class EditProfileController extends GetxController {
         userProfile.value = userProfile.value?.copyWith(
           avatarUrl: newAvatarUrl,
         );
-        
-        customSnackbar.showSuccessSnackbar(
-          'Avatar updated successfully',
-        );
+
+        customSnackbar.showSuccessSnackbar('Avatar updated successfully');
       }
     } catch (e) {
       customSnackbar.showErrorSnackbar(
@@ -140,9 +149,7 @@ class EditProfileController extends GetxController {
         updatedAt: DateTime.now(),
       );
 
-      customSnackbar.showSuccessSnackbar(
-        'Profile updated successfully',
-      );
+      customSnackbar.showSuccessSnackbar('Profile updated successfully');
 
       await Future.delayed(const Duration(milliseconds: 500));
       Get.back(result: true);
@@ -158,9 +165,7 @@ class EditProfileController extends GetxController {
   void showImageSourceDialog() {
     Get.dialog(
       AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Choose Image Source',
           style: Get.textTheme.titleLarge?.copyWith(
@@ -177,10 +182,7 @@ class EditProfileController extends GetxController {
                   color: Colors.blue.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
-                  Icons.photo_library,
-                  color: Colors.blue,
-                ),
+                child: const Icon(Icons.photo_library, color: Colors.blue),
               ),
               title: const Text('Gallery'),
               onTap: () {
@@ -196,10 +198,7 @@ class EditProfileController extends GetxController {
                   color: Colors.green.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
-                  Icons.camera_alt,
-                  color: Colors.green,
-                ),
+                child: const Icon(Icons.camera_alt, color: Colors.green),
               ),
               title: const Text('Camera'),
               onTap: () {

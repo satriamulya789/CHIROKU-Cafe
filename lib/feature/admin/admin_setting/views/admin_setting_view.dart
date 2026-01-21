@@ -105,30 +105,19 @@ class AdminSettingView extends GetView<AdminSettingController> {
                   icon: Icons.help_outline,
                   title: 'Help & Support',
                   subtitle: 'Get help and contact support',
-                  onTap: () {
-                    _snackBar.showInfoSnackbar('Feature coming soon');
-                  },
-                  iconColor:
-                      AppColors.blueDark ??
-                      AppColors.blueNormal, // fallback if no teal defined
+                  onTap: controller.contactSupport,
+                  iconColor: AppColors.blueDark,
                 ),
-                SettingItemWidget(
-                  icon: Icons.info_outline,
-                  title: 'About',
-                  subtitle: 'Version 1.1.0',
-                  onTap: () {
-                    showAboutDialog(
-                      context: context,
-                      applicationName: 'Chiroku Cafe',
-                      applicationVersion: '1.1.0',
-                      applicationIcon: Image.asset(
-                        AssetsConstant.logo,
-                        width: 50,
-                        height: 50,
-                      ),
-                    );
-                  },
-                  iconColor: AppColors.blueNormal,
+                Obx(
+                  () => SettingItemWidget(
+                    icon: Icons.info_outline,
+                    title: 'About',
+                    subtitle: 'Version ${controller.appVersion.value}',
+                    onTap: () {
+                      _showAboutAppDialog(context);
+                    },
+                    iconColor: AppColors.blueNormal,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 SizedBox(
@@ -161,6 +150,117 @@ class AdminSettingView extends GetView<AdminSettingController> {
           ),
         );
       }),
+    );
+  }
+
+  void _showAboutAppDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: EdgeInsets.zero,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 30),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.brownNormal, AppColors.brownDarker],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      AssetsConstant.logo,
+                      width: 60,
+                      height: 60,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Chiroku Cafe',
+                    style: AppTypography.h5.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Obx(
+                    () => Text(
+                      'Version ${controller.appVersion.value}',
+                      style: AppTypography.bodySmall.copyWith(
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  Text(
+                    'Elevating your cafe experience with seamless management and premium service.',
+                    textAlign: TextAlign.center,
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: Colors.grey[700],
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Divider(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Built with ❤️ for Chiroku Coffee & Roastery',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: Colors.grey[500],
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Get.back(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.brownNormal,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: Text(
+                        'Close',
+                        style: AppTypography.button.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

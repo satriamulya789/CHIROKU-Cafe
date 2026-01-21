@@ -6,11 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:chiroku_cafe/feature/crop_image/services/crop_image_service.dart';
 
 class CashierEditProfileController extends GetxController {
   final CashierUserProfileRepository _repository =
       CashierUserProfileRepository();
   final ImagePicker _picker = ImagePicker();
+  final _cropService = CropImageService();
   final customSnackbar = CustomSnackbar();
 
   final fullNameController = TextEditingController();
@@ -63,8 +65,14 @@ class CashierEditProfileController extends GetxController {
       );
 
       if (pickedFile != null) {
-        selectedImage.value = File(pickedFile.path);
-        await uploadAvatar();
+        final processedFile = await _cropService.processImage(
+          imageFile: File(pickedFile.path),
+          isCircle: true,
+        );
+        if (processedFile != null) {
+          selectedImage.value = processedFile;
+          await uploadAvatar();
+        }
       }
     } catch (e) {
       customSnackbar.showErrorSnackbar('Failed to pick image: $e');
@@ -81,8 +89,14 @@ class CashierEditProfileController extends GetxController {
       );
 
       if (pickedFile != null) {
-        selectedImage.value = File(pickedFile.path);
-        await uploadAvatar();
+        final processedFile = await _cropService.processImage(
+          imageFile: File(pickedFile.path),
+          isCircle: true,
+        );
+        if (processedFile != null) {
+          selectedImage.value = processedFile;
+          await uploadAvatar();
+        }
       }
     } catch (e) {
       customSnackbar.showErrorSnackbar('Failed to take photo: $e');
