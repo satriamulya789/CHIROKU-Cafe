@@ -9,6 +9,7 @@ class DashboardStatsModel {
   final int cancelledOrders;
   final List<HourlySalesData> hourlySales;
   final List<TopProductData> topProducts;
+  final int itemsSold;
 
   DashboardStatsModel({
     required this.totalRevenue,
@@ -18,6 +19,7 @@ class DashboardStatsModel {
     required this.cancelledOrders,
     required this.hourlySales,
     required this.topProducts,
+    required this.itemsSold,
   });
 
   factory DashboardStatsModel.fromJson(Map<String, dynamic> json) {
@@ -27,12 +29,17 @@ class DashboardStatsModel {
       pendingOrders: json['pending_orders'] ?? 0,
       completedOrders: json['completed_orders'] ?? 0,
       cancelledOrders: json['cancelled_orders'] ?? 0,
-      hourlySales: (json['hourly_sales'] as List?)
-          ?.map((e) => HourlySalesData.fromJson(e))
-          .toList() ?? [],
-      topProducts: (json['top_products'] as List?)
-          ?.map((e) => TopProductData.fromJson(e))
-          .toList() ?? [],
+      hourlySales:
+          (json['hourly_sales'] as List?)
+              ?.map((e) => HourlySalesData.fromJson(e))
+              .toList() ??
+          [],
+      topProducts:
+          (json['top_products'] as List?)
+              ?.map((e) => TopProductData.fromJson(e))
+              .toList() ??
+          [],
+      itemsSold: json['items_sold'] ?? 0,
     );
   }
 

@@ -35,6 +35,7 @@ class RecentTransactionsSection extends StatelessWidget {
               children: [
                 TransactionListWidget(
                   transactions: controller.recentTransactions,
+                  onPrint: controller.printTransactionPDF,
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
@@ -50,10 +51,7 @@ class RecentTransactionsSection extends StatelessWidget {
                         },
                       );
                     },
-                    icon: const Icon(
-                      Icons.list_alt,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.list_alt, color: Colors.white),
                     label: Text(
                       'View All Transactions',
                       style: AppTypography.bodyMediumBold.copyWith(
@@ -77,4 +75,3 @@ class RecentTransactionsSection extends StatelessWidget {
     );
   }
 }
-

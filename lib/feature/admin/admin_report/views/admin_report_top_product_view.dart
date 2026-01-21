@@ -9,10 +9,7 @@ import 'package:flutter/material.dart';
 class TopProductsView extends StatelessWidget {
   final List<ReportProductStat> products;
 
-  const TopProductsView({
-    super.key,
-    required this.products,
-  });
+  const TopProductsView({super.key, required this.products});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +17,7 @@ class TopProductsView extends StatelessWidget {
       backgroundColor: AppColors.brownLight,
       appBar: AppBar(
         title: Text(
-          'Top 20 Menu Terlaris',
+          'Top 20 Best-Selling Menus',
           style: AppTypography.h4.copyWith(color: AppColors.brownDarker),
         ),
         backgroundColor: AppColors.brownLight,

@@ -4,6 +4,8 @@ import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_cash
 import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_stats_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_transaction_summary_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/repositories/admin_report_repositories.dart';
+import 'package:chiroku_cafe/shared/services/excel_service.dart';
+import 'package:chiroku_cafe/shared/services/pdf_service.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -217,5 +219,46 @@ class ReportAdminController extends GetxController {
     final sorted = List<ReportProductStat>.from(productStats);
     sorted.sort((a, b) => b.totalQty.compareTo(a.totalQty));
     return sorted.take(20).toList();
+  }
+
+  Future<void> exportToExcel() async {
+    try {
+      isLoading.value = true;
+      final result = await repo.getAllTransactions(
+        startDate,
+        endDate,
+        cashierId: selectedCashierId,
+      );
+
+      final transactions = result
+          .map((json) => ReportTransaction.fromJson(json))
+          .toList();
+
+      if (transactions.isEmpty) {
+        snackbar.showErrorSnackbar('No data available to export');
+        return;
+      }
+
+      await ExcelService.exportTransactionsToExcel(transactions);
+    } catch (e) {
+      snackbar.showErrorSnackbar('Failed to export Excel: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> printTransactionPDF(ReportTransaction transaction) async {
+    try {
+      isLoading.value = true;
+      final items = await repo.getOrderItems([transaction.id]);
+      await PdfService.generateReceiptPDF(
+        transaction: transaction,
+        items: items,
+      );
+    } catch (e) {
+      snackbar.showErrorSnackbar('Failed to print PDF: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

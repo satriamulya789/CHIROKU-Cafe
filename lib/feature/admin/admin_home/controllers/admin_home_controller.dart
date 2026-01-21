@@ -1,5 +1,4 @@
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_dashboard_stats_model.dart';
-import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_hourly_sales.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_notification_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_stock_status_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_user_model.dart';
@@ -60,50 +59,17 @@ class AdminHomeController extends GetxController {
 
   Future<void> loadDashboardStats() async {
     try {
-      // final stats = await _dashboardService.getDashboardStats();
-      final stats = DashboardStatsModel(
-        totalRevenue: 100000,
-        totalOrders: 10,
-        completedOrders: 8,
-        pendingOrders: 1,
-        cancelledOrders: 1,
-        hourlySales: [
-          HourlySalesData(hour: '08:00', sales: 10000, orderCount: 1),
-          HourlySalesData(hour: '09:00', sales: 20000, orderCount: 2),
-          HourlySalesData(hour: '10:00', sales: 15000, orderCount: 1),
-          HourlySalesData(hour: '11:00', sales: 25000, orderCount: 2),
-          HourlySalesData(hour: '12:00', sales: 30000, orderCount: 3),
-          HourlySalesData(hour: '13:00', sales: 20000, orderCount: 2),
-          HourlySalesData(hour: '14:00', sales: 35000, orderCount: 3),
-          HourlySalesData(hour: '15:00', sales: 25000, orderCount: 2),
-          HourlySalesData(hour: '16:00', sales: 40000, orderCount: 4),
-          HourlySalesData(hour: '17:00', sales: 30000, orderCount: 3),
-          HourlySalesData(hour: '18:00', sales: 45000, orderCount: 4),
-          HourlySalesData(hour: '19:00', sales: 35000, orderCount: 3),
-          HourlySalesData(hour: '20:00', sales: 50000, orderCount: 5),
-          HourlySalesData(hour: '21:00', sales: 40000, orderCount: 4),
-          HourlySalesData(hour: '22:00', sales: 55000, orderCount: 5),
-        ], topProducts: [],
-      );
-      dashboardStats.value = stats;
-      print('DUMMY Dashboard stats loaded:');
+      final stats = await _dashboardService.getDashboardStats();
+      if (stats != null) {
+        dashboardStats.value = stats;
+        print('Dashboard stats loaded');
+      } else {
+        print('No dashboard stats found');
+      }
     } catch (e) {
       print('Error loading dashboard stats: $e');
     }
   }
-  // Future<void> loadDashboardStats() async {
-  //   try {
-  //     final stats = await _dashboardService.getDashboardStats();
-  //     if (stats != null) {
-  //       dashboardStats.value = stats;
-  //       print('Dashboard stats loaded}');
-  //     } else {
-  //       print('No dashboard stats found');
-  //     }
-  //   } catch (e) {
-  //     print('Error loading dashboard stats: $e');
-  //   }
-  // }
 
   Future<void> loadNotifications() async {
     try {
@@ -126,8 +92,7 @@ class AdminHomeController extends GetxController {
   }
 
   void toggleChartType() {
-    selectedChartType.value =
-        selectedChartType.value == 'bar' ? 'line' : 'bar';
+    selectedChartType.value = selectedChartType.value == 'bar' ? 'line' : 'bar';
   }
 
   Future<void> refreshData() async {

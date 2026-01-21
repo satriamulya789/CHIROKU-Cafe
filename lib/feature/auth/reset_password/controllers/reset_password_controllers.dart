@@ -88,17 +88,17 @@ class ResetPasswordController extends GetxController {
         newPassword: newPassword,
         confirmPassword: confirmPassword,
       );
-        // Tunggu sebentar agar user bisa melihat success message
-        await Future.delayed(const Duration(seconds: 2));
+      // Tunggu sebentar agar user bisa melihat success message
+      await Future.delayed(const Duration(seconds: 2));
 
-        // Navigate ke halaman sign in
-        Get.offAllNamed(AppRoutes.signIn);
-
+      // Navigate ke halaman sign in
+      Get.offAllNamed(AppRoutes.signIn);
     } on AuthErrorModel catch (e) {
       // Handle specific auth errors
       _customSnackbar.showErrorSnackbar(e.message);
     } catch (e) {
       // Handle unknown errors
+      debugPrint('Error during resetPassword: $e');
       _customSnackbar.showErrorSnackbar(AuthErrorModel.unknownError().message);
     } finally {
       isLoading.value = false;

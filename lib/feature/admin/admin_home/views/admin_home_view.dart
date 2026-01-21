@@ -2,7 +2,6 @@ import 'package:chiroku_cafe/feature/admin/admin_home/controllers/admin_home_con
 import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_notification_card_widget.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_view_widget/admin_home_view_app_bar.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_view_widget/admin_home_view_notification_bottom_sheet.dart';
-import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_view_widget/admin_home_view_notification_selection.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_view_widget/admin_home_view_quick_action.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_view_widget/admin_home_view_sales_chart.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/widgets/admin_home_view_widget/admin_home_view_stats_section.dart';
@@ -63,15 +62,6 @@ class AdminHomeView extends GetView<AdminHomeController> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Obx(
-                //   () => NotificationsSectionWidget(
-                //     notifications: controller.notifications.take(3).toList(),
-                //     unreadCount: controller.unreadNotificationsCount,
-                //     onViewAll: _showNotificationsBottomSheet,
-                //     onTap: _handleNotificationTap,
-                //   ),
-                // ),
-                // const SizedBox(height: 20),
                 Obx(
                   () => StockSectionWidget(
                     stocks: controller.stockStatus.take(5).toList(),

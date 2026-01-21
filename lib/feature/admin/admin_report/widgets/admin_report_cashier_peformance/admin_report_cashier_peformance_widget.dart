@@ -9,10 +9,7 @@ import 'package:intl/intl.dart';
 class CashierPerformanceWidget extends StatelessWidget {
   final List<ReportCashierStat> cashiers;
 
-  const CashierPerformanceWidget({
-    super.key,
-    required this.cashiers,
-  });
+  const CashierPerformanceWidget({super.key, required this.cashiers});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +28,7 @@ class CashierPerformanceWidget extends StatelessWidget {
               Icon(Icons.people, size: 48, color: Colors.grey[300]),
               const SizedBox(height: 8),
               Text(
-                'Belum ada data kasir',
+                'No cashier data yet',
                 style: AppTypography.bodyMedium.copyWith(
                   color: Colors.grey[600],
                 ),
@@ -65,10 +62,10 @@ class CashierPerformanceWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 color: rank <= 3
                     ? (rank == 1
-                        ? Colors.amber
-                        : rank == 2
-                            ? Colors.grey[400]
-                            : Colors.brown[300])
+                          ? Colors.amber
+                          : rank == 2
+                          ? Colors.grey[400]
+                          : Colors.brown[300])
                     : AppColors.brownNormal.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
@@ -89,10 +86,8 @@ class CashierPerformanceWidget extends StatelessWidget {
               ),
             ),
             subtitle: Text(
-              '${cashier.totalOrders} pesanan • ${cashier.itemsSold} item terjual',
-              style: AppTypography.bodySmall.copyWith(
-                color: Colors.grey[600],
-              ),
+              '${cashier.totalOrders} orders • ${cashier.itemsSold} items sold',
+              style: AppTypography.bodySmall.copyWith(color: Colors.grey[600]),
             ),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -105,7 +100,7 @@ class CashierPerformanceWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Pendapatan',
+                  'Revenue',
                   style: AppTypography.bodySmall.copyWith(
                     color: Colors.grey[600],
                   ),

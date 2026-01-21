@@ -9,10 +9,12 @@ import 'package:intl/intl.dart';
 
 class TransactionListWidget extends StatelessWidget {
   final List<ReportTransaction> transactions;
+  final Function(ReportTransaction)? onPrint;
 
   const TransactionListWidget({
     super.key,
     required this.transactions,
+    this.onPrint,
   });
 
   @override
@@ -32,7 +34,7 @@ class TransactionListWidget extends StatelessWidget {
               Icon(Icons.receipt_long, size: 48, color: Colors.grey[300]),
               const SizedBox(height: 8),
               Text(
-                'Belum ada transaksi',
+                'No transactions yet',
                 style: AppTypography.bodyMedium.copyWith(
                   color: Colors.grey[600],
                 ),
@@ -70,14 +72,14 @@ class TransactionListWidget extends StatelessWidget {
                 paymentMethod == 'cash'
                     ? Icons.money
                     : paymentMethod == 'qris'
-                        ? Icons.qr_code
-                        : Icons.credit_card,
+                    ? Icons.qr_code
+                    : Icons.credit_card,
                 color: Colors.green[700],
                 size: 20,
               ),
             ),
             title: Text(
-              'Pesanan #${transaction.id}',
+              'Order #${transaction.id}',
               style: AppTypography.bodyMedium.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -86,13 +88,13 @@ class TransactionListWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${transaction.tableName != null ? 'Meja ${transaction.tableName}' : 'Tanpa Meja'} • ${DateFormat('dd MMM, HH:mm').format(transaction.createdAt)}',
+                  '${transaction.tableName != null ? 'Table ${transaction.tableName}' : 'No Table'} • ${DateFormat('dd MMM, HH:mm').format(transaction.createdAt)}',
                   style: AppTypography.bodySmall.copyWith(
                     color: Colors.grey[600],
                   ),
                 ),
                 Text(
-                  'Kasir: ${transaction.cashierName}',
+                  'Cashier: ${transaction.cashierName}',
                   style: AppTypography.bodySmall.copyWith(
                     color: AppColors.brownNormal,
                     fontWeight: FontWeight.w500,
@@ -110,35 +112,52 @@ class TransactionListWidget extends StatelessWidget {
               ],
             ),
             isThreeLine: true,
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  currencyFormat.format(transaction.total),
-                  style: AppTypography.bodyMedium.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green[700],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    paymentMethod.toUpperCase(),
-                    style: AppTypography.bodySmall.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green[700],
-                      fontSize: 9,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      currencyFormat.format(transaction.total),
+                      style: AppTypography.bodyMedium.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[700],
+                      ),
                     ),
-                  ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green[50],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        paymentMethod.toUpperCase(),
+                        style: AppTypography.bodySmall.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[700],
+                          fontSize: 9,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+                if (onPrint != null) ...[
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: () => onPrint!(transaction),
+                    icon: const Icon(
+                      Icons.print_outlined,
+                      color: AppColors.brownNormal,
+                      size: 20,
+                    ),
+                    tooltip: 'Print Receipt',
+                  ),
+                ],
               ],
             ),
           ),

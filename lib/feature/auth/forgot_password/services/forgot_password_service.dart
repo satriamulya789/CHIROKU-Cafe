@@ -38,8 +38,11 @@ class ForgotPasswordService {
     log('Email exists: $email');
   }
 
-  Future<void> resetPassword({required String email, required String newPassword}) async {
-    // Implementasi sesuai kebutuhan, misal update via RPC
+  Future<void> resetPassword({
+    required String email,
+    required String newPassword,
+  }) async {
+    // 1. Get user ID from email
     final userData = await supabase
         .from('users')
         .select('id')
@@ -47,16 +50,19 @@ class ForgotPasswordService {
         .maybeSingle();
 
     if (userData == null) {
+      log('Email not found in users table during reset: $email');
       throw Exception('Email not registered');
     }
 
     final userId = userData['id'] as String;
 
+    // 2. Call admin RPC function to update password
+    // This function must be defined in Supabase as SECURITY DEFINER
     final response = await supabase.rpc(
       'admin_update_user_password',
       params: {'user_id': userId, 'new_password': newPassword},
     );
 
-    log('Password reset via service response: $response');
+    log('RPC admin_update_user_password response: $response');
   }
 }

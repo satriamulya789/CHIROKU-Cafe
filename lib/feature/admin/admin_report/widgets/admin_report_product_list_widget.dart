@@ -9,10 +9,7 @@ import 'package:intl/intl.dart';
 class ProductListWidget extends StatelessWidget {
   final List<ReportProductStat> products;
 
-  const ProductListWidget({
-    super.key,
-    required this.products,
-  });
+  const ProductListWidget({super.key, required this.products});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +28,7 @@ class ProductListWidget extends StatelessWidget {
               Icon(Icons.inventory_2, size: 48, color: Colors.grey[300]),
               const SizedBox(height: 8),
               Text(
-                'Belum ada item terjual',
+                'No items sold yet',
                 style: AppTypography.bodyMedium.copyWith(
                   color: Colors.grey[600],
                 ),
@@ -65,10 +62,10 @@ class ProductListWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 color: rank <= 3
                     ? (rank == 1
-                        ? Colors.amber
-                        : rank == 2
-                            ? Colors.grey[400]
-                            : Colors.brown[300])
+                          ? Colors.amber
+                          : rank == 2
+                          ? Colors.grey[400]
+                          : Colors.brown[300])
                     : AppColors.brownNormal.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
@@ -89,10 +86,8 @@ class ProductListWidget extends StatelessWidget {
               ),
             ),
             subtitle: Text(
-              '${item.totalQty} terjual • ${currencyFormat.format(item.price)} per item',
-              style: AppTypography.bodySmall.copyWith(
-                color: Colors.grey[600],
-              ),
+              '${item.totalQty} sold • ${currencyFormat.format(item.price)} per item',
+              style: AppTypography.bodySmall.copyWith(color: Colors.grey[600]),
             ),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -105,7 +100,7 @@ class ProductListWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Pendapatan',
+                  'Revenue',
                   style: AppTypography.bodySmall.copyWith(
                     color: Colors.grey[600],
                   ),

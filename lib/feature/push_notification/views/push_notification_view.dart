@@ -12,7 +12,7 @@ class PushNotificationView extends GetView<PushNotificationController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notifikasi', style: AppTypography.h1),
+        title: Text('Notifications', style: AppTypography.h1),
         backgroundColor: AppColors.brownLightHover,
         foregroundColor: AppColors.brownLight,
       ),
@@ -23,8 +23,10 @@ class PushNotificationView extends GetView<PushNotificationController> {
         if (controller.notifications.isEmpty) {
           return Center(
             child: Text(
-              'Belum ada notifikasi',
-              style: AppTypography.h1.copyWith(color: AppColors.brownLightHover),
+              'No notifications yet',
+              style: AppTypography.h1.copyWith(
+                color: AppColors.brownLightHover,
+              ),
             ),
           );
         }

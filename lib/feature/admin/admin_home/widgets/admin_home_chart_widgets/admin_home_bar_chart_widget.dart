@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 class BarChartWidget extends StatelessWidget {
   final List<HourlySalesData> data;
 
-  const BarChartWidget({
-    super.key,
-    required this.data,
-  });
+  const BarChartWidget({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +17,7 @@ class BarChartWidget extends StatelessWidget {
         barTouchData: BarTouchData(
           enabled: true,
           touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (group) => AppColors.brownDarker,
+            getTooltipColor: (group) => AppColors.brownDarker,
             tooltipBorderRadius: BorderRadius.all(Radius.circular(8)),
             //   tooltipBgColor: AppColors.brownDarker,
             // tooltipRoundedRadius: 8,
@@ -57,12 +54,8 @@ class BarChartWidget extends StatelessWidget {
         ),
         titlesData: FlTitlesData(
           show: true,
-          rightTitles:  AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          topTitles:  AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -107,15 +100,10 @@ class BarChartWidget extends StatelessWidget {
           drawVerticalLine: false,
           horizontalInterval: _getMaxY() / 4,
           getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: AppColors.brownLight,
-              strokeWidth: 1,
-            );
+            return FlLine(color: AppColors.brownLight, strokeWidth: 1);
           },
         ),
-        borderData: FlBorderData(
-          show: false,
-        ),
+        borderData: FlBorderData(show: false),
         barGroups: data.asMap().entries.map((entry) {
           return BarChartGroupData(
             x: entry.key,
@@ -130,10 +118,10 @@ class BarChartWidget extends StatelessWidget {
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
-                width: 16,
+                width: 12, // Slightly adjusted for hourly
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(6),
-                  topRight: Radius.circular(6),
+                  topLeft: Radius.circular(4),
+                  topRight: Radius.circular(4),
                 ),
               ),
             ],
@@ -159,8 +147,8 @@ class BarChartWidget extends StatelessWidget {
 
   String _formatNumber(int value) {
     return value.toString().replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (Match m) => '${m[1]}.',
-        );
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]}.',
+    );
   }
 }

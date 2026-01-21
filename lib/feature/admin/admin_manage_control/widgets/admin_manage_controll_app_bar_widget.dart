@@ -3,7 +3,8 @@ import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
 
-class AdminManageControlAppBar extends StatelessWidget implements PreferredSizeWidget {
+class AdminManageControlAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
   final UserModel? user;
   final String currentTitle;
   final VoidCallback? onProfileTap;
@@ -85,7 +86,7 @@ class AdminManageControlAppBar extends StatelessWidget implements PreferredSizeW
                   ],
                 ),
               ),
-              // CircleAvatar dihapus
+              // CircleAvatar removed
             ],
           ),
         ),

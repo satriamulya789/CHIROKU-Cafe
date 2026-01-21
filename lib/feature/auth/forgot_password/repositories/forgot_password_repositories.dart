@@ -12,22 +12,15 @@ class ForgotPasswordRepository {
   /// Verify if email is registered
   Future<ForgotPasswordModel> verifyEmail({required String email}) async {
     try {
-      // Validasi email format
+      // 1. Validasi email format
       if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
         throw AuthErrorModel.invalidEmailFormat();
       }
+
+      log('Attempting to verify email: $email');
+
+      // 2. Cek apakah email ada di database (via service)
       await _service.verifyEmail(email);
-
-      // Cek apakah email ada di database
-      final response = await supabase
-          .from('users')
-          .select('email, id')
-          .eq('email', email.trim())
-          .maybeSingle();
-
-      if (response == null) {
-        throw AuthErrorModel.emailNotRegistered();
-      }
 
       log('Email verified successfully: $email');
 
@@ -41,7 +34,11 @@ class ForgotPasswordRepository {
       log('Auth error during email verification: ${e.message}');
       rethrow;
     } catch (e) {
-      log('Unknown error during email verification: $e');
+      log('Unexpected error during email verification: $e');
+      // Jika errornya dari service "Email not registered"
+      if (e.toString().contains('Email not registered')) {
+        throw AuthErrorModel.emailNotRegistered();
+      }
       throw AuthErrorModel.unknownError();
     }
   }
@@ -53,37 +50,22 @@ class ForgotPasswordRepository {
     required String confirmPassword,
   }) async {
     try {
-      // Validasi password match
+      // 1. Validasi password match
       if (newPassword != confirmPassword) {
         throw AuthErrorModel.passwordDontMatch();
       }
 
-      // Validasi panjang password
+      // 2. Validasi panjang password
       if (newPassword.length < 8) {
         throw AuthErrorModel.passwordTooShort();
       }
+
+      log('Attempting to reset password for email: $email');
+
+      // 3. Perform reset via service
       await _service.resetPassword(email: email, newPassword: newPassword);
 
-      // Get user ID from email
-      final userData = await supabase
-          .from('users')
-          .select('id')
-          .eq('email', email.trim())
-          .maybeSingle();
-
-      if (userData == null) {
-        throw AuthErrorModel.emailNotRegistered();
-      }
-
-      final userId = userData['id'] as String;
-
-      // Update password menggunakan RPC function
-      final response = await supabase.rpc(
-        'admin_update_user_password',
-        params: {'user_id': userId, 'new_password': newPassword},
-      );
-
-      log('Password update response: $response');
+      log('Password reset successfully completed for: $email');
 
       return ResetPasswordModel(
         email: email,
@@ -94,10 +76,12 @@ class ForgotPasswordRepository {
       log('Auth error during password reset: ${e.message}');
       rethrow;
     } on PostgrestException catch (e) {
-      log('Supabase error during password reset: ${e.message}');
+      log(
+        'Supabase/Postgres error during password reset: ${e.message} (Code: ${e.code})',
+      );
       throw AuthErrorModel.unknownError();
     } catch (e) {
-      log('Unknown error during password reset: $e');
+      log('Unexpected error during password reset: $e');
       throw AuthErrorModel.unknownError();
     }
   }

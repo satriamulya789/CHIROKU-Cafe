@@ -6,11 +6,13 @@ import 'package:flutter/material.dart';
 class AdminReportAppBar extends StatelessWidget implements PreferredSizeWidget {
   final UserModel? user;
   final VoidCallback? onProfileTap;
+  final VoidCallback? onExportTap;
 
   const AdminReportAppBar({
     super.key,
     this.user,
     this.onProfileTap,
+    this.onExportTap,
   });
 
   @override
@@ -65,7 +67,16 @@ class AdminReportAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ],
                 ),
               ),
-              // CircleAvatar dihapus
+              if (onExportTap != null)
+                IconButton(
+                  onPressed: onExportTap,
+                  icon: const Icon(
+                    Icons.file_download_outlined,
+                    color: AppColors.brownNormal,
+                  ),
+                  tooltip: 'Export to Excel',
+                ),
+              // CircleAvatar removed
             ],
           ),
         ),

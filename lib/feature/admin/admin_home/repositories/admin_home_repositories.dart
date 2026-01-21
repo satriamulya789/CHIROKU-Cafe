@@ -43,6 +43,9 @@ class DashboardRepository {
       // Get top products
       final topProducts = await _getTopProducts();
 
+      // Calculate items sold
+      final itemsSold = topProducts.fold<int>(0, (sum, p) => sum + p.quantity);
+
       return DashboardStatsModel(
         totalRevenue: totalRevenue,
         totalOrders: ordersData.length,
@@ -51,6 +54,7 @@ class DashboardRepository {
         cancelledOrders: cancelledOrders,
         hourlySales: hourlySales,
         topProducts: topProducts,
+        itemsSold: itemsSold,
       );
     } catch (e) {
       throw Exception('Failed to load dashboard stats: $e');
@@ -58,7 +62,9 @@ class DashboardRepository {
   }
 
   Future<List<HourlySalesData>> _getHourlySales(
-      DateTime start, DateTime end) async {
+    DateTime start,
+    DateTime end,
+  ) async {
     try {
       final ordersData = await _supabase
           .from('orders')
@@ -149,14 +155,16 @@ class DashboardRepository {
           .limit(5);
 
       for (var order in pendingOrders) {
-        notifications.add(NotificationModel(
-          id: order['id'],
-          type: 'order',
-          title: 'New Order Received',
-          message:
-              'Order #${order['id']} - ${order['customer_name'] ?? 'Customer'} is waiting for confirmation',
-          createdAt: DateTime.parse(order['created_at']),
-        ));
+        notifications.add(
+          NotificationModel(
+            id: order['id'],
+            type: 'order',
+            title: 'New Order Received',
+            message:
+                'Order #${order['id']} - ${order['customer_name'] ?? 'Customer'} is waiting for confirmation',
+            createdAt: DateTime.parse(order['created_at']),
+          ),
+        );
       }
 
       // Check low stock
@@ -168,14 +176,16 @@ class DashboardRepository {
           .limit(3);
 
       for (var item in lowStock) {
-        notifications.add(NotificationModel(
-          id: item['id'],
-          type: 'stock',
-          title: 'Stock Running Low',
-          message:
-              '${item['name']} - Only ${item['stock']} units left, please reorder soon',
-          createdAt: DateTime.now(),
-        ));
+        notifications.add(
+          NotificationModel(
+            id: item['id'],
+            type: 'stock',
+            title: 'Stock Running Low',
+            message:
+                '${item['name']} - Only ${item['stock']} units left, please reorder soon',
+            createdAt: DateTime.now(),
+          ),
+        );
       }
 
       // Check out of stock
@@ -186,14 +196,16 @@ class DashboardRepository {
           .limit(2);
 
       for (var item in outOfStock) {
-        notifications.add(NotificationModel(
-          id: item['id'],
-          type: 'alert',
-          title: 'Product Out of Stock',
-          message:
-              '${item['name']} is unavailable - Update menu or mark as sold out',
-          createdAt: DateTime.now(),
-        ));
+        notifications.add(
+          NotificationModel(
+            id: item['id'],
+            type: 'alert',
+            title: 'Product Out of Stock',
+            message:
+                '${item['name']} is unavailable - Update menu or mark as sold out',
+            createdAt: DateTime.now(),
+          ),
+        );
       }
 
       return notifications;

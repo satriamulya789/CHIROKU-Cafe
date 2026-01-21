@@ -8,11 +8,11 @@ class PermissionService {
   /// Request camera permission
   Future<bool> requestCameraPermission() async {
     final status = await Permission.camera.status;
-    
+
     if (status.isGranted) {
       return true;
     }
-    
+
     if (status.isDenied) {
       final result = await Permission.camera.request();
       if (result.isGranted) {
@@ -20,23 +20,25 @@ class PermissionService {
       } else if (result.isPermanentlyDenied) {
         await _showPermissionDialog(
           title: 'Camera Permission Required',
-          message: 'Please grant camera permission from app settings to take photos.',
+          message:
+              'Please grant camera permission from app settings to take photos.',
           icon: Icons.camera_alt,
         );
         return false;
       }
       return false;
     }
-    
+
     if (status.isPermanentlyDenied) {
       await _showPermissionDialog(
         title: 'Camera Permission Required',
-        message: 'Please grant camera permission from app settings to take photos.',
+        message:
+            'Please grant camera permission from app settings to take photos.',
         icon: Icons.camera_alt,
       );
       return false;
     }
-    
+
     return false;
   }
 
@@ -45,14 +47,14 @@ class PermissionService {
     // For Android 13+ (API 33+), use photos permission
     // For older versions, use storage permission
     PermissionStatus status;
-    
+
     if (await _isAndroid13OrHigher()) {
       status = await Permission.photos.status;
-      
+
       if (status.isGranted) {
         return true;
       }
-      
+
       if (status.isDenied) {
         final result = await Permission.photos.request();
         if (result.isGranted) {
@@ -60,29 +62,31 @@ class PermissionService {
         } else if (result.isPermanentlyDenied) {
           await _showPermissionDialog(
             title: 'Photos Permission Required',
-            message: 'Please grant photos permission from app settings to select images.',
+            message:
+                'Please grant photos permission from app settings to select images.',
             icon: Icons.photo_library,
           );
           return false;
         }
         return false;
       }
-      
+
       if (status.isPermanentlyDenied) {
         await _showPermissionDialog(
           title: 'Photos Permission Required',
-          message: 'Please grant photos permission from app settings to select images.',
+          message:
+              'Please grant photos permission from app settings to select images.',
           icon: Icons.photo_library,
         );
         return false;
       }
     } else {
       status = await Permission.storage.status;
-      
+
       if (status.isGranted) {
         return true;
       }
-      
+
       if (status.isDenied) {
         final result = await Permission.storage.request();
         if (result.isGranted) {
@@ -90,24 +94,26 @@ class PermissionService {
         } else if (result.isPermanentlyDenied) {
           await _showPermissionDialog(
             title: 'Storage Permission Required',
-            message: 'Please grant storage permission from app settings to select images.',
+            message:
+                'Please grant storage permission from app settings to select images.',
             icon: Icons.photo_library,
           );
           return false;
         }
         return false;
       }
-      
+
       if (status.isPermanentlyDenied) {
         await _showPermissionDialog(
           title: 'Storage Permission Required',
-          message: 'Please grant storage permission from app settings to select images.',
+          message:
+              'Please grant storage permission from app settings to select images.',
           icon: Icons.photo_library,
         );
         return false;
       }
     }
-    
+
     return false;
   }
 
@@ -126,9 +132,7 @@ class PermissionService {
   }) async {
     await Get.dialog(
       AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: [
             Icon(icon, color: AppColors.alertNormal, size: 28),
@@ -136,18 +140,14 @@ class PermissionService {
             Expanded(
               child: Text(
                 title,
-                style: AppTypography.h6.copyWith(
-                  color: AppColors.black,
-                ),
+                style: AppTypography.h6.copyWith(color: AppColors.black),
               ),
             ),
           ],
         ),
         content: Text(
           message,
-          style: AppTypography.bodyMedium.copyWith(
-            color: AppColors.brownDark,
-          ),
+          style: AppTypography.bodyMedium.copyWith(color: AppColors.brownDark),
         ),
         actions: [
           TextButton(
@@ -173,9 +173,7 @@ class PermissionService {
             ),
             child: Text(
               'Open Settings',
-              style: AppTypography.button.copyWith(
-                color: AppColors.white,
-              ),
+              style: AppTypography.button.copyWith(color: AppColors.white),
             ),
           ),
         ],
@@ -184,15 +182,15 @@ class PermissionService {
     );
   }
 
-  // HAPUS METHOD INI
+  // DELETE THIS METHOD
   // /// Show loading dialog while checking permissions
   // void showPermissionLoadingDialog() { ... }
 
-  // HAPUS METHOD INI
+  // DELETE THIS METHOD
   // /// Request all necessary permissions for image picking
   // Future<bool> requestAllImagePermissions() async { ... }
 
-  // HAPUS METHOD INI
+  // DELETE THIS METHOD
   // /// Request all necessary permissions for camera
   // Future<bool> requestAllCameraPermissions() async { ... }
 
@@ -201,7 +199,9 @@ class PermissionService {
     Get.snackbar(
       title,
       message,
-      backgroundColor: isSuccess ? AppColors.successNormal : AppColors.alertNormal,
+      backgroundColor: isSuccess
+          ? AppColors.successNormal
+          : AppColors.alertNormal,
       colorText: AppColors.white,
       snackPosition: SnackPosition.TOP,
       duration: const Duration(seconds: 3),
@@ -213,15 +213,11 @@ class PermissionService {
       margin: const EdgeInsets.all(16),
       titleText: Text(
         title,
-        style: AppTypography.h6.copyWith(
-          color: AppColors.white,
-        ),
+        style: AppTypography.h6.copyWith(color: AppColors.white),
       ),
       messageText: Text(
         message,
-        style: AppTypography.bodyMedium.copyWith(
-          color: AppColors.white,
-        ),
+        style: AppTypography.bodyMedium.copyWith(color: AppColors.white),
       ),
     );
   }

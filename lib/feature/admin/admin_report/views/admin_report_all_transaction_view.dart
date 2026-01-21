@@ -24,105 +24,114 @@ class AllTransactionsView extends StatelessWidget {
         foregroundColor: AppColors.brownDarker,
         actions: [
           IconButton(
+            icon: const Icon(Icons.file_download_outlined),
+            onPressed: controller.exportToExcel,
+            tooltip: 'Export to Excel',
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: controller.fetchAllTransactions,
+            tooltip: 'Refresh',
           ),
         ],
       ),
-      body: Obx(() => Column(
-        children: [
-          // Search Bar
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: AppColors.brownLight,
-            child: TextField(
-              controller: controller.searchController,
-              decoration: InputDecoration(
-                hintText: 'Search by ID, Customer, or Cashier...',
-                hintStyle: AppTypography.bodyMedium.copyWith(
-                  color: Colors.grey[400],
-                ),
-                prefixIcon: Icon(Icons.search, color: AppColors.brownNormal),
-                suffixIcon: controller.searchController.text.isEmpty
-                    ? const SizedBox.shrink()
-                    : IconButton(
-                        icon: Icon(Icons.clear, color: AppColors.brownNormal),
-                        onPressed: controller.clearSearch,
-                      ),
-                filled: true,
-                fillColor: AppColors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.brownNormal),
+      body: Obx(
+        () => Column(
+          children: [
+            // Search Bar
+            Container(
+              padding: const EdgeInsets.all(16),
+              color: AppColors.brownLight,
+              child: TextField(
+                controller: controller.searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search by ID, Customer, or Cashier...',
+                  hintStyle: AppTypography.bodyMedium.copyWith(
+                    color: Colors.grey[400],
+                  ),
+                  prefixIcon: Icon(Icons.search, color: AppColors.brownNormal),
+                  suffixIcon: controller.searchController.text.isEmpty
+                      ? const SizedBox.shrink()
+                      : IconButton(
+                          icon: Icon(Icons.clear, color: AppColors.brownNormal),
+                          onPressed: controller.clearSearch,
+                        ),
+                  filled: true,
+                  fillColor: AppColors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.brownNormal),
+                  ),
                 ),
               ),
             ),
-          ),
 
-          // Results Count
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: AppColors.brownLight,
-            child: Row(
-              children: [
-                Text(
-                  'Showing ${controller.filteredTransactions.length} of ${controller.allTransactions.length} transactions',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: Colors.grey[600],
+            // Results Count
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              color: AppColors.brownLight,
+              child: Row(
+                children: [
+                  Text(
+                    'Showing ${controller.filteredTransactions.length} of ${controller.allTransactions.length} transactions',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: Colors.grey[600],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          // Transaction List
-          Expanded(
-            child: controller.isLoading.value
-                ? const Center(child: CircularProgressIndicator())
-                : controller.filteredTransactions.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.receipt_long,
-                              size: 64,
-                              color: Colors.grey[300],
+            // Transaction List
+            Expanded(
+              child: controller.isLoading.value
+                  ? const Center(child: CircularProgressIndicator())
+                  : controller.filteredTransactions.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.receipt_long,
+                            size: 64,
+                            color: Colors.grey[300],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            controller.searchController.text.isEmpty
+                                ? 'No transactions yet'
+                                : 'No matching transactions found',
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: Colors.grey[600],
                             ),
-                            const SizedBox(height: 16),
-                            Text(
-                              controller.searchController.text.isEmpty
-                                  ? 'No transactions yet'
-                                  : 'No matching transactions found',
-                              style: AppTypography.bodyMedium.copyWith(
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : RefreshIndicator(
-                        onRefresh: controller.fetchAllTransactions,
-                        child: ListView(
-                          padding: const EdgeInsets.all(16),
-                          children: [
-                            TransactionListWidget(
-                              transactions: controller.filteredTransactions,
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-          ),
-        ],
-      )),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: controller.fetchAllTransactions,
+                      child: ListView(
+                        padding: const EdgeInsets.all(16),
+                        children: [
+                          TransactionListWidget(
+                            transactions: controller.filteredTransactions,
+                            onPrint: controller.printTransactionPDF,
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

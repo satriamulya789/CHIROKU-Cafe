@@ -3,11 +3,15 @@
 import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_stats_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_transaction_summary_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/repositories/admin_report_repositories.dart';
+import 'package:chiroku_cafe/shared/services/excel_service.dart';
+import 'package:chiroku_cafe/shared/services/pdf_service.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AllTransactionsController extends GetxController {
   final repo = ReportAdminRepository();
+  final snackbar = CustomSnackbar();
 
   var isLoading = false.obs;
   var allTransactions = <ReportTransaction>[].obs;
@@ -65,7 +69,7 @@ class AllTransactionsController extends GetxController {
 
   void _onSearchChanged() {
     final query = searchController.text.toLowerCase();
-    
+
     if (query.isEmpty) {
       filteredTransactions.value = allTransactions;
     } else {
@@ -73,15 +77,46 @@ class AllTransactionsController extends GetxController {
         final orderId = transaction.id.toString();
         final customerName = (transaction.customerName ?? '').toLowerCase();
         final cashierName = transaction.cashierName.toLowerCase();
-        
+
         return orderId.contains(query) ||
-               customerName.contains(query) ||
-               cashierName.contains(query);
+            customerName.contains(query) ||
+            cashierName.contains(query);
       }).toList();
     }
   }
 
   void clearSearch() {
     searchController.clear();
+  }
+
+  Future<void> printTransactionPDF(ReportTransaction transaction) async {
+    try {
+      isLoading.value = true;
+      final items = await repo.getOrderItems([transaction.id]);
+      await PdfService.generateReceiptPDF(
+        transaction: transaction,
+        items: items,
+      );
+    } catch (e) {
+      snackbar.showErrorSnackbar('Failed to print PDF: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> exportToExcel() async {
+    if (filteredTransactions.isEmpty) {
+      snackbar.showErrorSnackbar('No data available to export');
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+      await ExcelService.exportTransactionsToExcel(filteredTransactions);
+    } catch (e) {
+      snackbar.showErrorSnackbar('Failed to export Excel: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

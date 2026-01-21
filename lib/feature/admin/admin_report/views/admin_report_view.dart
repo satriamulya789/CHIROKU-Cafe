@@ -24,44 +24,40 @@ class _ReportAdminViewState extends State<ReportAdminView> {
   DateTimeRange? _customDateRange;
 
   void _onFilterSelected(String value) {
+    final controller = Get.find<ReportAdminController>();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
     setState(() {
       _selectedFilter = value;
-      // TODO: Call controller/filter data here if needed
+      _customDateRange = null;
     });
+
+    if (value == 'today') {
+      controller.setDateRange(
+        DateTimeRange(start: today, end: today.add(const Duration(days: 1))),
+      );
+    } else if (value == 'week') {
+      controller.setDateRange(
+        DateTimeRange(start: today.subtract(const Duration(days: 7)), end: now),
+      );
+    } else if (value == 'month') {
+      controller.setDateRange(
+        DateTimeRange(start: DateTime(now.year, now.month, 1), end: now),
+      );
+    } else if (value == 'all') {
+      controller.setDateRange(DateTimeRange(start: DateTime(2020), end: now));
+    }
   }
 
   Future<void> _onCustomDateRangeTap() async {
-    final picked = await showDateRangePicker(
-      context: context,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-      initialDateRange: _customDateRange,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.brownNormal,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: AppColors.brownDarker,
-            ),
-            dialogBackgroundColor: AppColors.white,
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.brownNormal,
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
+    final picked = await showDateRangePopup(context, _customDateRange);
     if (picked != null) {
       setState(() {
         _selectedFilter = 'custom';
         _customDateRange = picked;
-        // TODO: Call controller/filter data here if needed
       });
+      Get.find<ReportAdminController>().setDateRange(picked);
     }
   }
 
@@ -70,7 +66,7 @@ class _ReportAdminViewState extends State<ReportAdminView> {
     final controller = Get.find<ReportAdminController>();
     return Scaffold(
       backgroundColor: AppColors.brownLight,
-      appBar: AdminReportAppBar(),
+      appBar: AdminReportAppBar(onExportTap: controller.exportToExcel),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -95,9 +91,7 @@ class _ReportAdminViewState extends State<ReportAdminView> {
                   const SizedBox(height: 12),
                   StatsGrid(stat: controller.stat.value!),
                   const SizedBox(height: 24),
-                  ReportSalesChartSectionWidget(
-                    data: controller.productStats, 
-                  ),
+                  ReportSalesChartSectionWidget(data: controller.productStats),
                   const SizedBox(height: 24),
                 ],
                 if (controller.selectedCashierId == null) ...[
