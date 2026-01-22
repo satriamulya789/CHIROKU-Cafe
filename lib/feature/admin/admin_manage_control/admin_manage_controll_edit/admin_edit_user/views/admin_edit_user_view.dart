@@ -59,7 +59,7 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
                     return UserListItem(
                       user: user,
                       onEdit: () => _showEditDialog(context, user),
-                      onDelete: () => _showDeleteDialog(context, user.id),
+                      onDelete: () => _showDeleteDialog(context, user),
                     );
                   },
                 ),
@@ -74,9 +74,7 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
         icon: const Icon(Icons.person_add, color: AppColors.white),
         label: Text(
           'Add User',
-          style: AppTypography.button.copyWith(
-            color: AppColors.white,
-          ),
+          style: AppTypography.button.copyWith(color: AppColors.white),
         ),
       ),
     );
@@ -100,7 +98,10 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
         ),
       ),
     );
@@ -110,7 +111,7 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
     controller.clearForm();
     showDialog(
       context: context,
-      builder: (context) => const UserFormDialog(isEdit: false, userId: '',),
+      builder: (context) => const UserFormDialog(isEdit: false, userId: ''),
     );
   }
 
@@ -118,14 +119,11 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
     controller.setEditUser(user);
     showDialog(
       context: context,
-      builder: (context) => UserFormDialog(
-        userId: user.id,
-        isEdit: true,
-      ),
+      builder: (context) => UserFormDialog(userId: user.id, isEdit: true),
     );
   }
 
-  void _showDeleteDialog(BuildContext context, String userId) {
+  void _showDeleteDialog(BuildContext context, user) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -137,21 +135,25 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel', style: AppTypography.button.copyWith(
-              color: AppColors.brownNormal,
-            )),
+            child: Text(
+              'Cancel',
+              style: AppTypography.button.copyWith(
+                color: AppColors.brownNormal,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back();
-              controller.deleteUser(userId);
+              controller.deleteUser(user);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.alertNormal,
             ),
-            child: Text('Delete', style: AppTypography.button.copyWith(
-              color: AppColors.white,
-            )),
+            child: Text(
+              'Delete',
+              style: AppTypography.button.copyWith(color: AppColors.white),
+            ),
           ),
         ],
       ),

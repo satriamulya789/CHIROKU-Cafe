@@ -1,4 +1,5 @@
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/models/admin_edit_user_model.dart';
+import 'package:chiroku_cafe/shared/constants/protected_users.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,8 @@ class UserListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isProtected = ProtectedUsers.isProtected(user.email);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -31,12 +34,15 @@ class UserListItem extends StatelessWidget {
         ],
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         leading: CircleAvatar(
           radius: 24,
           backgroundColor: AppColors.brownLight,
-          backgroundImage: user.avatarUrl != null 
-              ? NetworkImage(user.avatarUrl!) 
+          backgroundImage: user.avatarUrl != null
+              ? NetworkImage(user.avatarUrl!)
               : null,
           child: user.avatarUrl == null
               ? Text(
@@ -49,9 +55,7 @@ class UserListItem extends StatelessWidget {
         ),
         title: Text(
           user.fullName,
-          style: AppTypography.h6.copyWith(
-            color: AppColors.brownDark,
-          ),
+          style: AppTypography.h6.copyWith(color: AppColors.brownDark),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,16 +72,16 @@ class UserListItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: user.role == 'admin' 
-                    ? AppColors.purpleLight 
+                color: user.role == 'admin'
+                    ? AppColors.purpleLight
                     : AppColors.blueLight,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
                 user.role.toUpperCase(),
                 style: AppTypography.label.copyWith(
-                  color: user.role == 'admin' 
-                      ? AppColors.purpleNormal 
+                  color: user.role == 'admin'
+                      ? AppColors.purpleNormal
                       : AppColors.blueNormal,
                   fontWeight: FontWeight.w600,
                 ),
@@ -92,10 +96,11 @@ class UserListItem extends StatelessWidget {
               icon: const Icon(Icons.edit, color: AppColors.blueNormal),
               onPressed: onEdit,
             ),
-            IconButton(
-              icon: const Icon(Icons.delete, color: AppColors.alertNormal),
-              onPressed: onDelete,
-            ),
+            if (!isProtected)
+              IconButton(
+                icon: const Icon(Icons.delete, color: AppColors.alertNormal),
+                onPressed: onDelete,
+              ),
           ],
         ),
       ),

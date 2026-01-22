@@ -1,5 +1,6 @@
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/models/admin_edit_user_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/services/admin_edit_user_service.dart';
+import 'package:chiroku_cafe/shared/constants/protected_users.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
@@ -120,10 +121,17 @@ class AdminEditUserController extends GetxController {
     }
   }
 
-  Future<void> deleteUser(String id) async {
+  Future<void> deleteUser(UserModel user) async {
     try {
+      if (ProtectedUsers.isProtected(user.email)) {
+        snackbar.showErrorSnackbar(
+          'This is a protected account and cannot be deleted.',
+        );
+        return;
+      }
+
       isLoading.value = true;
-      await _service.deleteUser(id);
+      await _service.deleteUser(user.id);
       await fetchUsers();
       snackbar.showSuccessSnackbar('User deleted successfully');
     } catch (e) {
