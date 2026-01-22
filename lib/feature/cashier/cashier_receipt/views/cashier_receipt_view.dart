@@ -81,7 +81,7 @@ class ReceiptView extends GetView<ReceiptController> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Example St. No. 123, City',
+                          'Jl. Cikarang Raya No. 123, Cikarang',
                           style: AppTypography.bodyMedium.copyWith(
                             color: AppColors.greyNormal,
                           ),
