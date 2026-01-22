@@ -1,5 +1,7 @@
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/models/admin_edit_user_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/services/admin_edit_user_service.dart';
+import 'package:chiroku_cafe/shared/style/app_color.dart';
+import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -127,15 +129,37 @@ class AdminEditUserController extends GetxController {
     } catch (e) {
       final errorMessage = e.toString();
       if (errorMessage.contains('23503')) {
-        snackbar.showErrorSnackbar(
-          'Cannot delete user because they have associated records (like orders). You may want to deactivate their account instead.',
-        );
+        _showCannotDeleteUserDialog();
       } else {
         snackbar.showErrorSnackbar('Failed to delete user: $e');
       }
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _showCannotDeleteUserDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Cannot Delete User', style: AppTypography.h5),
+        content: Text(
+          'This user has associated records in the system (such as orders or reports) and cannot be deleted to preserve data integrity.',
+          style: AppTypography.bodyMedium,
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Get.back(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.brownNormal,
+            ),
+            child: Text(
+              'Understood',
+              style: AppTypography.button.copyWith(color: AppColors.white),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   bool _validateCreateForm() {

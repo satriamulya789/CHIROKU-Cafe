@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:chiroku_cafe/feature/crop_image/services/crop_image_service.dart';
+import 'package:chiroku_cafe/shared/style/app_color.dart';
+import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 
 class AdminEditMenuController extends GetxController {
@@ -228,27 +230,63 @@ class AdminEditMenuController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Delete image from storage if exists
+      await _service.deleteMenu(id);
+
+      // Delete image from storage only after successful menu deletion
       if (imageUrl != null && imageUrl.isNotEmpty) {
         await _service.deleteImage(imageUrl);
       }
 
-      await _service.deleteMenu(id);
       await fetchMenus();
-
       snackbar.showSuccessSnackbar('Menu deleted successfully');
     } catch (e) {
       final errorMessage = e.toString();
       if (errorMessage.contains('23503')) {
-        snackbar.showErrorSnackbar(
-          'Cannot delete menu because it has already been ordered. You can set it to "Not Available" instead.',
-        );
+        _showDisableInsteadOfDeleteDialog(id);
       } else {
         snackbar.showErrorSnackbar('Failed to delete menu: $e');
       }
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _showDisableInsteadOfDeleteDialog(int id) {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Cannot Delete Menu', style: AppTypography.h5),
+        content: Text(
+          'This menu has already been ordered and cannot be deleted to maintain order history. Would you like to set it to "Not Available" instead?',
+          style: AppTypography.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text(
+              'Cancel',
+              style: AppTypography.button.copyWith(
+                color: AppColors.brownNormal,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Get.back();
+              await _service.toggleMenuAvailability(id, false);
+              await fetchMenus();
+              snackbar.showSuccessSnackbar('Menu status set to Not Available');
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.brownNormal,
+            ),
+            child: Text(
+              'Set to Not Available',
+              style: AppTypography.button.copyWith(color: AppColors.white),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   bool _validateForm() {

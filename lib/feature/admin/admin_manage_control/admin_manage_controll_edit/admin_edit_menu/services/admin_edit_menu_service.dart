@@ -67,4 +67,8 @@ class MenuService {
   Future<void> deleteMenu(int id) async {
     await _repository.deleteMenu(id);
   }
+
+  Future<void> toggleMenuAvailability(int id, bool isAvailable) async {
+    await _repository.toggleMenuAvailability(id, isAvailable);
+  }
 }

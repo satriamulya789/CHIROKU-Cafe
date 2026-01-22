@@ -1,5 +1,7 @@
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/models/admin_edit_category_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/services/admin_edit_category_service.dart';
+import 'package:chiroku_cafe/shared/style/app_color.dart';
+import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -98,15 +100,37 @@ class AdminEditCategoryController extends GetxController {
     } catch (e) {
       final errorMessage = e.toString();
       if (errorMessage.contains('23503')) {
-        snackbar.showErrorSnackbar(
-          'Cannot delete category because it is still used by some menus. Please delete or reassign those menus first.',
-        );
+        _showCannotDeleteCategoryDialog();
       } else {
         snackbar.showErrorSnackbar('Failed to delete category: $e');
       }
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _showCannotDeleteCategoryDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Cannot Delete Category', style: AppTypography.h5),
+        content: Text(
+          'This category is still linked to several menu items. You must reassign or delete those menus before this category can be removed.',
+          style: AppTypography.bodyMedium,
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Get.back(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.brownNormal,
+            ),
+            child: Text(
+              'Understood',
+              style: AppTypography.button.copyWith(color: AppColors.white),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void clearForm() {

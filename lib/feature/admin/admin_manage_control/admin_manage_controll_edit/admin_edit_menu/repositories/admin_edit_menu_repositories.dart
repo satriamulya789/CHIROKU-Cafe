@@ -15,7 +15,9 @@ class MenuRepositories {
           .select('*, categories!fk_menu_category(id, name)')
           .order('created_at', ascending: false);
 
-      return (response as List).map((json) => MenuModel.fromJson(json)).toList();
+      return (response as List)
+          .map((json) => MenuModel.fromJson(json))
+          .toList();
     } catch (e) {
       throw Exception('Failed to load menus: $e');
     }
@@ -39,9 +41,7 @@ class MenuRepositories {
   Future<String> uploadImage(File imageFile, String fileName) async {
     try {
       // Upload to Supabase Storage
-      await _supabase.storage
-          .from(bucketName)
-          .upload(fileName, imageFile);
+      await _supabase.storage.from(bucketName).upload(fileName, imageFile);
 
       // Get public URL
       final String publicUrl = _supabase.storage
@@ -104,16 +104,19 @@ class MenuRepositories {
     bool isAvailable = true,
   }) async {
     try {
-      await _supabase.from(ApiConstant.menuTable).update({
-        'category_id': categoryId,
-        'name': name,
-        'price': price,
-        'description': description,
-        'stock': stock,
-        'image_url': imageUrl,
-        'is_available': isAvailable,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', id);
+      await _supabase
+          .from(ApiConstant.menuTable)
+          .update({
+            'category_id': categoryId,
+            'name': name,
+            'price': price,
+            'description': description,
+            'stock': stock,
+            'image_url': imageUrl,
+            'is_available': isAvailable,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', id);
     } catch (e) {
       throw Exception('Failed to update menu: $e');
     }
@@ -124,6 +127,20 @@ class MenuRepositories {
       await _supabase.from(ApiConstant.menuTable).delete().eq('id', id);
     } catch (e) {
       throw Exception('Failed to delete menu: $e');
+    }
+  }
+
+  Future<void> toggleMenuAvailability(int id, bool isAvailable) async {
+    try {
+      await _supabase
+          .from(ApiConstant.menuTable)
+          .update({
+            'is_available': isAvailable,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', id);
+    } catch (e) {
+      throw Exception('Failed to update menu availability: $e');
     }
   }
 }
