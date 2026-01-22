@@ -50,4 +50,6 @@ abstract class AppRoutes {
 
   //cashier
   static const cashierEditProfile = '/cashier-edit-profile';
+  static const cashierReport = '/cashier-report';
+  static const cashierAllTransactions = '/cashier/all-transactions';
 }

@@ -1,4 +1,4 @@
-import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_hourly_sales.dart';
+import 'package:chiroku_cafe/shared/models/report/hourly_sales_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_top_product_model.dart';
 
 class DashboardStatsModel {

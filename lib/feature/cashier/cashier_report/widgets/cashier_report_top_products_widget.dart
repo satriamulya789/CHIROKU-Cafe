@@ -1,22 +1,24 @@
-import 'package:chiroku_cafe/feature/admin/admin_report/controllers/admin_report_controller.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_cashier_peformance/admin_report_cashier_peformance_widget.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/controllers/cashier_report_controller.dart';
 import 'package:chiroku_cafe/shared/widgets/report/report_section_header_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
+import 'package:chiroku_cafe/shared/widgets/report/report_product_list_widget.dart';
 import 'package:flutter/material.dart';
 
-class CashierPerformanceSection extends StatelessWidget {
-  final ReportAdminController controller;
-  const CashierPerformanceSection({super.key, required this.controller});
+class CashierTopProductsSection extends StatelessWidget {
+  final ReportCashierController controller;
+  const CashierTopProductsSection({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
+    if (controller.top5Products.isEmpty) return const SizedBox.shrink();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ReportSectionHeader(
-          icon: Icons.people,
-          title: 'Cashier Performance',
-          subtitle: 'Top cashiers by revenue & orders',
+        const ReportSectionHeader(
+          icon: Icons.trending_up,
+          title: 'Top 5 Menus',
+          subtitle: 'Best selling items by quantity',
         ),
         const SizedBox(height: 12),
         Card(
@@ -28,8 +30,8 @@ class CashierPerformanceSection extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: CashierPerformanceWidget(
-              cashiers: controller.cashierStats.toList(),
+            child: ProductListWidget(
+              products: controller.top5Products.toList(),
             ),
           ),
         ),

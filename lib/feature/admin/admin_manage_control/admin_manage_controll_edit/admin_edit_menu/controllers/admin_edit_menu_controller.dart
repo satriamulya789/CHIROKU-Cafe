@@ -6,11 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:chiroku_cafe/feature/crop_image/services/crop_image_service.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 
 class AdminEditMenuController extends GetxController {
   final MenuService _service = MenuService();
   final ImagePicker _picker = ImagePicker();
   final _cropService = CropImageService();
+  final snackbar = CustomSnackbar();
 
   final menus = <MenuModel>[].obs;
   final categories = <CategoryModel>[].obs;
@@ -56,13 +58,7 @@ class AdminEditMenuController extends GetxController {
       isLoading.value = true;
       menus.value = await _service.fetchMenus();
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to fetch menus: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Failed to fetch menus: $e');
     } finally {
       isLoading.value = false;
     }
@@ -72,13 +68,7 @@ class AdminEditMenuController extends GetxController {
     try {
       categories.value = await _service.fetchCategories();
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to fetch categories: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Failed to fetch categories: $e');
     }
   }
 
@@ -112,13 +102,7 @@ class AdminEditMenuController extends GetxController {
         }
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to pick image: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Failed to pick image: $e');
     }
   }
 
@@ -141,13 +125,7 @@ class AdminEditMenuController extends GetxController {
         }
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to take photo: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Failed to take photo: $e');
     }
   }
 
@@ -168,13 +146,7 @@ class AdminEditMenuController extends GetxController {
       );
       return uploadedUrl;
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to upload image: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Failed to upload image: $e');
       return null;
     } finally {
       isUploadingImage.value = false;
@@ -207,24 +179,10 @@ class AdminEditMenuController extends GetxController {
         isAvailable: isAvailable.value,
       );
 
-      await fetchMenus();
-      clearForm();
       Get.back();
-      Get.snackbar(
-        'Success',
-        'Menu created successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      snackbar.showSuccessSnackbar('Menu created successfully');
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to create menu: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Failed to create menu: $e');
     } finally {
       isLoading.value = false;
     }
@@ -257,24 +215,10 @@ class AdminEditMenuController extends GetxController {
         isAvailable: isAvailable.value,
       );
 
-      await fetchMenus();
-      clearForm();
       Get.back();
-      Get.snackbar(
-        'Success',
-        'Menu updated successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      snackbar.showSuccessSnackbar('Menu updated successfully');
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to update menu: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Failed to update menu: $e');
     } finally {
       isLoading.value = false;
     }
@@ -292,21 +236,16 @@ class AdminEditMenuController extends GetxController {
       await _service.deleteMenu(id);
       await fetchMenus();
 
-      Get.snackbar(
-        'Success',
-        'Menu deleted successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      snackbar.showSuccessSnackbar('Menu deleted successfully');
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to delete menu: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      final errorMessage = e.toString();
+      if (errorMessage.contains('23503')) {
+        snackbar.showErrorSnackbar(
+          'Cannot delete menu because it has already been ordered. You can set it to "Not Available" instead.',
+        );
+      } else {
+        snackbar.showErrorSnackbar('Failed to delete menu: $e');
+      }
     } finally {
       isLoading.value = false;
     }
@@ -314,65 +253,29 @@ class AdminEditMenuController extends GetxController {
 
   bool _validateForm() {
     if (nameController.text.trim().isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Menu name is required',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Menu name is required');
       return false;
     }
     if (selectedCategoryId.value == null) {
-      Get.snackbar(
-        'Error',
-        'Please select a category',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Please select a category');
       return false;
     }
     if (priceController.text.trim().isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Price is required',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Price is required');
       return false;
     }
     final price = double.tryParse(priceController.text);
     if (price == null || price < 0) {
-      Get.snackbar(
-        'Error',
-        'Please enter a valid price',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Please enter a valid price');
       return false;
     }
     if (stockController.text.trim().isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Stock is required',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Stock is required');
       return false;
     }
     final stock = int.tryParse(stockController.text);
     if (stock == null || stock < 0) {
-      Get.snackbar(
-        'Error',
-        'Please enter a valid stock',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      snackbar.showErrorSnackbar('Please enter a valid stock');
       return false;
     }
     return true;

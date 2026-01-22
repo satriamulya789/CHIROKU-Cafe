@@ -1,10 +1,12 @@
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_table/models/admin_edit_table_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_table/services/admin_edit_table_service.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AdminEditTableController extends GetxController {
   final TableService _service = TableService();
+  final snackbar = CustomSnackbar();
 
   final tables = <TableModel>[].obs;
   final isLoading = false.obs;
@@ -31,7 +33,9 @@ class AdminEditTableController extends GetxController {
   List<TableModel> get filteredTables {
     if (searchQuery.value.isEmpty) return tables;
     return tables.where((table) {
-      return table.tableName.toLowerCase().contains(searchQuery.value.toLowerCase());
+      return table.tableName.toLowerCase().contains(
+        searchQuery.value.toLowerCase(),
+      );
     }).toList();
   }
 
@@ -40,8 +44,7 @@ class AdminEditTableController extends GetxController {
       isLoading.value = true;
       tables.value = await _service.fetchTables();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to fetch tables: $e',
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showErrorSnackbar('Failed to fetch tables: $e');
     } finally {
       isLoading.value = false;
     }
@@ -65,11 +68,9 @@ class AdminEditTableController extends GetxController {
       await fetchTables();
       clearForm();
       Get.back();
-      Get.snackbar('Success', 'Table created successfully',
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showSuccessSnackbar('Table created successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to create table: $e',
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showErrorSnackbar('Failed to create table: $e');
     } finally {
       isLoading.value = false;
     }
@@ -89,11 +90,9 @@ class AdminEditTableController extends GetxController {
       await fetchTables();
       clearForm();
       Get.back();
-      Get.snackbar('Success', 'Table updated successfully',
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showSuccessSnackbar('Table updated successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update table: $e',
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showErrorSnackbar('Failed to update table: $e');
     } finally {
       isLoading.value = false;
     }
@@ -104,11 +103,16 @@ class AdminEditTableController extends GetxController {
       isLoading.value = true;
       await _service.deleteTable(id);
       await fetchTables();
-      Get.snackbar('Success', 'Table deleted successfully',
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showSuccessSnackbar('Table deleted successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to delete table: $e',
-          snackPosition: SnackPosition.BOTTOM);
+      final errorMessage = e.toString();
+      if (errorMessage.contains('23503')) {
+        snackbar.showErrorSnackbar(
+          'Cannot delete table because it is still referenced by orders. Please complete or delete the associated orders first.',
+        );
+      } else {
+        snackbar.showErrorSnackbar('Failed to delete table: $e');
+      }
     } finally {
       isLoading.value = false;
     }
@@ -116,19 +120,16 @@ class AdminEditTableController extends GetxController {
 
   bool _validateForm() {
     if (tableNameController.text.isEmpty) {
-      Get.snackbar('Error', 'Table name is required', 
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showErrorSnackbar('Table name is required');
       return false;
     }
     if (capacityController.text.isEmpty) {
-      Get.snackbar('Error', 'Capacity is required', 
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showErrorSnackbar('Capacity is required');
       return false;
     }
     final capacity = int.tryParse(capacityController.text);
     if (capacity == null || capacity < 1) {
-      Get.snackbar('Error', 'Capacity must be at least 1', 
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showErrorSnackbar('Capacity must be at least 1');
       return false;
     }
     return true;

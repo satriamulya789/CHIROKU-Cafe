@@ -1,7 +1,6 @@
 // lib/feature/admin/admin_report/widgets/transaction_list_widget.dart
 
-import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_stats_model.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_transaction_summary_model.dart';
+import 'package:chiroku_cafe/shared/models/report/report_transaction_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +9,13 @@ import 'package:intl/intl.dart';
 class TransactionListWidget extends StatelessWidget {
   final List<ReportTransaction> transactions;
   final Function(ReportTransaction)? onPrint;
+  final Function(ReportTransaction)? onTap;
 
   const TransactionListWidget({
     super.key,
     required this.transactions,
     this.onPrint,
+    this.onTap,
   });
 
   @override
@@ -62,6 +63,7 @@ class TransactionListWidget extends StatelessWidget {
             side: BorderSide(color: Colors.grey.withOpacity(0.2)),
           ),
           child: ListTile(
+            onTap: onTap != null ? () => onTap!(transaction) : null,
             leading: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(

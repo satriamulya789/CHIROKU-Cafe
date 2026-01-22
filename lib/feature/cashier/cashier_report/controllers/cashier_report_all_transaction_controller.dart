@@ -1,13 +1,13 @@
 import 'package:chiroku_cafe/shared/models/report/report_transaction_model.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/repositories/admin_report_repositories.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/repositories/cashier_report_repositories.dart';
 import 'package:chiroku_cafe/shared/services/excel_service.dart';
 import 'package:chiroku_cafe/shared/services/pdf_service.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class AllTransactionsController extends GetxController {
-  final repo = ReportAdminRepository();
+class CashierAllTransactionsController extends GetxController {
+  final repo = ReportCashierRepository();
   final snackbar = CustomSnackbar();
 
   var isLoading = false.obs;
@@ -19,7 +19,7 @@ class AllTransactionsController extends GetxController {
   final DateTime endDate;
   final String? cashierId;
 
-  AllTransactionsController({
+  CashierAllTransactionsController({
     required this.startDate,
     required this.endDate,
     this.cashierId,
@@ -84,6 +84,19 @@ class AllTransactionsController extends GetxController {
 
   void clearSearch() {
     searchController.clear();
+  }
+
+  Future<void> completeOrder(ReportTransaction transaction) async {
+    try {
+      isLoading.value = true;
+      await repo.completeOrder(transaction.id, transaction.tableId);
+      snackbar.showSuccessSnackbar('Order #${transaction.id} marked as paid');
+      await fetchAllTransactions();
+    } catch (e) {
+      snackbar.showErrorSnackbar('Failed to complete order: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<void> printTransactionPDF(ReportTransaction transaction) async {

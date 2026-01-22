@@ -1,30 +1,29 @@
-import 'package:chiroku_cafe/feature/admin/admin_report/controllers/admin_report_controller.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_app_bar_widget.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_date_range_filter_widget.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_stats/admin_report_stats_grid_widget.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_top_revenue_card_widget.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_cashier_peformance/admin_report_cashier_performance_widget.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_top_sales_product_widget.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_recent_transaction/admin_report_recent_transaction_widget.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/controllers/cashier_report_controller.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/widgets/cashier_report_app_bar_widget.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/widgets/cashier_report_date_filter_widget.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/widgets/cashier_report_revenue_card_widget.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/widgets/cashier_report_stats_grid_widget.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/widgets/cashier_report_recent_transaction_widget.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/widgets/cashier_report_top_products_widget.dart';
 import 'package:chiroku_cafe/shared/widgets/report/report_detail_dialog.dart';
-import 'package:chiroku_cafe/shared/widgets/report/chart/sales_chart_section_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
+import 'package:chiroku_cafe/shared/widgets/report/chart/sales_chart_section_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ReportAdminView extends StatefulWidget {
-  const ReportAdminView({super.key});
+class ReportCashierView extends StatefulWidget {
+  const ReportCashierView({super.key});
 
   @override
-  State<ReportAdminView> createState() => _ReportAdminViewState();
+  State<ReportCashierView> createState() => _ReportCashierViewState();
 }
 
-class _ReportAdminViewState extends State<ReportAdminView> {
+class _ReportCashierViewState extends State<ReportCashierView> {
   String _selectedFilter = 'today';
   DateTimeRange? _customDateRange;
 
   void _onFilterSelected(String value) {
-    final controller = Get.find<ReportAdminController>();
+    final controller = Get.find<ReportCashierController>();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
@@ -57,11 +56,11 @@ class _ReportAdminViewState extends State<ReportAdminView> {
         _selectedFilter = 'custom';
         _customDateRange = picked;
       });
-      Get.find<ReportAdminController>().setDateRange(picked);
+      Get.find<ReportCashierController>().setDateRange(picked);
     }
   }
 
-  void _showTransactionDetails(transaction) {
+  void _showTransactionDetails(dynamic transaction) {
     showDialog(
       context: context,
       builder: (context) => ReportDetailDialog(transaction: transaction),
@@ -70,10 +69,10 @@ class _ReportAdminViewState extends State<ReportAdminView> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ReportAdminController>();
+    final controller = Get.find<ReportCashierController>();
     return Scaffold(
       backgroundColor: AppColors.brownLight,
-      appBar: AdminReportAppBar(onExportTap: controller.exportToExcel),
+      appBar: CashierReportAppBar(onExportTap: controller.exportToExcel),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -86,7 +85,7 @@ class _ReportAdminViewState extends State<ReportAdminView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // --- Date Filter Section ---
-                TransactionDateFilterSection(
+                CashierTransactionDateFilterSection(
                   selectedFilter: _selectedFilter,
                   customDateRange: _customDateRange,
                   onFilterSelected: _onFilterSelected,
@@ -94,9 +93,8 @@ class _ReportAdminViewState extends State<ReportAdminView> {
                 ),
                 const SizedBox(height: 16),
                 if (controller.stat.value != null) ...[
-                  TotalRevenueCard(stat: controller.stat.value!),
-                  const SizedBox(height: 12),
-                  StatsGrid(stat: controller.stat.value!),
+                  CashierTotalRevenueCard(stat: controller.stat.value!),
+                  CashierStatsGrid(stat: controller.stat.value!),
                   const SizedBox(height: 24),
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -114,20 +112,16 @@ class _ReportAdminViewState extends State<ReportAdminView> {
                     child: SharedSalesChartSection(
                       data: controller.hourlySales.toList(),
                       title: 'Sales Chart',
-                      subtitle: 'Orders performance over time',
+                      subtitle: 'Operational sales performance',
                     ),
                   ),
                   const SizedBox(height: 24),
                 ],
-                if (controller.selectedCashierId == null) ...[
-                  CashierPerformanceSection(controller: controller),
-                  const SizedBox(height: 24),
-                ],
-                TopProductsSection(controller: controller),
+                CashierTopProductsSection(controller: controller),
                 const SizedBox(height: 24),
-                RecentTransactionsSection(
+                CashierRecentTransactionsSection(
                   controller: controller,
-                  onTap: _showTransactionDetails,
+                  onTapTransaction: _showTransactionDetails,
                 ),
                 const SizedBox(height: 16),
               ],

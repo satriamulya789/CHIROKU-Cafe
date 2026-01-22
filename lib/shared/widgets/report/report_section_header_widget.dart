@@ -2,11 +2,12 @@ import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
 
-class SectionHeader extends StatelessWidget {
+class ReportSectionHeader extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
-  const SectionHeader({
+  const ReportSectionHeader({
+    super.key,
     required this.icon,
     required this.title,
     this.subtitle,

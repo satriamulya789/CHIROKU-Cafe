@@ -2,10 +2,11 @@ import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/feature/auth/splash_screen/repositories/splash_repository.dart';
 import 'package:chiroku_cafe/utils/enums/user_enum.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SplashController extends GetxController {
   final SplashRepository _repository;
-  final RxString appVersion = '1.1.1'.obs;
+  final RxString appVersion = ''.obs;
 
   SplashController(this._repository);
 
@@ -13,7 +14,17 @@ class SplashController extends GetxController {
   void onInit() {
     super.onInit();
     print('🚀 SplashController: onInit called');
+    _loadAppVersion();
     _startApp();
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      appVersion.value = packageInfo.version;
+    } catch (e) {
+      appVersion.value = '1.2.0'; // Fallback
+    }
   }
 
   Future<void> _startApp() async {

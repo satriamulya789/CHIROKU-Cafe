@@ -1,17 +1,17 @@
-import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_stats_model.dart';
+import 'package:chiroku_cafe/shared/models/report/hourly_sales_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-class ReportAdminBarChart extends StatelessWidget {
-  final List<ReportProductStat> data;
-  const ReportAdminBarChart({super.key, required this.data});
+class BaseBarChartWidget extends StatelessWidget {
+  final List<HourlySalesData> data;
+
+  const BaseBarChartWidget({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
-    if (data.isEmpty) {
-      return const Center(child: Text('No product data'));
-    }
+    if (data.isEmpty) return const SizedBox();
+
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
@@ -23,9 +23,8 @@ class ReportAdminBarChart extends StatelessWidget {
             tooltipBorderRadius: const BorderRadius.all(Radius.circular(8)),
             tooltipPadding: const EdgeInsets.all(8),
             getTooltipItem: (group, groupIndex, rod, rodIndex) {
-              final stat = data[group.x.toInt()];
               return BarTooltipItem(
-                '${stat.name}\n',
+                '${data[group.x.toInt()].hour}\n',
                 const TextStyle(
                   color: AppColors.white,
                   fontWeight: FontWeight.bold,
@@ -41,7 +40,7 @@ class ReportAdminBarChart extends StatelessWidget {
                     ),
                   ),
                   TextSpan(
-                    text: '${stat.totalQty} items sold',
+                    text: '${data[group.x.toInt()].orderCount} orders',
                     style: TextStyle(
                       color: AppColors.white.withOpacity(0.8),
                       fontSize: 10,
@@ -64,73 +63,88 @@ class ReportAdminBarChart extends StatelessWidget {
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
+              interval: 1,
               getTitlesWidget: (value, meta) {
-                final idx = value.toInt();
-                if (idx >= 0 && idx < data.length) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      data[idx].name.length > 8
-                          ? '${data[idx].name.substring(0, 8)}...'
-                          : data[idx].name,
-                      style: const TextStyle(
-                        color: AppColors.brownNormal,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 10,
-                      ),
-                    ),
-                  );
+                final index = value.toInt();
+                if (index < 0 || index >= data.length) return const SizedBox();
+
+                // Only show labels every 4 hours to avoid overlapping
+                // Always show the last point if it's significant
+                if (index % 4 != 0 && index != data.length - 1) {
+                  return const SizedBox();
                 }
-                return const Text('');
+
+                return Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    data[index].hour,
+                    style: TextStyle(
+                      color: AppColors.brownNormal.withOpacity(0.7),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 10,
+                    ),
+                  ),
+                );
               },
-              reservedSize: 30,
+              reservedSize: 32,
             ),
           ),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                return Text(
-                  _formatYAxis(value.toInt()),
-                  style: const TextStyle(
-                    color: AppColors.brownNormal,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 10,
+                if (value == meta.max) return const SizedBox();
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Text(
+                    _formatYAxis(value.toInt()),
+                    style: TextStyle(
+                      color: AppColors.brownNormal.withOpacity(0.7),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 10,
+                    ),
                   ),
                 );
               },
-              reservedSize: 40,
+              reservedSize: 42,
             ),
           ),
         ),
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
-          horizontalInterval: _getMaxY() / 4,
+          horizontalInterval: _getMaxY() / 4 > 0 ? _getMaxY() / 4 : 10000,
           getDrawingHorizontalLine: (value) {
-            return FlLine(color: AppColors.brownLight, strokeWidth: 1);
+            return FlLine(
+              color: AppColors.brownLight.withOpacity(0.5),
+              strokeWidth: 1,
+              dashArray: [5, 5],
+            );
           },
         ),
         borderData: FlBorderData(show: false),
-        barGroups: data.take(7).toList().asMap().entries.map((entry) {
-          final stat = entry.value;
+        barGroups: data.asMap().entries.map((entry) {
           return BarChartGroupData(
             x: entry.key,
             barRods: [
               BarChartRodData(
-                toY: stat.totalRevenue,
+                toY: entry.value.sales.toDouble(),
                 gradient: LinearGradient(
                   colors: [
                     AppColors.brownNormal,
-                    AppColors.brownNormal.withOpacity(0.7),
+                    AppColors.brownNormal.withOpacity(0.6),
                   ],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                 ),
-                width: 16,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(6),
-                  topRight: Radius.circular(6),
+                width: data.length > 20 ? 8 : 16,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(4),
+                ),
+                backDrawRodData: BackgroundBarChartRodData(
+                  show: true,
+                  toY: _getMaxY() * 1.2,
+                  color: AppColors.brownLight.withOpacity(0.1),
                 ),
               ),
             ],
@@ -142,11 +156,7 @@ class ReportAdminBarChart extends StatelessWidget {
 
   double _getMaxY() {
     if (data.isEmpty) return 100;
-    // Calculate max from totalRevenue
-    return data
-        .take(7)
-        .map((e) => e.totalRevenue)
-        .reduce((a, b) => a > b ? a : b);
+    return data.map((e) => e.sales).reduce((a, b) => a > b ? a : b).toDouble();
   }
 
   String _formatYAxis(int value) {

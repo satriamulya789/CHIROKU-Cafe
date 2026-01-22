@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_transaction_summary_model.dart';
+import 'package:chiroku_cafe/shared/models/report/report_transaction_model.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xls;

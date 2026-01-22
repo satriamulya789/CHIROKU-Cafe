@@ -1,7 +1,7 @@
 import 'package:chiroku_cafe/feature/admin/admin_report/controllers/admin_report_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/views/admin_report_top_product_view.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_product_list_widget.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_section_header_widget.dart';
+import 'package:chiroku_cafe/shared/widgets/report/report_product_list_widget.dart';
+import 'package:chiroku_cafe/shared/widgets/report/report_section_header_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ class TopProductsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionHeader(
+        ReportSectionHeader(
           icon: Icons.emoji_events,
           title: 'Top 5 Best-selling Menus',
           subtitle: 'Based on quantity sold',
@@ -72,4 +72,3 @@ class TopProductsSection extends StatelessWidget {
     );
   }
 }
-

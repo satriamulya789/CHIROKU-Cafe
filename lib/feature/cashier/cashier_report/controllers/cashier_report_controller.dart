@@ -1,23 +1,20 @@
-// lib/feature/admin/admin_report/controllers/admin_report_controller.dart
-
 import 'package:chiroku_cafe/shared/models/report/hourly_sales_model.dart';
 import 'package:chiroku_cafe/shared/models/report/report_stats_model.dart';
 import 'package:chiroku_cafe/shared/models/report/report_transaction_model.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/repositories/admin_report_repositories.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/repositories/cashier_report_repositories.dart';
 import 'package:chiroku_cafe/shared/services/excel_service.dart';
 import 'package:chiroku_cafe/shared/services/pdf_service.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ReportAdminController extends GetxController {
-  final repo = ReportAdminRepository();
+class ReportCashierController extends GetxController {
+  final repo = ReportCashierRepository();
   final snackbar = CustomSnackbar();
 
   var isLoading = false.obs;
   var stat = Rxn<ReportStat>();
   var productStats = <ReportProductStat>[].obs;
-  var cashierStats = <ReportCashierStat>[].obs;
   var recentTransactions = <ReportTransaction>[].obs;
   var hourlySales = <HourlySalesData>[].obs;
 
@@ -79,11 +76,6 @@ class ReportAdminController extends GetxController {
       // Hourly/Daily sales for chart
       await _loadTimeSalesData(orders);
 
-      // Cashier performance (only if no cashier filter)
-      if (selectedCashierId == null) {
-        await _loadCashierPerformance();
-      }
-
       // Recent transactions
       await _loadRecentTransactions();
     } catch (e) {
@@ -120,70 +112,6 @@ class ReportAdminController extends GetxController {
       }
     }
     productStats.value = grouped.values.toList();
-  }
-
-  Future<void> _loadCashierPerformance() async {
-    try {
-      final orders = await repo.getCashierPerformance(startDate, endDate);
-
-      final Map<String, ReportCashierStat> cashierMap = {};
-
-      for (var order in orders) {
-        final cashierId = order['cashier_id'] as String;
-        final cashierName = order['cashier_name'] as String;
-        final total = (order['total'] as num?)?.toDouble() ?? 0.0;
-
-        if (cashierMap.containsKey(cashierId)) {
-          final existing = cashierMap[cashierId]!;
-          cashierMap[cashierId] = ReportCashierStat(
-            cashierId: cashierId,
-            cashierName: cashierName,
-            totalOrders: existing.totalOrders + 1,
-            totalRevenue: existing.totalRevenue + total,
-            itemsSold: existing.itemsSold,
-          );
-        } else {
-          cashierMap[cashierId] = ReportCashierStat(
-            cashierId: cashierId,
-            cashierName: cashierName,
-            totalOrders: 1,
-            totalRevenue: total,
-            itemsSold: 0,
-          );
-        }
-      }
-
-      // Get items sold for each cashier
-      for (var entry in cashierMap.entries) {
-        final cashierOrders = orders
-            .where((o) => o['cashier_id'] == entry.key)
-            .map((o) => o['id'])
-            .toList();
-
-        if (cashierOrders.isNotEmpty) {
-          final items = await repo.getOrderItems(cashierOrders);
-          final itemsSold = items.fold<int>(
-            0,
-            (sum, item) => sum + ((item['qty'] as int?) ?? 0),
-          );
-
-          cashierMap[entry.key] = ReportCashierStat(
-            cashierId: entry.value.cashierId,
-            cashierName: entry.value.cashierName,
-            totalOrders: entry.value.totalOrders,
-            totalRevenue: entry.value.totalRevenue,
-            itemsSold: itemsSold,
-          );
-        }
-      }
-
-      final sorted = cashierMap.values.toList()
-        ..sort((a, b) => b.totalRevenue.compareTo(a.totalRevenue));
-
-      cashierStats.value = sorted;
-    } catch (e) {
-      print('Error loading cashier performance: $e');
-    }
   }
 
   Future<void> _loadTimeSalesData(List<Map<String, dynamic>> orders) async {
@@ -242,7 +170,6 @@ class ReportAdminController extends GetxController {
       if (isSingleDay) {
         sorted.sort((a, b) => a.hour.compareTo(b.hour));
       } else {
-        // Custom sort for DD/MM might be needed for accuracy across months
         sorted.sort((a, b) => a.hour.compareTo(b.hour));
       }
 
@@ -274,21 +201,25 @@ class ReportAdminController extends GetxController {
     fetchReport();
   }
 
-  void setCashierFilter(String? cashierId) {
-    selectedCashierId = cashierId;
-    fetchReport();
-  }
-
   List<ReportProductStat> get top5Products {
     final sorted = List<ReportProductStat>.from(productStats);
     sorted.sort((a, b) => b.totalQty.compareTo(a.totalQty));
     return sorted.take(5).toList();
   }
 
-  List<ReportProductStat> get top20Products {
-    final sorted = List<ReportProductStat>.from(productStats);
-    sorted.sort((a, b) => b.totalQty.compareTo(a.totalQty));
-    return sorted.take(20).toList();
+  Future<void> completeOrder(ReportTransaction transaction) async {
+    try {
+      isLoading.value = true;
+      await repo.completeOrder(transaction.id, transaction.tableId);
+      snackbar.showSuccessSnackbar(
+        'Order #${transaction.id} completed successfully',
+      );
+      fetchReport();
+    } catch (e) {
+      snackbar.showErrorSnackbar('Failed to complete order: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<void> exportToExcel() async {

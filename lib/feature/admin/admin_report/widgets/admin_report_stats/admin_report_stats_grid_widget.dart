@@ -1,9 +1,10 @@
+import 'package:chiroku_cafe/shared/models/report/report_stats_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_stats/admin_report_stats_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class StatsGrid extends StatelessWidget {
-  final dynamic stat;
+  final ReportStat stat;
   const StatsGrid({super.key, required this.stat});
 
   @override
@@ -48,7 +49,8 @@ class StatsGrid extends StatelessWidget {
       ],
     );
   }
-    String _formatCurrency(double value) {
+
+  String _formatCurrency(double value) {
     final format = NumberFormat.currency(
       locale: 'id_ID',
       symbol: 'Rp ',

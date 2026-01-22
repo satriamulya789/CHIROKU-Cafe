@@ -1,13 +1,13 @@
-import 'package:chiroku_cafe/feature/admin/admin_report/controllers/admin_report_all_transaction_controller.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_recent_transaction/admin_report_transaction_list_widget.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/controllers/cashier_report_all_transaction_controller.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/widgets/cashier_report_transaction_list_widget.dart';
 import 'package:chiroku_cafe/shared/widgets/report/report_detail_dialog.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class AllTransactionsView extends StatelessWidget {
-  const AllTransactionsView({super.key});
+class CashierAllTransactionsView extends StatelessWidget {
+  const CashierAllTransactionsView({super.key});
 
   void _showTransactionDetails(BuildContext context, dynamic transaction) {
     showDialog(
@@ -18,7 +18,7 @@ class AllTransactionsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<AllTransactionsController>();
+    final controller = Get.find<CashierAllTransactionsController>();
 
     return Scaffold(
       backgroundColor: AppColors.brownLight,
@@ -129,10 +129,11 @@ class AllTransactionsView extends StatelessWidget {
                       child: ListView(
                         padding: const EdgeInsets.all(16),
                         children: [
-                          TransactionListWidget(
+                          CashierTransactionListWidget(
                             transactions: controller.filteredTransactions
                                 .toList(),
-                            onPrint: controller.printTransactionPDF,
+                            onPrint: (t) => controller.printTransactionPDF(t),
+                            onDone: (t) => controller.completeOrder(t),
                             onTap: (t) => _showTransactionDetails(context, t),
                           ),
                         ],

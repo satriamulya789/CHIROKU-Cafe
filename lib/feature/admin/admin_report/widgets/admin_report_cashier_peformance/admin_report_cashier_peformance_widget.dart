@@ -1,6 +1,6 @@
 // lib/feature/admin/admin_report/widgets/cashier_performance_widget.dart
 
-import 'package:chiroku_cafe/feature/admin/admin_report/models/admin_report_cashier_stats_mode.dart';
+import 'package:chiroku_cafe/shared/models/report/report_stats_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';

@@ -43,7 +43,7 @@ class StatsSectionWidget extends StatelessWidget {
                 icon: Icons.check_circle_outline,
                 color: AppColors.successNormal,
                 backgroundColor: AppColors.white,
-                onTap: () => Get.toNamed('/orders'),
+                onTap: () => Get.toNamed(AppRoutes.adminReport),
               ),
             ),
           ],

@@ -16,7 +16,6 @@ import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_con
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/views/admin_edit_user_view.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/binding/admin_manage_controll_binding.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/views/admin_manage_control_view.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/binding/admin_report_all_transaction_binding.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/binding/admin_report_binding.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/controllers/admin_report_all_transaction_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_report/views/admin_report_all_transaction_view.dart';
@@ -51,6 +50,10 @@ import 'package:chiroku_cafe/feature/cashier/cashier_order/binding/cashier_order
 import 'package:chiroku_cafe/feature/cashier/cashier_order/views/cashier_order_view.dart';
 import 'package:chiroku_cafe/feature/push_notification/binding/push_notification_binding.dart';
 import 'package:chiroku_cafe/feature/push_notification/views/push_notification_view.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/binding/cashier_report_binding.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/controllers/cashier_report_all_transaction_controller.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/views/cashier_report_all_transaction_view.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/views/cashier_report_view.dart';
 import 'package:get/get.dart';
 import 'package:chiroku_cafe/feature/auth/on_board/binding/on_board_binding.dart';
 import 'package:chiroku_cafe/feature/auth/splash_screen/binding/splash_binding.dart';
@@ -236,6 +239,25 @@ class Pages {
       name: AppRoutes.cashierEditProfile,
       page: () => const CashierEditProfileView(),
       binding: CashierEditProfileBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.cashierReport,
+      page: () => const ReportCashierView(),
+      binding: ReportCashierBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.cashierAllTransactions,
+      page: () => const CashierAllTransactionsView(),
+      binding: BindingsBuilder(() {
+        final args = Get.arguments as Map<String, dynamic>;
+        Get.lazyPut<CashierAllTransactionsController>(
+          () => CashierAllTransactionsController(
+            startDate: args['startDate'] as DateTime,
+            endDate: args['endDate'] as DateTime,
+            cashierId: args['cashierId'] as String?,
+          ),
+        );
+      }),
     ),
   ];
 }

@@ -1,10 +1,12 @@
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/models/admin_edit_category_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/services/admin_edit_category_service.dart';
+import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AdminEditCategoryController extends GetxController {
   final CategoryService _service = CategoryService();
+  final snackbar = CustomSnackbar();
 
   final categories = <CategoryModel>[].obs;
   final isLoading = false.obs;
@@ -28,7 +30,9 @@ class AdminEditCategoryController extends GetxController {
   List<CategoryModel> get filteredCategories {
     if (searchQuery.value.isEmpty) return categories;
     return categories.where((category) {
-      return category.name.toLowerCase().contains(searchQuery.value.toLowerCase());
+      return category.name.toLowerCase().contains(
+        searchQuery.value.toLowerCase(),
+      );
     }).toList();
   }
 
@@ -37,8 +41,7 @@ class AdminEditCategoryController extends GetxController {
       isLoading.value = true;
       categories.value = await _service.fetchCategories();
     } catch (e) {
-      Get.snackbar('Error', 'Failed to fetch categories: $e',
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showErrorSnackbar('Failed to fetch categories: $e');
     } finally {
       isLoading.value = false;
     }
@@ -51,21 +54,17 @@ class AdminEditCategoryController extends GetxController {
   Future<void> createCategory() async {
     try {
       if (nameController.text.isEmpty) {
-        Get.snackbar('Error', 'Category name is required',
-            snackPosition: SnackPosition.BOTTOM);
+        snackbar.showErrorSnackbar('Category name is required');
         return;
       }
 
       isLoading.value = true;
       await _service.createCategory(nameController.text);
       await fetchCategories();
-      clearForm();
       Get.back();
-      Get.snackbar('Success', 'Category created successfully',
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showSuccessSnackbar('Category created successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to create category: $e',
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showErrorSnackbar('Failed to create category: $e');
     } finally {
       isLoading.value = false;
     }
@@ -74,21 +73,17 @@ class AdminEditCategoryController extends GetxController {
   Future<void> updateCategory(int id) async {
     try {
       if (nameController.text.isEmpty) {
-        Get.snackbar('Error', 'Category name is required',
-            snackPosition: SnackPosition.BOTTOM);
+        snackbar.showErrorSnackbar('Category name is required');
         return;
       }
 
       isLoading.value = true;
       await _service.updateCategory(id, nameController.text);
       await fetchCategories();
-      clearForm();
       Get.back();
-      Get.snackbar('Success', 'Category updated successfully',
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showSuccessSnackbar('Category updated successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update category: $e',
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showErrorSnackbar('Failed to update category: $e');
     } finally {
       isLoading.value = false;
     }
@@ -99,11 +94,16 @@ class AdminEditCategoryController extends GetxController {
       isLoading.value = true;
       await _service.deleteCategory(id);
       await fetchCategories();
-      Get.snackbar('Success', 'Category deleted successfully',
-          snackPosition: SnackPosition.BOTTOM);
+      snackbar.showSuccessSnackbar('Category deleted successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to delete category: $e',
-          snackPosition: SnackPosition.BOTTOM);
+      final errorMessage = e.toString();
+      if (errorMessage.contains('23503')) {
+        snackbar.showErrorSnackbar(
+          'Cannot delete category because it is still used by some menus. Please delete or reassign those menus first.',
+        );
+      } else {
+        snackbar.showErrorSnackbar('Failed to delete category: $e');
+      }
     } finally {
       isLoading.value = false;
     }

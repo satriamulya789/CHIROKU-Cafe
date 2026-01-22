@@ -1,20 +1,20 @@
 import 'package:chiroku_cafe/config/routes/routes.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/controllers/admin_report_controller.dart';
-import 'package:chiroku_cafe/shared/models/report/report_transaction_model.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/controllers/cashier_report_controller.dart';
 import 'package:chiroku_cafe/shared/widgets/report/report_section_header_widget.dart';
-import 'package:chiroku_cafe/feature/admin/admin_report/widgets/admin_report_recent_transaction/admin_report_transaction_list_widget.dart';
+import 'package:chiroku_cafe/feature/cashier/cashier_report/widgets/cashier_report_transaction_list_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class RecentTransactionsSection extends StatelessWidget {
-  final ReportAdminController controller;
-  final Function(ReportTransaction)? onTap;
-  const RecentTransactionsSection({
+class CashierRecentTransactionsSection extends StatelessWidget {
+  final ReportCashierController controller;
+  final Function(dynamic) onTapTransaction;
+
+  const CashierRecentTransactionsSection({
     super.key,
     required this.controller,
-    this.onTap,
+    required this.onTapTransaction,
   });
 
   @override
@@ -22,7 +22,7 @@ class RecentTransactionsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ReportSectionHeader(
+        const ReportSectionHeader(
           icon: Icons.receipt_long,
           title: 'Recent Transactions',
           subtitle: 'Last 5 transactions',
@@ -39,10 +39,11 @@ class RecentTransactionsSection extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                TransactionListWidget(
+                CashierTransactionListWidget(
                   transactions: controller.recentTransactions.toList(),
-                  onPrint: controller.printTransactionPDF,
-                  onTap: onTap,
+                  onPrint: (t) => controller.printTransactionPDF(t),
+                  onTap: onTapTransaction,
+                  onDone: (t) => controller.completeOrder(t),
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
@@ -50,7 +51,7 @@ class RecentTransactionsSection extends StatelessWidget {
                   child: ElevatedButton.icon(
                     onPressed: () {
                       Get.toNamed(
-                        AppRoutes.adminAllTransactions,
+                        AppRoutes.cashierAllTransactions,
                         arguments: {
                           'startDate': controller.startDate,
                           'endDate': controller.endDate,

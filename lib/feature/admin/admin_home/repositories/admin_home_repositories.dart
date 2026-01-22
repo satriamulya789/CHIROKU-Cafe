@@ -1,5 +1,5 @@
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_dashboard_stats_model.dart';
-import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_hourly_sales.dart';
+import 'package:chiroku_cafe/shared/models/report/hourly_sales_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_notification_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_stock_status_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_home/models/admin_home_top_product_model.dart';
@@ -73,10 +73,20 @@ class DashboardRepository {
           .gte('created_at', start.toIso8601String())
           .lt('created_at', end.toIso8601String());
 
+      final now = DateTime.now();
       Map<int, HourlySalesData> hourlyMap = {};
 
+      // Initialize all hours from 00:00 to current hour
+      for (int i = 0; i <= now.hour; i++) {
+        hourlyMap[i] = HourlySalesData(
+          hour: '${i.toString().padLeft(2, '0')}:00',
+          sales: 0,
+          orderCount: 0,
+        );
+      }
+
       for (var order in ordersData) {
-        final createdAt = DateTime.parse(order['created_at']);
+        final createdAt = DateTime.parse(order['created_at']).toLocal();
         final hour = createdAt.hour;
         final sales = (order['total'] as num).toInt();
 
@@ -88,6 +98,7 @@ class DashboardRepository {
             orderCount: existing.orderCount + 1,
           );
         } else {
+          // In case of any data outside our expected range (shouldn't happen with toLocal() and same day filter)
           hourlyMap[hour] = HourlySalesData(
             hour: '${hour.toString().padLeft(2, '0')}:00',
             sales: sales,
@@ -96,8 +107,9 @@ class DashboardRepository {
         }
       }
 
-      return hourlyMap.values.toList()
+      final sorted = hourlyMap.values.toList()
         ..sort((a, b) => a.hour.compareTo(b.hour));
+      return sorted;
     } catch (e) {
       return [];
     }
