@@ -20,6 +20,21 @@
 
 ---
 
+## 👥 User Roles & Credentials
+
+The system supports two primary roles with different access levels:
+
+### 👨‍💼 Admin
+The Admin has full control over the system, including user management, menu management, and financial reporting.
+- **Email**: `adminchirokucafe@gmail.com`
+- **Password**: `Admin@123`
+
+### 🧑‍🍳 Cashier
+Cashiers focus on taking orders and processing payments. 
+- **Registration**: New cashiers can register an account directly through the **Sign Up** screen in the application.
+
+---
+
 ## 📱 Minimal Device Requirements
 
 | Requirement | Android | iOS |

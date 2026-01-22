@@ -111,7 +111,7 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
     controller.clearForm();
     showDialog(
       context: context,
-      builder: (context) => const UserFormDialog(isEdit: false, userId: ''),
+      builder: (context) => const UserFormDialog(isEdit: false),
     );
   }
 
@@ -119,7 +119,7 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
     controller.setEditUser(user);
     showDialog(
       context: context,
-      builder: (context) => UserFormDialog(userId: user.id, isEdit: true),
+      builder: (context) => UserFormDialog(user: user, isEdit: true),
     );
   }
 

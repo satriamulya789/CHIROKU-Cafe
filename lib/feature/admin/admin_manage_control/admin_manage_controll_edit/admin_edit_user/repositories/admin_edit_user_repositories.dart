@@ -46,6 +46,9 @@ class UserRepositories {
       final tempClient = SupabaseClient(
         ApiConstant.supabaseUrl,
         ApiConstant.supabaseAnonKey,
+        authOptions: const AuthClientOptions(
+          authFlowType: AuthFlowType.implicit,
+        ),
       );
 
       // Create user in auth

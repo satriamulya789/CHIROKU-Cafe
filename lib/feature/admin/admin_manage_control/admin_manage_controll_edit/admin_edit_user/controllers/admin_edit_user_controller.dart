@@ -97,13 +97,20 @@ class AdminEditUserController extends GetxController {
     }
   }
 
-  Future<void> updateUser(String id) async {
+  Future<void> updateUser(UserModel user) async {
     try {
+      if (ProtectedUsers.isProtected(user.email)) {
+        snackbar.showErrorSnackbar(
+          'This is a protected account and cannot be modified.',
+        );
+        return;
+      }
+
       if (!_validateUpdateForm()) return;
 
       isLoading.value = true;
       await _service.updateUser(
-        id,
+        user.id,
         fullName: fullNameController.text.trim(),
         email: emailController.text.trim().isEmpty
             ? null

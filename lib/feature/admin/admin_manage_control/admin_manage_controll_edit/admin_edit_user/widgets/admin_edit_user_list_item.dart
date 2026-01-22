@@ -92,10 +92,11 @@ class UserListItem extends StatelessWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              icon: const Icon(Icons.edit, color: AppColors.blueNormal),
-              onPressed: onEdit,
-            ),
+            if (!isProtected)
+              IconButton(
+                icon: const Icon(Icons.edit, color: AppColors.blueNormal),
+                onPressed: onEdit,
+              ),
             if (!isProtected)
               IconButton(
                 icon: const Icon(Icons.delete, color: AppColors.alertNormal),
