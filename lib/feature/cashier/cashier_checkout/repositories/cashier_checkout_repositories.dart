@@ -237,6 +237,22 @@ class CheckoutRepository {
     }
   }
 
+  /// Update order note
+  Future<void> updateOrderNote(int orderId, String note) async {
+    try {
+      await _supabase.from('orders').update({'note': note}).eq('id', orderId);
+
+      log('✅ Order #$orderId note updated successfully');
+    } catch (e) {
+      log('❌ Error updating order note: $e');
+      throw CashierErrorModel(
+        message: 'Failed to update order note',
+        code: 'update_order_note_failed',
+        statusCode: 500,
+      );
+    }
+  }
+
   /// Get order details with items
   Future<Map<String, dynamic>?> getOrderDetails(int orderId) async {
     try {

@@ -169,7 +169,7 @@ class CashierTransactionListWidget extends StatelessWidget {
                         ),
                       const SizedBox(width: 8),
                       // "Done" button
-                      if (isPending)
+                      if (transaction.note?.contains('[DONE]') != true)
                         ElevatedButton.icon(
                           onPressed: onDone != null
                               ? () => onDone!(transaction)

@@ -80,6 +80,7 @@ class CheckoutService {
     double? changeAmount,
     String? note,
     bool isPaid = true,
+    bool isDone = false,
   }) async {
     try {
       // 0. Validate stock availability first
@@ -121,11 +122,24 @@ class CheckoutService {
 
         // 4. Update order status to 'paid'
         await _repository.updateOrderStatus(orderId, 'paid');
+
+        // 5. Add [DONE] flag to note if isDone is true
+        if (isDone) {
+          final currentNote = note ?? '';
+          final newNote = currentNote.isEmpty
+              ? '[DONE]'
+              : '$currentNote [DONE]';
+          await _repository.updateOrderNote(orderId, newNote);
+        }
       }
 
-      // 4. Reserve table if selected
+      // 4. Reserve table if selected (only if not done)
       if (tableId != null) {
-        await reserveTable(tableId);
+        if (isDone) {
+          await releaseTable(tableId);
+        } else {
+          await reserveTable(tableId);
+        }
       }
 
       // 5. Fetch full order details with joined items for receipt

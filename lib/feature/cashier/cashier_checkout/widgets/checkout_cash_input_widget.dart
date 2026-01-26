@@ -10,12 +10,17 @@ class CheckoutCashInputWidget extends StatelessWidget {
   final double changeAmount;
   final bool isCashValid;
 
+  final VoidCallback? onExactChange;
+  final Function(double)? onAddCash;
+
   const CheckoutCashInputWidget({
     super.key,
     required this.cashController,
     required this.total,
     required this.changeAmount,
     required this.isCashValid,
+    this.onExactChange,
+    this.onAddCash,
   });
 
   String _formatCurrency(double amount) {
@@ -169,14 +174,40 @@ class CheckoutCashInputWidget extends StatelessWidget {
             const SizedBox(height: 12),
 
             // Quick amount buttons
+            Text(
+              'Quick Options',
+              style: AppTypography.labelLarge.copyWith(
+                color: AppColors.brownDark,
+              ),
+            ),
+            const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
-                _buildQuickAmountButton(context, 50000),
-                _buildQuickAmountButton(context, 100000),
-                _buildQuickAmountButton(context, 150000),
-                _buildQuickAmountButton(context, 200000),
+                // Uang Pas button
+                ElevatedButton(
+                  onPressed: onExactChange,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.successNormal,
+                    foregroundColor: AppColors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                  ),
+                  child: const Text('Uang Pas'),
+                ),
+                // Increment buttons
+                _buildAddAmountButton(2000),
+                _buildAddAmountButton(5000),
+                _buildAddAmountButton(10000),
+                _buildAddAmountButton(20000),
+                _buildAddAmountButton(50000),
+                _buildAddAmountButton(100000),
               ],
             ),
           ],
@@ -185,18 +216,16 @@ class CheckoutCashInputWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickAmountButton(BuildContext context, int amount) {
+  Widget _buildAddAmountButton(double amount) {
     return OutlinedButton(
-      onPressed: () {
-        cashController.text = amount.toString();
-      },
+      onPressed: onAddCash != null ? () => onAddCash!(amount) : null,
       style: OutlinedButton.styleFrom(
         side: BorderSide(color: AppColors.brownNormal),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       child: Text(
-        _formatCurrency(amount.toDouble()),
+        '+${_formatCurrency(amount).replaceFirst('Rp ', '')}',
         style: AppTypography.buttonSmall.copyWith(color: AppColors.brownNormal),
       ),
     );

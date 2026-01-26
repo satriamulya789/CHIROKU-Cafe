@@ -142,6 +142,19 @@ class CheckoutController extends GetxController {
     changeAmount.value = _service.calculateChange(amount, total);
   }
 
+  /// Set cash received to exact total
+  void setExactChange() {
+    cashController.text = total.toInt().toString();
+    log('✅ Cash set to exact change: $total');
+  }
+
+  /// Add amount to cash received
+  void addCash(double amount) {
+    final current = double.tryParse(cashController.text) ?? 0.0;
+    cashController.text = (current + amount).toInt().toString();
+    log('✅ Added $amount to cash. Total: ${cashReceived.value}');
+  }
+
   /// Validate checkout data
   bool _validateCheckout() {
     // Check if cart is empty
@@ -205,9 +218,23 @@ class CheckoutController extends GetxController {
     );
 
     if (confirmed == true) {
-      await cartController.clearCart();
-      Get.back(); // Back to menu/bottom bar
-      _snackbar.showSuccessSnackbar('Order has been cancelled');
+      try {
+        isProcessing.value = true;
+        // Release table if selected
+        if (selectedTable.value != null) {
+          await _service.releaseTable(selectedTable.value!.id);
+          log('✅ Table ${selectedTable.value!.id} released on cancellation');
+        }
+
+        await cartController.clearCart();
+        Get.back(); // Back to menu/bottom bar
+        _snackbar.showSuccessSnackbar('Order has been cancelled');
+      } catch (e) {
+        log('❌ Error cancelling order: $e');
+        _snackbar.showErrorSnackbar('Failed to cancel order properly');
+      } finally {
+        isProcessing.value = false;
+      }
     }
   }
 
@@ -291,8 +318,63 @@ class CheckoutController extends GetxController {
     }
   }
 
+  /// Show checkout & done confirmation dialog
+  Future<void> showCheckoutDoneConfirmation(BuildContext context) async {
+    if (!_validateCheckout()) return;
+
+    final confirmed = await Get.dialog<bool>(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Process & Done Confirmation'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'This will process payment and release the table immediately.',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+            const Divider(),
+            _buildConfirmationRow('Total', 'Rp ${total.toStringAsFixed(0)}'),
+            _buildConfirmationRow('Method', _getPaymentMethodLabel()),
+            if (customerName.value.isNotEmpty)
+              _buildConfirmationRow('Customer', customerName.value),
+            if (selectedTable.value != null)
+              _buildConfirmationRow('Table', selectedTable.value!.tableName),
+            if (paymentMethod.value == 'cash')
+              _buildConfirmationRow(
+                'Change',
+                'Rp ${changeAmount.value.toStringAsFixed(0)}',
+              ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Get.back(result: true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[600],
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Process & Done'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await processCheckout(isPaid: true, isDone: true);
+    }
+  }
+
   /// Process checkout
-  Future<void> processCheckout({bool isPaid = true}) async {
+  Future<void> processCheckout({
+    bool isPaid = true,
+    bool isDone = false,
+  }) async {
     if (isPaid && !_validateCheckout()) return;
 
     try {
@@ -317,7 +399,14 @@ class CheckoutController extends GetxController {
             : null,
         note: cartController.orderNote.value,
         isPaid: isPaid,
+        isDone: isDone,
       );
+
+      // If "Done" is selected, release the table immediately
+      if (isDone && selectedTable.value != null) {
+        await _service.releaseTable(selectedTable.value!.id);
+        log('✅ Table ${selectedTable.value!.id} released immediately');
+      }
 
       // Clear cart after successful checkout
       await cartController.clearCart();

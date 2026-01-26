@@ -10,7 +10,9 @@ class ReportCashierService {
   }) async {
     var query = supabase
         .from('orders')
-        .select('id, total, created_at, order_status, cashier_id, cashier_name')
+        .select(
+          'id, total, created_at, order_status, cashier_id, cashier_name, note',
+        )
         .inFilter('order_status', [
           'paid',
           'pending',
@@ -50,6 +52,7 @@ class ReportCashierService {
           cashier_id,
           cashier_name,
           customer_name,
+          note,
           tables(table_name),
           payments(payment_method)
         ''')
@@ -81,6 +84,7 @@ class ReportCashierService {
           cashier_id,
           cashier_name,
           customer_name,
+          note,
           tables(table_name),
           payments(payment_method)
         ''')
@@ -113,11 +117,21 @@ class ReportCashierService {
   }
 
   Future<void> completeOrder(int orderId, int? tableId) async {
-    // 1. Update order status to 'paid' if it was 'pending'
-    // We can just update it to 'paid' anyway to be safe, or leave it if it was already 'paid'
+    // 0. Fetch current order to get existing note
+    final currentOrder = await supabase
+        .from('orders')
+        .select('note')
+        .eq('id', orderId)
+        .single();
+    final currentNote = currentOrder['note'] as String? ?? '';
+    final newNote = currentNote.contains('[DONE]')
+        ? currentNote
+        : (currentNote.isEmpty ? '[DONE]' : '$currentNote [DONE]');
+
+    // 1. Update order status to 'paid' and add [DONE] flag to note
     await supabase
         .from('orders')
-        .update({'order_status': 'paid'})
+        .update({'order_status': 'paid', 'note': newNote})
         .eq('id', orderId);
 
     // 2. Release table

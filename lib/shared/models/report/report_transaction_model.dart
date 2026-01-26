@@ -8,6 +8,7 @@ class ReportTransaction {
   final String cashierName;
   final String? customerName;
   final String? paymentMethod;
+  final String? note;
 
   ReportTransaction({
     required this.id,
@@ -19,6 +20,7 @@ class ReportTransaction {
     required this.cashierName,
     this.customerName,
     this.paymentMethod,
+    this.note,
   });
 
   factory ReportTransaction.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,7 @@ class ReportTransaction {
           json['payments'] != null && (json['payments'] as List).isNotEmpty
           ? json['payments'][0]['payment_method']
           : null,
+      note: json['note'],
     );
   }
 }

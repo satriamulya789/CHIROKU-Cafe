@@ -76,13 +76,14 @@ class CheckoutView extends GetView<CheckoutController> {
               const SizedBox(height: 16),
 
               // Cash Input (if cash payment)
-              if (controller.paymentMethod.value == 'cash')
-                CheckoutCashInputWidget(
-                  cashController: controller.cashController,
-                  total: controller.total,
-                  changeAmount: controller.changeAmount.value,
-                  isCashValid: controller.isCashValid.value,
-                ),
+              CheckoutCashInputWidget(
+                cashController: controller.cashController,
+                total: controller.total,
+                changeAmount: controller.changeAmount.value,
+                isCashValid: controller.isCashValid.value,
+                onExactChange: controller.setExactChange,
+                onAddCash: controller.addCash,
+              ),
               if (controller.paymentMethod.value == 'cash')
                 const SizedBox(height: 16),
 
@@ -147,11 +148,14 @@ class CheckoutView extends GetView<CheckoutController> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        icon: const Icon(Icons.cancel_outlined, size: 20),
-                        label: const Text('Cancel Order'),
+                        icon: const Icon(Icons.cancel_outlined, size: 18),
+                        label: const Text(
+                          'Cancel',
+                          style: TextStyle(fontSize: 12),
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: controller.isProcessing.value
@@ -165,8 +169,34 @@ class CheckoutView extends GetView<CheckoutController> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        icon: const Icon(Icons.hourglass_empty, size: 20),
-                        label: const Text('Save Pending'),
+                        icon: const Icon(Icons.hourglass_empty, size: 18),
+                        label: const Text(
+                          'Pending',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: controller.isProcessing.value
+                            ? null
+                            : () => controller.showCheckoutDoneConfirmation(
+                                context,
+                              ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.green[600],
+                          side: BorderSide(color: Colors.green[600]!),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: const Icon(Icons.check_circle_outline, size: 18),
+                        label: const Text(
+                          'Done',
+                          style: TextStyle(fontSize: 12),
+                        ),
                       ),
                     ),
                   ],
