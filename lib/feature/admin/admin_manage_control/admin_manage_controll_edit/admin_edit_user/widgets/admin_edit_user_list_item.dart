@@ -1,8 +1,11 @@
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/models/admin_edit_user_model.dart';
-import 'package:chiroku_cafe/shared/constants/protected_users.dart';
+import 'package:chiroku_cafe/shared/widgets/offline_badge_widget.dart';
+import 'package:chiroku_cafe/shared/services/connectivity_service.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class UserListItem extends StatelessWidget {
   final UserModel user;
@@ -18,7 +21,7 @@ class UserListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isProtected = ProtectedUsers.isProtected(user.email);
+    final connectivity = Get.find<ConnectivityService>();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -38,21 +41,10 @@ class UserListItem extends StatelessWidget {
           horizontal: 16,
           vertical: 12,
         ),
-        leading: CircleAvatar(
-          radius: 24,
-          backgroundColor: AppColors.brownLight,
-          backgroundImage: user.avatarUrl != null
-              ? NetworkImage(user.avatarUrl!)
-              : null,
-          child: user.avatarUrl == null
-              ? Text(
-                  user.fullName[0].toUpperCase(),
-                  style: AppTypography.h5.copyWith(
-                    color: AppColors.brownNormal,
-                  ),
-                )
-              : null,
-        ),
+        leading: Obx(() => OfflineBadgeWidget(
+              isOffline: !connectivity.isConnected,
+              child: _buildAvatar(),
+            )),
         title: Text(
           user.fullName,
           style: AppTypography.h6.copyWith(color: AppColors.brownDark),
@@ -92,19 +84,48 @@ class UserListItem extends StatelessWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!isProtected)
-              IconButton(
-                icon: const Icon(Icons.edit, color: AppColors.blueNormal),
-                onPressed: onEdit,
-              ),
-            if (!isProtected)
-              IconButton(
-                icon: const Icon(Icons.delete, color: AppColors.alertNormal),
-                onPressed: onDelete,
-              ),
+            IconButton(
+              icon: const Icon(Icons.edit, color: AppColors.blueNormal),
+              onPressed: onEdit,
+              tooltip: 'Edit User',
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete, color: AppColors.alertNormal),
+              onPressed: onDelete,
+              tooltip: 'Delete User',
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAvatar() {
+    // Handle offline or pending upload avatars
+    if (user.avatarUrl == null || 
+        user.avatarUrl!.isEmpty || 
+        user.avatarUrl == 'pending_upload') {
+      return CircleAvatar(
+        radius: 24,
+        backgroundColor: AppColors.brownLight,
+        child: Text(
+          user.fullName.isNotEmpty ? user.fullName[0].toUpperCase() : 'U',
+          style: AppTypography.h5.copyWith(
+            color: AppColors.brownNormal,
+          ),
+        ),
+      );
+    }
+
+    // Use cached network image for online avatars
+    return CircleAvatar(
+      radius: 24,
+      backgroundColor: AppColors.brownLight,
+      backgroundImage: CachedNetworkImageProvider(user.avatarUrl!),
+      onBackgroundImageError: (exception, stackTrace) {
+        // Fallback if image fails to load
+      },
+      child: null,
     );
   }
 }

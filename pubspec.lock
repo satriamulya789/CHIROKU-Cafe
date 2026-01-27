@@ -129,6 +129,110 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  brick_build:
+    dependency: transitive
+    description:
+      name: brick_build
+      sha256: "1c147c6db1792931ead3476594ed4cae7e43762b04ebe755e3414439c9f4b7ca"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
+  brick_core:
+    dependency: transitive
+    description:
+      name: brick_core
+      sha256: d73a7946bf2e5cf60337d456f3ec806500f4e96c446a15fbe022ed0431a0be96
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
+  brick_json_generators:
+    dependency: transitive
+    description:
+      name: brick_json_generators
+      sha256: ebc0de4d8c3cf5547da79c73684ba82cd155c8e58d343b29d0e2c3c51f3e3ff8
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
+  brick_offline_first:
+    dependency: transitive
+    description:
+      name: brick_offline_first
+      sha256: acafff734c8c193d5ff99df077cdfc7dba523067a662461e5e28facf42d42fb2
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.2"
+  brick_offline_first_build:
+    dependency: transitive
+    description:
+      name: brick_offline_first_build
+      sha256: dd4182fbabf5bfbeac55c045692878848b04a54b5e8be9956a3f442d10e95366
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
+  brick_offline_first_with_rest:
+    dependency: transitive
+    description:
+      name: brick_offline_first_with_rest
+      sha256: "634ec36a43c443d85b407da305fed6fa85a93c3647851500f7759030339e50fc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1"
+  brick_offline_first_with_supabase:
+    dependency: "direct main"
+    description:
+      name: brick_offline_first_with_supabase
+      sha256: "15b6f4747759133a95ca6d2d7a867773546d0c9293267eda2d31dfc5166c17c1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
+  brick_offline_first_with_supabase_build:
+    dependency: "direct dev"
+    description:
+      name: brick_offline_first_with_supabase_build
+      sha256: b65fafaf010790fb0979b71921ad028a98ee151a37ab5214444e147ec8829577
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
+  brick_rest:
+    dependency: transitive
+    description:
+      name: brick_rest
+      sha256: "41420702a24d2597bfd40004412061709cfd7201a32035e10e6cbc9e4780f59b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0+1"
+  brick_sqlite:
+    dependency: "direct main"
+    description:
+      name: brick_sqlite
+      sha256: ccd020fc662a90aac7139bc5a8e77291709ead7f5a7fa758711a738a57dc3aa4
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0+1"
+  brick_sqlite_generators:
+    dependency: transitive
+    description:
+      name: brick_sqlite_generators
+      sha256: "2d065f1cb3bb91d8236b3f3969e427aee0b828dde2f71a353dd051a79f5f839a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
+  brick_supabase:
+    dependency: "direct main"
+    description:
+      name: brick_supabase
+      sha256: d99306dc90fe93d63dece4c4efe94b3760674bed2a2e4749792567fae2de5d98
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
+  brick_supabase_generators:
+    dependency: transitive
+    description:
+      name: brick_supabase_generators
+      sha256: c55aa90f8284fd14c63733c18defac5d4728bb43cec0b567cac3a17381b2707d
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   build:
     dependency: transitive
     description:
@@ -177,6 +281,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "8.12.3"
+  cached_network_image:
+    dependency: "direct main"
+    description:
+      name: cached_network_image
+      sha256: "7c1183e361e5c8b0a0f21a28401eecdbde252441106a9816400dd4c2b2424916"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.1"
+  cached_network_image_platform_interface:
+    dependency: transitive
+    description:
+      name: cached_network_image_platform_interface
+      sha256: "35814b016e37fbdc91f7ae18c8caf49ba5c88501813f73ce8a07027a395e2829"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.1"
+  cached_network_image_web:
+    dependency: transitive
+    description:
+      name: cached_network_image_web
+      sha256: "980842f4e8e2535b8dbd3d5ca0b1f0ba66bf61d14cc3a17a9b4788a3685ba062"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.1"
   characters:
     dependency: transitive
     description:
@@ -233,6 +361,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
+  connectivity_plus:
+    dependency: "direct main"
+    description:
+      name: connectivity_plus
+      sha256: "33bae12a398f841c6cda09d1064212957265869104c478e5ad51e2fb26c3973c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.0"
+  connectivity_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: connectivity_plus_platform_interface
+      sha256: "42657c1715d48b167930d5f34d00222ac100475f73d10162ddf43e714932f204"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   convert:
     dependency: transitive
     description:
@@ -462,6 +606,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_cache_manager:
+    dependency: transitive
+    description:
+      name: flutter_cache_manager
+      sha256: "400b6592f16a4409a7f2bb929a9a7e38c72cceb8ffb99ee57bbf2cb2cecf8386"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.1"
   flutter_dotenv:
     dependency: "direct main"
     description:
@@ -968,6 +1120,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  nm:
+    dependency: transitive
+    description:
+      name: nm
+      sha256: "2c9aae4127bdc8993206464fcc063611e0e36e72018696cd9631023a31b24254"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
   objective_c:
     dependency: transitive
     description:
@@ -976,6 +1136,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.2.2"
+  octo_image:
+    dependency: transitive
+    description:
+      name: octo_image
+      sha256: "34faa6639a78c7e3cbe79be6f9f96535867e879748ade7d17c9b1ae7536293bd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   package_config:
     dependency: transitive
     description:
@@ -1001,7 +1169,7 @@ packages:
     source: hosted
     version: "3.2.1"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       sha256: "75cca69d1490965be98c73ceaea117e8a04dd21217b37b292c9ddbec0d955bc5"
@@ -1389,6 +1557,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.1"
+  sqflite:
+    dependency: "direct main"
+    description:
+      name: sqflite
+      sha256: e2297b1da52f127bc7a3da11439985d9b536f75070f3325e62ada69a5c585d03
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.2"
+  sqflite_android:
+    dependency: transitive
+    description:
+      name: sqflite_android
+      sha256: ecd684501ebc2ae9a83536e8b15731642b9570dc8623e0073d227d0ee2bfea88
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.2+2"
+  sqflite_common:
+    dependency: transitive
+    description:
+      name: sqflite_common
+      sha256: "6ef422a4525ecc601db6c0a2233ff448c731307906e92cabc9ba292afaae16a6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.6"
+  sqflite_darwin:
+    dependency: transitive
+    description:
+      name: sqflite_darwin
+      sha256: "279832e5cde3fe99e8571879498c9211f3ca6391b0d818df4e17d9fff5c6ccb3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.2"
+  sqflite_platform_interface:
+    dependency: transitive
+    description:
+      name: sqflite_platform_interface
+      sha256: "8dd4515c7bdcae0a785b0062859336de775e8c65db81ae33dd5445f35be61920"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.0"
   stack_trace:
     dependency: transitive
     description:
@@ -1469,6 +1677,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "32.1.24"
+  synchronized:
+    dependency: transitive
+    description:
+      name: synchronized
+      sha256: c254ade258ec8282947a0acbbc90b9575b4f19673533ee46f2f6e9b3aeefd7c0
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.0"
   term_glyph:
     dependency: transitive
     description:
@@ -1574,7 +1790,7 @@ packages:
     source: hosted
     version: "3.1.5"
   uuid:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: uuid
       sha256: a11b666489b1954e01d992f3d601b1804a33937b5a8fe677bd26b8a9f96f96e8

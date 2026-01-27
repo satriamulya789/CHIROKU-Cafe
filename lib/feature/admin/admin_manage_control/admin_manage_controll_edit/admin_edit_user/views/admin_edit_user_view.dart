@@ -1,6 +1,7 @@
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/controllers/admin_edit_user_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/widgets/admin_edit_user_form_dialog.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/widgets/admin_edit_user_list_item.dart';
+import 'package:chiroku_cafe/shared/widgets/sync_indicator_widget.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
       backgroundColor: AppColors.brownLight,
       body: Column(
         children: [
+          _buildHeader(),
           _buildSearchBar(),
           Expanded(
             child: Obx(() {
@@ -76,6 +78,39 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
           'Add User',
           style: AppTypography.button.copyWith(color: AppColors.white),
         ),
+      ),
+    );
+  }
+
+  /// Header with sync indicator and manual sync button
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      color: AppColors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Sync indicator
+          const SyncIndicatorWidget(),
+          
+          // Manual sync button
+          Obx(() => IconButton(
+                icon: controller.isSyncing.value
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.brownNormal,
+                        ),
+                      )
+                    : const Icon(Icons.sync, color: AppColors.brownNormal),
+                onPressed: controller.isSyncing.value
+                    ? null
+                    : () => controller.syncUsers(),
+                tooltip: 'Sync Users',
+              )),
+        ],
       ),
     );
   }

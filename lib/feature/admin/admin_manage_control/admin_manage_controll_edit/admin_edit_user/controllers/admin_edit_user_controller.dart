@@ -1,6 +1,10 @@
+import 'dart:developer';
+import 'package:chiroku_cafe/brick/models/user.model.dart' as BrickUser;
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/models/admin_edit_user_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/services/admin_edit_user_service.dart';
 import 'package:chiroku_cafe/shared/constants/protected_users.dart';
+import 'package:chiroku_cafe/shared/services/offline_user_service.dart';
+import 'package:chiroku_cafe/shared/services/connectivity_service.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
@@ -10,9 +14,14 @@ import 'package:get/get.dart';
 class AdminEditUserController extends GetxController {
   final UserService _service = UserService();
   final snackbar = CustomSnackbar();
+  
+  // Offline services
+  final OfflineUserService _offlineUserService = Get.find<OfflineUserService>();
+  final ConnectivityService _connectivity = Get.find<ConnectivityService>();
 
   final users = <UserModel>[].obs;
   final isLoading = false.obs;
+  final isSyncing = false.obs;
   final searchQuery = ''.obs;
 
   // Form controllers
@@ -29,6 +38,16 @@ class AdminEditUserController extends GetxController {
   void onInit() {
     super.onInit();
     fetchUsers();
+    
+    // Listen to offline service users and sync them to local users list
+    ever(_offlineUserService.users, (brickUsers) {
+      _syncBrickUsersToLocal(brickUsers);
+    });
+
+    // Listen to sync status
+    ever(_offlineUserService.isSyncing, (syncing) {
+      isSyncing.value = syncing;
+    });
   }
 
   @override
@@ -56,11 +75,34 @@ class AdminEditUserController extends GetxController {
     }).toList();
   }
 
+  /// Sync Brick users to local UserModel list
+  void _syncBrickUsersToLocal(List<BrickUser.User> brickUsers) {
+    users.value = brickUsers.map((brickUser) {
+      return UserModel(
+        id: brickUser.id,
+        fullName: brickUser.fullName,
+        email: brickUser.email,
+        avatarUrl: brickUser.avatarUrl,
+        role: brickUser.role,
+        createdAt: brickUser.createdAt,
+        updatedAt: brickUser.updatedAt,
+      );
+    }).toList();
+  }
+
+  /// Fetch users (offline-first)
   Future<void> fetchUsers() async {
     try {
       isLoading.value = true;
-      users.value = await _service.fetchUsers();
+      
+      // Load from offline service (which handles offline-first logic)
+      await _offlineUserService.loadUsers();
+      
+      // Convert Brick users to UserModel
+      _syncBrickUsersToLocal(_offlineUserService.users);
+      
     } catch (e) {
+      log('❌ Error fetching users: $e');
       snackbar.showErrorSnackbar('Failed to fetch users: $e');
     } finally {
       isLoading.value = false;
@@ -75,28 +117,48 @@ class AdminEditUserController extends GetxController {
     confirmPasswordController.clear();
   }
 
+  /// Create user (works offline)
   Future<void> createUser() async {
     try {
       if (!_validateCreateForm()) return;
 
       isLoading.value = true;
-      await _service.createUser(
-        email: emailController.text.trim(),
-        password: passwordController.text,
-        fullName: fullNameController.text.trim(),
-        role: roleController.text,
-      );
+
+      // If online, create auth user first
+      if (_connectivity.isConnected) {
+        await _service.createUser(
+          email: emailController.text.trim(),
+          password: passwordController.text,
+          fullName: fullNameController.text.trim(),
+          role: roleController.text,
+        );
+      } else {
+        // Offline mode: add to offline database
+        await _offlineUserService.addUser(
+          fullName: fullNameController.text.trim(),
+          email: emailController.text.trim(),
+          role: roleController.text,
+        );
+      }
+
       await fetchUsers();
       clearForm();
       Get.back();
-      snackbar.showSuccessSnackbar('User created successfully');
+      
+      snackbar.showSuccessSnackbar(
+        _connectivity.isConnected
+            ? 'User created successfully'
+            : 'User created offline. Will sync when online.',
+      );
     } catch (e) {
+      log('❌ Error creating user: $e');
       snackbar.showErrorSnackbar('Failed to create user: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
+  /// Update user (works offline)
   Future<void> updateUser(UserModel user) async {
     try {
       if (ProtectedUsers.isProtected(user.email)) {
@@ -109,25 +171,51 @@ class AdminEditUserController extends GetxController {
       if (!_validateUpdateForm()) return;
 
       isLoading.value = true;
-      await _service.updateUser(
-        user.id,
-        fullName: fullNameController.text.trim(),
-        email: emailController.text.trim().isEmpty
-            ? null
-            : emailController.text.trim(),
-        role: roleController.text,
-      );
+
+      // Find corresponding Brick user
+      final brickUser = _offlineUserService.getUserById(user.id);
+      
+      if (brickUser != null) {
+        // Update via offline service
+        await _offlineUserService.updateUser(
+          brickUser.copyWith(
+            fullName: fullNameController.text.trim(),
+            email: emailController.text.trim().isEmpty
+                ? null
+                : emailController.text.trim(),
+            role: roleController.text,
+          ),
+        );
+      } else {
+        // Fallback to direct service if not in offline DB
+        await _service.updateUser(
+          user.id,
+          fullName: fullNameController.text.trim(),
+          email: emailController.text.trim().isEmpty
+              ? null
+              : emailController.text.trim(),
+          role: roleController.text,
+        );
+      }
+
       await fetchUsers();
       clearForm();
       Get.back();
-      snackbar.showSuccessSnackbar('User updated successfully');
+      
+      snackbar.showSuccessSnackbar(
+        _connectivity.isConnected
+            ? 'User updated successfully'
+            : 'User updated offline. Will sync when online.',
+      );
     } catch (e) {
+      log('❌ Error updating user: $e');
       snackbar.showErrorSnackbar('Failed to update user: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
+  /// Delete user (works offline)
   Future<void> deleteUser(UserModel user) async {
     try {
       if (ProtectedUsers.isProtected(user.email)) {
@@ -138,18 +226,46 @@ class AdminEditUserController extends GetxController {
       }
 
       isLoading.value = true;
-      await _service.deleteUser(user.id);
+
+      // Find corresponding Brick user
+      final brickUser = _offlineUserService.getUserById(user.id);
+      
+      if (brickUser != null) {
+        // Delete via offline service
+        await _offlineUserService.deleteUser(brickUser);
+      } else {
+        // Fallback to direct service
+        await _service.deleteUser(user.id);
+      }
+
       await fetchUsers();
-      snackbar.showSuccessSnackbar('User deleted successfully');
+      
+      snackbar.showSuccessSnackbar(
+        _connectivity.isConnected
+            ? 'User deleted successfully'
+            : 'User deleted offline. Will sync when online.',
+      );
     } catch (e) {
       final errorMessage = e.toString();
       if (errorMessage.contains('23503')) {
         _showCannotDeleteUserDialog();
       } else {
+        log('❌ Error deleting user: $e');
         snackbar.showErrorSnackbar('Failed to delete user: $e');
       }
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  /// Manually trigger sync
+  Future<void> syncUsers() async {
+    try {
+      await _offlineUserService.syncWithRemote();
+      snackbar.showSuccessSnackbar('Users synced successfully');
+    } catch (e) {
+      log('❌ Error syncing users: $e');
+      snackbar.showErrorSnackbar('Failed to sync users: $e');
     }
   }
 
@@ -231,4 +347,7 @@ class AdminEditUserController extends GetxController {
   void updateSearchQuery(String query) {
     searchQuery.value = query;
   }
+
+  /// Check if device is online
+  bool get isOnline => _connectivity.isConnected;
 }
