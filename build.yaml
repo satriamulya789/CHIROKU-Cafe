@@ -1,0 +1,9 @@
+targets:
+  $default:
+    builders:
+      brick_offline_first_with_supabase_build:brick_aggregate_builder:
+        generate_for:
+          - lib/brick/models/*.dart
+      brick_offline_first_with_supabase_build:brick_adapters_builder:
+        generate_for:
+          - lib/brick/models/*.dart

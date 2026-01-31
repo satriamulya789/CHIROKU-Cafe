@@ -1,10 +1,14 @@
+import 'dart:developer';
+
 import 'package:chiroku_cafe/app.dart';
+import 'package:chiroku_cafe/core/databases/database_helper.dart';
 import 'package:chiroku_cafe/env/env.dart';
 import 'package:chiroku_cafe/brick/repositories/repositories.dart';
 import 'package:chiroku_cafe/shared/services/connectivity_service.dart';
 import 'package:chiroku_cafe/shared/services/avatar_cache_service.dart';
 import 'package:chiroku_cafe/shared/services/offline_user_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -24,6 +28,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize database
+  await DatabaseHelper().database;
+  log('✅ Database initialized');
+
+  // Initialize connectivity service
+  Get.put(ConnectivityService());
+  log('✅ Connectivity service initialized');
 
   // Initialize Firebase
   await Firebase.initializeApp();
