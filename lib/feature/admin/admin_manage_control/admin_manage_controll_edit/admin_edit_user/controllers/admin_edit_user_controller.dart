@@ -1,9 +1,8 @@
 import 'dart:developer';
-import 'package:chiroku_cafe/brick/models/user.model.dart' as BrickUser;
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/models/admin_edit_user_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/services/admin_edit_user_service.dart';
 import 'package:chiroku_cafe/shared/constants/protected_users.dart';
-import 'package:chiroku_cafe/shared/services/offline_user_service.dart';
+
 import 'package:chiroku_cafe/shared/services/connectivity_service.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
@@ -14,14 +13,14 @@ import 'package:get/get.dart';
 class AdminEditUserController extends GetxController {
   final UserService _service = UserService();
   final snackbar = CustomSnackbar();
-  
+
   // Offline services
-  final OfflineUserService _offlineUserService = Get.find<OfflineUserService>();
+
   final ConnectivityService _connectivity = Get.find<ConnectivityService>();
 
   final users = <UserModel>[].obs;
   final isLoading = false.obs;
-  final isSyncing = false.obs;
+  // final isSyncing = false.obs;
   final searchQuery = ''.obs;
 
   // Form controllers
@@ -38,16 +37,6 @@ class AdminEditUserController extends GetxController {
   void onInit() {
     super.onInit();
     fetchUsers();
-    
-    // Listen to offline service users and sync them to local users list
-    ever(_offlineUserService.users, (brickUsers) {
-      _syncBrickUsersToLocal(brickUsers);
-    });
-
-    // Listen to sync status
-    ever(_offlineUserService.isSyncing, (syncing) {
-      isSyncing.value = syncing;
-    });
   }
 
   @override
@@ -75,32 +64,13 @@ class AdminEditUserController extends GetxController {
     }).toList();
   }
 
-  /// Sync Brick users to local UserModel list
-  void _syncBrickUsersToLocal(List<BrickUser.User> brickUsers) {
-    users.value = brickUsers.map((brickUser) {
-      return UserModel(
-        id: brickUser.id,
-        fullName: brickUser.fullName,
-        email: brickUser.email,
-        avatarUrl: brickUser.avatarUrl,
-        role: brickUser.role,
-        createdAt: brickUser.createdAt,
-        updatedAt: brickUser.updatedAt,
-      );
-    }).toList();
-  }
-
-  /// Fetch users (offline-first)
+  /// Fetch users
   Future<void> fetchUsers() async {
     try {
       isLoading.value = true;
-      
-      // Load from offline service (which handles offline-first logic)
-      await _offlineUserService.loadUsers();
-      
-      // Convert Brick users to UserModel
-      _syncBrickUsersToLocal(_offlineUserService.users);
-      
+
+      final result = await _service.fetchUsers();
+      users.value = result;
     } catch (e) {
       log('❌ Error fetching users: $e');
       snackbar.showErrorSnackbar('Failed to fetch users: $e');
@@ -133,18 +103,14 @@ class AdminEditUserController extends GetxController {
           role: roleController.text,
         );
       } else {
-        // Offline mode: add to offline database
-        await _offlineUserService.addUser(
-          fullName: fullNameController.text.trim(),
-          email: emailController.text.trim(),
-          role: roleController.text,
-        );
+        snackbar.showErrorSnackbar('Cannot create user while offline');
+        return;
       }
 
       await fetchUsers();
       clearForm();
       Get.back();
-      
+
       snackbar.showSuccessSnackbar(
         _connectivity.isConnected
             ? 'User created successfully'
@@ -172,36 +138,20 @@ class AdminEditUserController extends GetxController {
 
       isLoading.value = true;
 
-      // Find corresponding Brick user
-      final brickUser = _offlineUserService.getUserById(user.id);
-      
-      if (brickUser != null) {
-        // Update via offline service
-        await _offlineUserService.updateUser(
-          brickUser.copyWith(
-            fullName: fullNameController.text.trim(),
-            email: emailController.text.trim().isEmpty
-                ? null
-                : emailController.text.trim(),
-            role: roleController.text,
-          ),
-        );
-      } else {
-        // Fallback to direct service if not in offline DB
-        await _service.updateUser(
-          user.id,
-          fullName: fullNameController.text.trim(),
-          email: emailController.text.trim().isEmpty
-              ? null
-              : emailController.text.trim(),
-          role: roleController.text,
-        );
-      }
+      // Update via service
+      await _service.updateUser(
+        user.id,
+        fullName: fullNameController.text.trim(),
+        email: emailController.text.trim().isEmpty
+            ? null
+            : emailController.text.trim(),
+        role: roleController.text,
+      );
 
       await fetchUsers();
       clearForm();
       Get.back();
-      
+
       snackbar.showSuccessSnackbar(
         _connectivity.isConnected
             ? 'User updated successfully'
@@ -228,18 +178,11 @@ class AdminEditUserController extends GetxController {
       isLoading.value = true;
 
       // Find corresponding Brick user
-      final brickUser = _offlineUserService.getUserById(user.id);
-      
-      if (brickUser != null) {
-        // Delete via offline service
-        await _offlineUserService.deleteUser(brickUser);
-      } else {
-        // Fallback to direct service
-        await _service.deleteUser(user.id);
-      }
+      // Delete via service
+      await _service.deleteUser(user.id);
 
       await fetchUsers();
-      
+
       snackbar.showSuccessSnackbar(
         _connectivity.isConnected
             ? 'User deleted successfully'
@@ -255,17 +198,6 @@ class AdminEditUserController extends GetxController {
       }
     } finally {
       isLoading.value = false;
-    }
-  }
-
-  /// Manually trigger sync
-  Future<void> syncUsers() async {
-    try {
-      await _offlineUserService.syncWithRemote();
-      snackbar.showSuccessSnackbar('Users synced successfully');
-    } catch (e) {
-      log('❌ Error syncing users: $e');
-      snackbar.showErrorSnackbar('Failed to sync users: $e');
     }
   }
 

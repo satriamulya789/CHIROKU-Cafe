@@ -178,7 +178,7 @@ packages:
     source: hosted
     version: "4.0.1"
   brick_offline_first_with_supabase:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: brick_offline_first_with_supabase
       sha256: "15b6f4747759133a95ca6d2d7a867773546d0c9293267eda2d31dfc5166c17c1"
@@ -202,7 +202,7 @@ packages:
     source: hosted
     version: "4.0.0+1"
   brick_sqlite:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: brick_sqlite
       sha256: ccd020fc662a90aac7139bc5a8e77291709ead7f5a7fa758711a738a57dc3aa4
@@ -218,7 +218,7 @@ packages:
     source: hosted
     version: "4.1.0"
   brick_supabase:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: brick_supabase
       sha256: d99306dc90fe93d63dece4c4efe94b3760674bed2a2e4749792567fae2de5d98

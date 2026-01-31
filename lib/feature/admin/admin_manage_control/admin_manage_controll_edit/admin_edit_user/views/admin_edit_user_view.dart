@@ -92,24 +92,10 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
         children: [
           // Sync indicator
           const SyncIndicatorWidget(),
-          
+
           // Manual sync button
-          Obx(() => IconButton(
-                icon: controller.isSyncing.value
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.brownNormal,
-                        ),
-                      )
-                    : const Icon(Icons.sync, color: AppColors.brownNormal),
-                onPressed: controller.isSyncing.value
-                    ? null
-                    : () => controller.syncUsers(),
-                tooltip: 'Sync Users',
-              )),
+          // Manual sync button removed (offline sync disabled)
+          const SizedBox.shrink(),
         ],
       ),
     );

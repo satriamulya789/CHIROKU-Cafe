@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:chiroku_cafe/app.dart';
 import 'package:chiroku_cafe/core/databases/database_helper.dart';
 import 'package:chiroku_cafe/env/env.dart';
-import 'package:chiroku_cafe/brick/repositories/repositories.dart';
+
 import 'package:chiroku_cafe/shared/services/connectivity_service.dart';
 import 'package:chiroku_cafe/shared/services/avatar_cache_service.dart';
 import 'package:chiroku_cafe/shared/services/offline_user_service.dart';
@@ -13,7 +13,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
-import 'package:sqflite/sqflite.dart' show databaseFactory;
 
 // Background message handler - must be a top-level function
 @pragma('vm:entry-point')
@@ -40,19 +39,11 @@ Future<void> main() async {
   // Initialize Firebase
   await Firebase.initializeApp();
 
+  // Initialize Supabase
+  await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseAnonKey);
+
   // Set up Firebase Cloud Messaging background handler
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  // Initialize Brick Repository with Supabase
-  // Note: Brick will initialize Supabase internally, so we don't call Supabase.initialize separately
-  await Repository.configure(
-    databaseFactory: databaseFactory,
-    supabaseUrl: Env.supabaseUrl,
-    supabaseAnonKey: Env.supabaseAnonKey,
-  );
-
-  // Initialize repository
-  await Repository().initialize();
 
   // Initialize offline services
   Get.put(ConnectivityService());
