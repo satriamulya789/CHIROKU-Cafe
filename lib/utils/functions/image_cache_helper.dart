@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'dart:developer';
 
 class ImageCacheHelper {
-  // Custom cache manager dengan konfigurasi persistent
-  static final CacheManager _cacheManager = CacheManager(
+  // Custom cache manager untuk avatar
+  static final CacheManager _avatarCacheManager = CacheManager(
     Config(
       'chiroku_avatar_cache',
       stalePeriod: const Duration(days: 120), // Cache selama 120 hari
@@ -14,6 +14,19 @@ class ImageCacheHelper {
       fileService: HttpFileService(),
     ),
   );
+
+  // Custom cache manager untuk menu images
+  static final CacheManager _menuCacheManager = CacheManager(
+    Config(
+      'chiroku_menu_cache',
+      stalePeriod: const Duration(days: 90), // Cache selama 90 hari
+      maxNrOfCacheObjects: 500, // Max 500 menu images
+      repo: JsonCacheInfoRepository(databaseName: 'chiroku_menu_cache'),
+      fileService: HttpFileService(),
+    ),
+  );
+
+  // ==================== AVATAR CACHE ====================
 
   // Cache avatar with fallback
   static Widget cachedAvatar({
@@ -34,7 +47,7 @@ class ImageCacheHelper {
 
     return CachedNetworkImage(
       imageUrl: imageUrl,
-      cacheManager: _cacheManager,
+      cacheManager: _avatarCacheManager,
       imageBuilder: (context, imageProvider) => Container(
         width: size,
         height: size,
@@ -61,11 +74,6 @@ class ImageCacheHelper {
       },
       fadeInDuration: const Duration(milliseconds: 300),
       fadeOutDuration: const Duration(milliseconds: 300),
-      // ❌ REMOVE ALL RESIZE PARAMETERS - not supported with regular CacheManager
-      // memCacheWidth: 200,
-      // memCacheHeight: 200,
-      // maxWidthDiskCache: 200,
-      // maxHeightDiskCache: 200,
     );
   }
 
@@ -92,7 +100,7 @@ class ImageCacheHelper {
 
     return CachedNetworkImage(
       imageUrl: imageUrl,
-      cacheManager: _cacheManager,
+      cacheManager: _avatarCacheManager,
       imageBuilder: (context, imageProvider) => Container(
         width: size,
         height: size,
@@ -121,7 +129,113 @@ class ImageCacheHelper {
       },
       fadeInDuration: const Duration(milliseconds: 300),
       fadeOutDuration: const Duration(milliseconds: 300),
-      // ❌ REMOVE ALL RESIZE PARAMETERS
+    );
+  }
+
+  // ==================== MENU IMAGE CACHE ====================
+
+  static Widget cachedMenuImage({
+    required String? imageUrl,
+    double? width,
+    double? height,
+    BoxFit fit = BoxFit.cover,
+    Color? backgroundColor,
+    BorderRadius? borderRadius,
+    Color? loadingColor,
+    Widget? errorWidget,
+  }) {
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return _buildFallbackMenuImage(
+        width: width,
+        height: height,
+        backgroundColor: backgroundColor,
+        borderRadius: borderRadius,
+      );
+    }
+
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      cacheManager: _menuCacheManager,
+      imageBuilder: (context, imageProvider) => Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          borderRadius: borderRadius ?? BorderRadius.circular(8),
+          image: DecorationImage(
+            image: imageProvider,
+            fit: fit,
+          ),
+        ),
+      ),
+      placeholder: (context, url) => _buildLoadingMenuImage(
+        width: width,
+        height: height,
+        backgroundColor: backgroundColor,
+        borderRadius: borderRadius,
+        loadingColor: loadingColor,
+      ),
+      errorWidget: (context, url, error) {
+        log('❌ Error loading menu image: $url - $error');
+        return errorWidget ??
+            _buildFallbackMenuImage(
+              width: width,
+              height: height,
+              backgroundColor: backgroundColor,
+              borderRadius: borderRadius,
+            );
+      },
+      fadeInDuration: const Duration(milliseconds: 300),
+      fadeOutDuration: const Duration(milliseconds: 300),
+    );
+  }
+
+  // ==================== PRIVATE BUILDERS ====================
+
+  static Widget _buildLoadingMenuImage({
+    double? width,
+    double? height,
+    Color? backgroundColor,
+    BorderRadius? borderRadius,
+    Color? loadingColor,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: borderRadius ?? BorderRadius.circular(8),
+        color: backgroundColor ?? Colors.grey[300],
+      ),
+      child: Center(
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(
+            loadingColor ?? Colors.grey[600]!,
+          ),
+        ),
+      ),
+    );
+  }
+
+  static Widget _buildFallbackMenuImage({
+    double? width,
+    double? height,
+    Color? backgroundColor,
+    BorderRadius? borderRadius,
+  }) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: borderRadius ?? BorderRadius.circular(8),
+        color: backgroundColor ?? Colors.grey[300],
+      ),
+      child: Icon(
+        Icons.restaurant_menu,
+        size: (width != null && height != null)
+            ? (width < height ? width * 0.5 : height * 0.5)
+            : 48,
+        color: Colors.grey[600],
+      ),
     );
   }
 
@@ -180,7 +294,7 @@ class ImageCacheHelper {
     TextStyle? textStyle,
   }) {
     final initial = userName.isNotEmpty ? userName[0].toUpperCase() : '?';
-    
+
     return Container(
       width: size,
       height: size,
@@ -203,12 +317,13 @@ class ImageCacheHelper {
   }
 
   // ==================== PRECACHE METHODS ====================
-  
-  static Future<void> precacheAvatar(BuildContext context, String? imageUrl) async {
+
+  static Future<void> precacheAvatar(
+      BuildContext context, String? imageUrl) async {
     if (imageUrl == null || imageUrl.isEmpty) return;
-    
+
     try {
-      await _cacheManager.downloadFile(imageUrl);
+      await _avatarCacheManager.downloadFile(imageUrl);
       log('✅ Avatar precached: $imageUrl');
     } catch (e) {
       log('❌ Error precaching avatar: $e');
@@ -225,62 +340,170 @@ class ImageCacheHelper {
     for (final url in imageUrls) {
       if (url.isNotEmpty) {
         try {
-          await _cacheManager.downloadFile(url);
+          await _avatarCacheManager.downloadFile(url);
           successCount++;
-          log('✅ Cached: $url');
+          log('✅ Cached avatar: $url');
         } catch (e) {
           errorCount++;
-          log('❌ Error caching: $url - $e');
+          log('❌ Error caching avatar: $url - $e');
         }
       }
     }
-    
+
     log('✅ Precached $successCount avatars (${errorCount} errors)');
   }
 
+  static Future<void> precacheMenuImage(String? imageUrl) async {
+    if (imageUrl == null || imageUrl.isEmpty) return;
+
+    try {
+      await _menuCacheManager.downloadFile(imageUrl);
+      log('✅ Menu image precached: $imageUrl');
+    } catch (e) {
+      log('❌ Error precaching menu image: $e');
+    }
+  }
+
+  static Future<void> precacheMenuImages(List<String> imageUrls) async {
+    int successCount = 0;
+    int errorCount = 0;
+
+    for (final url in imageUrls) {
+      if (url.isNotEmpty) {
+        try {
+          await _menuCacheManager.downloadFile(url);
+          successCount++;
+          log('✅ Cached menu image: $url');
+        } catch (e) {
+          errorCount++;
+          log('❌ Error caching menu image: $url - $e');
+        }
+      }
+    }
+
+    log('✅ Precached $successCount menu images (${errorCount} errors)');
+  }
+
   // ==================== CACHE INFO ====================
-  
+
   static Future<bool> isImageCached(String imageUrl) async {
     try {
-      final fileInfo = await _cacheManager.getFileFromCache(imageUrl);
+      final fileInfo = await _avatarCacheManager.getFileFromCache(imageUrl);
       final isCached = fileInfo != null;
       if (isCached) {
-        log('✅ Image cached: $imageUrl');
+        log('✅ Avatar cached: $imageUrl');
       } else {
-        log('ℹ️ Image not cached: $imageUrl');
+        log('ℹ️ Avatar not cached: $imageUrl');
       }
       return isCached;
     } catch (e) {
-      log('❌ Error checking cache: $e');
+      log('❌ Error checking avatar cache: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> isAvatarCached(String imageUrl) async {
+    try {
+      final fileInfo = await _avatarCacheManager.getFileFromCache(imageUrl);
+      final isCached = fileInfo != null;
+      if (isCached) {
+        log('✅ Avatar cached: $imageUrl');
+      } else {
+        log('ℹ️ Avatar not cached: $imageUrl');
+      }
+      return isCached;
+    } catch (e) {
+      log('❌ Error checking avatar cache: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> isMenuImageCached(String imageUrl) async {
+    try {
+      final fileInfo = await _menuCacheManager.getFileFromCache(imageUrl);
+      final isCached = fileInfo != null;
+      if (isCached) {
+        log('✅ Menu image cached: $imageUrl');
+      } else {
+        log('ℹ️ Menu image not cached: $imageUrl');
+      }
+      return isCached;
+    } catch (e) {
+      log('❌ Error checking menu image cache: $e');
       return false;
     }
   }
 
   static Future<Map<String, dynamic>> getCacheInfo() async {
     return {
-      'cacheExists': true,
-      'message': 'Cache manager initialized',
-      'stalePeriod': '120 days',
-      'maxObjects': 200,
+      'avatar': {
+        'cacheExists': true,
+        'message': 'Avatar cache manager initialized',
+        'stalePeriod': '120 days',
+        'maxObjects': 200,
+      },
+      'menu': {
+        'cacheExists': true,
+        'message': 'Menu cache manager initialized',
+        'stalePeriod': '90 days',
+        'maxObjects': 500,
+      },
     };
   }
 
   // ==================== CACHE MANAGEMENT ====================
-  
+
   static Future<void> clearCache() async {
     try {
-      await _cacheManager.emptyCache();
+      await _avatarCacheManager.emptyCache();
       log('✅ All avatar cache cleared');
     } catch (e) {
-      log('❌ Error clearing cache: $e');
+      log('❌ Error clearing avatar cache: $e');
       rethrow;
     }
   }
 
-  static Future<void> clearImageCache(String imageUrl) async {
+  static Future<void> clearAvatarCache() async {
     try {
-      await _cacheManager.removeFile(imageUrl);
-      log('✅ Image cache cleared for: $imageUrl');
+      await _avatarCacheManager.emptyCache();
+      log('✅ All avatar cache cleared');
+    } catch (e) {
+      log('❌ Error clearing avatar cache: $e');
+      rethrow;
+    }
+  }
+
+  static Future<void> clearMenuCache() async {
+    try {
+      await _menuCacheManager.emptyCache();
+      log('✅ All menu cache cleared');
+    } catch (e) {
+      log('❌ Error clearing menu cache: $e');
+      rethrow;
+    }
+  }
+
+  static Future<void> clearAllCache() async {
+    try {
+      await _avatarCacheManager.emptyCache();
+      await _menuCacheManager.emptyCache();
+      log('✅ All cache cleared (avatars & menus)');
+    } catch (e) {
+      log('❌ Error clearing all cache: $e');
+      rethrow;
+    }
+  }
+
+  static Future<void> clearImageCache(String imageUrl,
+      {bool isMenuImage = false}) async {
+    try {
+      if (isMenuImage) {
+        await _menuCacheManager.removeFile(imageUrl);
+        log('✅ Menu image cache cleared for: $imageUrl');
+      } else {
+        await _avatarCacheManager.removeFile(imageUrl);
+        log('✅ Avatar cache cleared for: $imageUrl');
+      }
     } catch (e) {
       log('❌ Error clearing image cache: $e');
       rethrow;

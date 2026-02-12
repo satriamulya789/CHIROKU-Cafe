@@ -8,6 +8,7 @@ class MenuRepositories {
   final SupabaseClient _supabase = Supabase.instance.client;
   static const String bucketName = 'menus';
 
+  // Original methods with MenuModel
   Future<List<MenuModel>> getMenus() async {
     try {
       final response = await _supabase
@@ -38,12 +39,52 @@ class MenuRepositories {
     }
   }
 
+  // Raw methods for offline sync
+  Future<List<Map<String, dynamic>>> getMenusRaw() async {
+    try {
+      final response = await _supabase
+          .from(ApiConstant.menuTable)
+          .select('*')
+          .order('created_at', ascending: false);
+
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      throw Exception('Failed to load menus: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getCategoriesRaw() async {
+    try {
+      final response = await _supabase
+          .from(ApiConstant.categoriesTable)
+          .select()
+          .order('name');
+
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      throw Exception('Failed to load categories: $e');
+    }
+  }
+
+  // Stream methods for realtime sync
+  Stream<List<Map<String, dynamic>>> watchMenus() {
+    return _supabase
+        .from(ApiConstant.menuTable)
+        .stream(primaryKey: ['id'])
+        .order('created_at', ascending: false);
+  }
+
+  Stream<List<Map<String, dynamic>>> watchCategories() {
+    return _supabase
+        .from(ApiConstant.categoriesTable)
+        .stream(primaryKey: ['id'])
+        .order('name');
+  }
+
   Future<String> uploadImage(File imageFile, String fileName) async {
     try {
-      // Upload to Supabase Storage
       await _supabase.storage.from(bucketName).upload(fileName, imageFile);
 
-      // Get public URL
       final String publicUrl = _supabase.storage
           .from(bucketName)
           .getPublicUrl(fileName);
@@ -56,18 +97,16 @@ class MenuRepositories {
 
   Future<void> deleteImage(String imageUrl) async {
     try {
-      // Extract filename from URL
       final uri = Uri.parse(imageUrl);
       final fileName = uri.pathSegments.last;
 
       await _supabase.storage.from(bucketName).remove([fileName]);
     } catch (e) {
-      // Don't throw error if image deletion fails
       print('Warning: Failed to delete image: $e');
     }
   }
 
-  Future<void> createMenu({
+  Future<int> createMenu({
     required int categoryId,
     required String name,
     required double price,
@@ -77,7 +116,7 @@ class MenuRepositories {
     bool isAvailable = true,
   }) async {
     try {
-      await _supabase.from(ApiConstant.menuTable).insert({
+      final response = await _supabase.from(ApiConstant.menuTable).insert({
         'category_id': categoryId,
         'name': name,
         'price': price,
@@ -87,7 +126,9 @@ class MenuRepositories {
         'is_available': isAvailable,
         'created_at': DateTime.now().toIso8601String(),
         'updated_at': DateTime.now().toIso8601String(),
-      });
+      }).select('id').single();
+
+      return response['id'] as int;
     } catch (e) {
       throw Exception('Failed to create menu: $e');
     }
@@ -142,5 +183,9 @@ class MenuRepositories {
     } catch (e) {
       throw Exception('Failed to update menu availability: $e');
     }
+  }
+
+  Future<void> syncPendingChanges() async {
+    // Handled by AdminEditMenuSyncService
   }
 }

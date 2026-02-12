@@ -1,5 +1,7 @@
 import 'package:chiroku_cafe/core/tables/session_table.dart';
 import 'package:chiroku_cafe/core/tables/user_table.dart';
+import 'package:chiroku_cafe/core/tables/menu_table.dart';
+import 'package:chiroku_cafe/core/tables/category_table.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,12 +11,12 @@ import 'dart:developer';
 
 part 'drift_database.g.dart';
 
-@DriftDatabase(tables: [SessionTable, UsersLocalTable])
+@DriftDatabase(tables: [SessionTable, UsersLocalTable, MenuLocalTable, CategoryLocalTable])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
@@ -53,6 +55,12 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(usersLocalTable, usersLocalTable.isLocalOnly);
           await m.addColumn(usersLocalTable, usersLocalTable.tempPassword);
           log('✅ Offline operation columns added');
+        }
+        if (from < 8) {
+          log('➕ Migrating to version 8: Creating menu and category tables');
+          await m.createTable(menuLocalTable);
+          await m.createTable(categoryLocalTable);
+          log('✅ Menu and category tables created');
         }
       },
     );
@@ -180,7 +188,6 @@ class AppDatabase extends _$AppDatabase {
         throw Exception('User not found');
       }
 
-      // If user was created offline, keep CREATE operation
       final pendingOp = user.isLocalOnly ? 'CREATE' : 'UPDATE';
 
       await (update(usersLocalTable)..where((tbl) => tbl.id.equals(id)))
@@ -211,11 +218,9 @@ class AppDatabase extends _$AppDatabase {
       }
 
       if (user.isLocalOnly) {
-        // If created offline and never synced, permanently delete
         await (delete(usersLocalTable)..where((tbl) => tbl.id.equals(id))).go();
         log('✅ Local-only user permanently deleted: $id');
       } else {
-        // Mark for deletion sync
         await (update(usersLocalTable)..where((tbl) => tbl.id.equals(id)))
             .write(UsersLocalTableCompanion(
           isDeleted: const Value(true),
@@ -252,16 +257,13 @@ class AppDatabase extends _$AppDatabase {
     log('✅ Marking user as synced: $oldId ${newId != null ? "-> $newId" : ""}');
     try {
       if (newId != null && oldId != newId) {
-        // Replace temp ID with real Supabase ID
         final user = await (select(usersLocalTable)
               ..where((tbl) => tbl.id.equals(oldId)))
             .getSingleOrNull();
             
         if (user != null) {
-          // Delete old temp user
           await (delete(usersLocalTable)..where((tbl) => tbl.id.equals(oldId))).go();
           
-          // Insert with real ID
           await into(usersLocalTable).insert(
             UsersLocalTableCompanion.insert(
               id: newId,
@@ -280,14 +282,12 @@ class AppDatabase extends _$AppDatabase {
           );
           log('✅ User ID replaced: $oldId -> $newId');
           
-          // Verification
           final verifyUser = await getUserById(newId);
           if (verifyUser != null) {
             log('🔍 Verification: User exists with new ID: ${verifyUser.fullName}');
           }
         }
       } else {
-        // Just mark as synced
         await (update(usersLocalTable)..where((tbl) => tbl.id.equals(oldId)))
             .write(UsersLocalTableCompanion(
           needsSync: const Value(false),
@@ -303,8 +303,6 @@ class AppDatabase extends _$AppDatabase {
       rethrow;
     }
   }
-
-  // =========================== ONLINE SYNC METHODS ===========================
 
   Future<void> upsertUser(UsersLocal user) async {
     log('💾 Upserting user from Supabase: ${user.id} - ${user.fullName}');
@@ -366,8 +364,6 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
-  // =========================== QUERY METHODS ===========================
-
   Future<List<UsersLocal>> getAllUsers() async {
     log('🔍 Getting all users...');
     try {
@@ -410,8 +406,6 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
-  // =========================== COUNT METHODS ===========================
-
   Future<int> getUsersCount() async {
     log('🔢 Counting users...');
     try {
@@ -426,29 +420,6 @@ class AppDatabase extends _$AppDatabase {
       return 0;
     }
   }
-
-  Future<int> getMenusCount() async {
-    log('🔢 Counting menus...');
-    // TODO: Implement when menu table exists
-    log('⚠️ Menu table not yet implemented, returning 0');
-    return 0;
-  }
-
-  Future<int> getCategoriesCount() async {
-    log('🔢 Counting categories...');
-    // TODO: Implement when category table exists
-    log('⚠️ Category table not yet implemented, returning 0');
-    return 0;
-  }
-
-  Future<int> getTablesCount() async {
-    log('🔢 Counting tables...');
-    // TODO: Implement when table entity exists
-    log('⚠️ Table entity not yet implemented, returning 0');
-    return 0;
-  }
-
-  // =========================== UTILITY METHODS ===========================
 
   Future<void> permanentlyDeleteUser(String id) async {
     log('🗑️ Permanently deleting user: $id');
@@ -470,6 +441,411 @@ class AppDatabase extends _$AppDatabase {
       log('❌ Error clearing users: $e');
     }
   }
+
+  // =========================== MENU METHODS ===========================
+
+  Future<int> createMenuOffline({
+    required int categoryId,
+    required String name,
+    required double price,
+    String? description,
+    int stock = 0,
+    String? imageUrl,
+    String? localImagePath,
+    bool isAvailable = true,
+  }) async {
+    log('📴 Creating menu offline: $name');
+    
+    try {
+      final id = await into(menuLocalTable).insert(
+        MenuLocalTableCompanion.insert(
+          categoryId: categoryId,
+          name: name,
+          price: price,
+          description: Value(description),
+          imageUrl: Value(imageUrl),
+          localImagePath: Value(localImagePath),
+          stock: Value(stock),
+          isAvailable: Value(isAvailable),
+          createdAt: Value(DateTime.now()),
+          updatedAt: Value(DateTime.now()),
+          needsSync: const Value(true),
+          isLocalOnly: const Value(true),
+          pendingOperation: const Value('CREATE'),
+        ),
+      );
+      log('✅ Menu created offline with ID: $id');
+      return id;
+    } catch (e) {
+      log('❌ Error creating menu offline: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateMenuOffline(int id, {
+    int? categoryId,
+    String? name,
+    double? price,
+    String? description,
+    int? stock,
+    String? imageUrl,
+    String? localImagePath,
+    bool? isAvailable,
+  }) async {
+    log('✏️ Updating menu offline: $id');
+    try {
+      final menu = await getMenuById(id);
+      if (menu == null) {
+        throw Exception('Menu not found');
+      }
+
+      final pendingOp = menu.isLocalOnly ? 'CREATE' : 'UPDATE';
+
+      await (update(menuLocalTable)..where((tbl) => tbl.id.equals(id)))
+          .write(MenuLocalTableCompanion(
+        categoryId: categoryId != null ? Value(categoryId) : const Value.absent(),
+        name: name != null ? Value(name) : const Value.absent(),
+        price: price != null ? Value(price) : const Value.absent(),
+        description: description != null ? Value(description) : const Value.absent(),
+        stock: stock != null ? Value(stock) : const Value.absent(),
+        imageUrl: imageUrl != null ? Value(imageUrl) : const Value.absent(),
+        localImagePath: localImagePath != null ? Value(localImagePath) : const Value.absent(),
+        isAvailable: isAvailable != null ? Value(isAvailable) : const Value.absent(),
+        updatedAt: Value(DateTime.now()),
+        needsSync: const Value(true),
+        pendingOperation: Value(pendingOp),
+      ));
+      log('✅ Menu updated offline (operation: $pendingOp)');
+    } catch (e) {
+      log('❌ Error updating menu offline: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> deleteMenuOffline(int id) async {
+    log('🗑️ Deleting menu offline: $id');
+    try {
+      final menu = await (select(menuLocalTable)
+            ..where((tbl) => tbl.id.equals(id)))
+          .getSingleOrNull();
+          
+      if (menu == null) {
+        throw Exception('Menu not found');
+      }
+
+      if (menu.isLocalOnly) {
+        await (delete(menuLocalTable)..where((tbl) => tbl.id.equals(id))).go();
+        log('✅ Local-only menu permanently deleted: $id');
+      } else {
+        await (update(menuLocalTable)..where((tbl) => tbl.id.equals(id)))
+            .write(MenuLocalTableCompanion(
+          isDeleted: const Value(true),
+          needsSync: const Value(true),
+          pendingOperation: const Value('DELETE'),
+          updatedAt: Value(DateTime.now()),
+        ));
+        log('✅ Menu marked for deletion: $id');
+      }
+    } catch (e) {
+      log('❌ Error deleting menu offline: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<MenuLocal>> getMenusNeedingSync() async {
+    log('🔄 Getting menus needing sync...');
+    try {
+      final menus = await (select(menuLocalTable)
+            ..where((tbl) => tbl.needsSync.equals(true)))
+          .get();
+      log('✅ Found ${menus.length} menus needing sync');
+      return menus;
+    } catch (e) {
+      log('❌ Error getting menus needing sync: $e');
+      return [];
+    }
+  }
+
+  Future<void> markMenuAsSynced(int localId, {int? newId}) async {
+    log('✅ Marking menu as synced: $localId ${newId != null ? "-> $newId" : ""}');
+    try {
+      if (newId != null && localId != newId) {
+        final menu = await (select(menuLocalTable)
+              ..where((tbl) => tbl.id.equals(localId)))
+            .getSingleOrNull();
+            
+        if (menu != null) {
+          await (delete(menuLocalTable)..where((tbl) => tbl.id.equals(localId))).go();
+          
+          await into(menuLocalTable).insert(
+            MenuLocalTableCompanion.insert(
+              id: Value(newId),
+              categoryId: menu.categoryId,
+              name: menu.name,
+              price: menu.price,
+              description: Value(menu.description),
+              imageUrl: Value(menu.imageUrl),
+              localImagePath: Value(menu.localImagePath),
+              stock: Value(menu.stock),
+              isAvailable: Value(menu.isAvailable),
+              createdAt: Value(menu.createdAt),
+              updatedAt: Value(menu.updatedAt),
+              syncedAt: Value(DateTime.now()),
+              needsSync: const Value(false),
+              isLocalOnly: const Value(false),
+            ),
+          );
+          log('✅ Menu ID replaced: $localId -> $newId');
+        }
+      } else {
+        await (update(menuLocalTable)..where((tbl) => tbl.id.equals(localId)))
+            .write(MenuLocalTableCompanion(
+          needsSync: const Value(false),
+          syncedAt: Value(DateTime.now()),
+          isLocalOnly: const Value(false),
+          pendingOperation: const Value.absent(),
+        ));
+        log('✅ Menu marked as synced: $localId');
+      }
+    } catch (e) {
+      log('❌ Error marking menu as synced: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> upsertMenu(MenuLocal menu) async {
+    log('💾 Upserting menu from Supabase: ${menu.id} - ${menu.name}');
+    try {
+      await into(menuLocalTable).insertOnConflictUpdate(
+        MenuLocalTableCompanion(
+          id: Value(menu.id),
+          categoryId: Value(menu.categoryId),
+          name: Value(menu.name),
+          price: Value(menu.price),
+          description: Value(menu.description),
+          imageUrl: Value(menu.imageUrl),
+          stock: Value(menu.stock),
+          isAvailable: Value(menu.isAvailable),
+          createdAt: Value(menu.createdAt),
+          updatedAt: Value(menu.updatedAt),
+          syncedAt: Value(DateTime.now()),
+          needsSync: const Value(false),
+          isDeleted: Value(menu.isDeleted),
+          isLocalOnly: const Value(false),
+        ),
+      );
+      log('✅ Menu upserted: ${menu.id}');
+    } catch (e) {
+      log('❌ Error upserting menu: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> upsertMenus(List<MenuLocal> menusList) async {
+    log('💾 Bulk upserting ${menusList.length} menus from Supabase...');
+    try {
+      await batch((batch) {
+        for (final menu in menusList) {
+          batch.insert(
+            menuLocalTable,
+            MenuLocalTableCompanion(
+              id: Value(menu.id),
+              categoryId: Value(menu.categoryId),
+              name: Value(menu.name),
+              price: Value(menu.price),
+              description: Value(menu.description),
+              imageUrl: Value(menu.imageUrl),
+              stock: Value(menu.stock),
+              isAvailable: Value(menu.isAvailable),
+              createdAt: Value(menu.createdAt),
+              updatedAt: Value(menu.updatedAt),
+              syncedAt: Value(DateTime.now()),
+              needsSync: const Value(false),
+              isDeleted: Value(menu.isDeleted),
+              isLocalOnly: const Value(false),
+            ),
+            mode: InsertMode.insertOrReplace,
+          );
+        }
+      });
+      log('✅ Bulk upsert completed');
+    } catch (e) {
+      log('❌ Error bulk upserting menus: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<MenuLocal>> getAllMenus() async {
+    log('🔍 Getting all menus...');
+    try {
+      final menus = await (select(menuLocalTable)
+            ..where((tbl) => tbl.isDeleted.equals(false))
+            ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]))
+          .get();
+      log('✅ Found ${menus.length} menus');
+      return menus;
+    } catch (e) {
+      log('❌ Error getting menus: $e');
+      return [];
+    }
+  }
+
+  Stream<List<MenuLocal>> watchAllMenus() {
+    log('👂 Setting up menus realtime watcher...');
+    return (select(menuLocalTable)
+          ..where((tbl) => tbl.isDeleted.equals(false))
+          ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]))
+        .watch();
+  }
+
+  Future<MenuLocal?> getMenuById(int id) async {
+    log('🔍 Getting menu by ID: $id');
+    try {
+      final menu = await (select(menuLocalTable)
+            ..where((tbl) => tbl.id.equals(id)))
+          .getSingleOrNull();
+          
+      if (menu != null) {
+        log('✅ Menu found: ${menu.name}');
+      } else {
+        log('❌ Menu not found: $id');
+      }
+      return menu;
+    } catch (e) {
+      log('❌ Error getting menu: $e');
+      return null;
+    }
+  }
+
+  Future<int> getMenusCount() async {
+    log('🔢 Counting menus...');
+    try {
+      final menus = await (select(menuLocalTable)
+            ..where((tbl) => tbl.isDeleted.equals(false)))
+          .get();
+      final count = menus.length;
+      log('✅ Menus count: $count');
+      return count;
+    } catch (e) {
+      log('❌ Error counting menus: $e');
+      return 0;
+    }
+  }
+
+  // =========================== CATEGORY METHODS ===========================
+
+  Future<void> upsertCategory(CategoryLocal category) async {
+    log('💾 Upserting category from Supabase: ${category.id} - ${category.name}');
+    try {
+      await into(categoryLocalTable).insertOnConflictUpdate(
+        CategoryLocalTableCompanion(
+          id: Value(category.id),
+          name: Value(category.name),
+          createdAt: Value(category.createdAt),
+          updatedAt: Value(category.updatedAt),
+          syncedAt: Value(DateTime.now()),
+          needsSync: const Value(false),
+          isDeleted: Value(category.isDeleted),
+        ),
+      );
+      log('✅ Category upserted: ${category.id}');
+    } catch (e) {
+      log('❌ Error upserting category: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> upsertCategories(List<CategoryLocal> categoriesList) async {
+    log('💾 Bulk upserting ${categoriesList.length} categories from Supabase...');
+    try {
+      await batch((batch) {
+        for (final category in categoriesList) {
+          batch.insert(
+            categoryLocalTable,
+            CategoryLocalTableCompanion(
+              id: Value(category.id),
+              name: Value(category.name),
+              createdAt: Value(category.createdAt),
+              updatedAt: Value(category.updatedAt),
+              syncedAt: Value(DateTime.now()),
+              needsSync: const Value(false),
+              isDeleted: Value(category.isDeleted),
+            ),
+            mode: InsertMode.insertOrReplace,
+          );
+        }
+      });
+      log('✅ Bulk upsert completed');
+    } catch (e) {
+      log('❌ Error bulk upserting categories: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<CategoryLocal>> getAllCategories() async {
+    log('🔍 Getting all categories...');
+    try {
+      final categories = await (select(categoryLocalTable)
+            ..where((tbl) => tbl.isDeleted.equals(false))
+            ..orderBy([(t) => OrderingTerm(expression: t.name)]))
+          .get();
+      log('✅ Found ${categories.length} categories');
+      return categories;
+    } catch (e) {
+      log('❌ Error getting categories: $e');
+      return [];
+    }
+  }
+
+  Stream<List<CategoryLocal>> watchAllCategories() {
+    log('👂 Setting up categories realtime watcher...');
+    return (select(categoryLocalTable)
+          ..where((tbl) => tbl.isDeleted.equals(false))
+          ..orderBy([(t) => OrderingTerm(expression: t.name)]))
+        .watch();
+  }
+
+  Future<CategoryLocal?> getCategoryById(int id) async {
+    log('🔍 Getting category by ID: $id');
+    try {
+      final category = await (select(categoryLocalTable)
+            ..where((tbl) => tbl.id.equals(id)))
+          .getSingleOrNull();
+          
+      if (category != null) {
+        log('✅ Category found: ${category.name}');
+      } else {
+        log('❌ Category not found: $id');
+      }
+      return category;
+    } catch (e) {
+      log('❌ Error getting category: $e');
+      return null;
+    }
+  }
+
+  Future<int> getCategoriesCount() async {
+    log('🔢 Counting categories...');
+    try {
+      final categories = await (select(categoryLocalTable)
+            ..where((tbl) => tbl.isDeleted.equals(false)))
+          .get();
+      final count = categories.length;
+      log('✅ Categories count: $count');
+      return count;
+    } catch (e) {
+      log('❌ Error counting categories: $e');
+      return 0;
+    }
+  }
+
+  Future<int> getTablesCount() async {
+    log('🔢 Counting tables...');
+    log('⚠️ Table entity not yet implemented, returning 0');
+    return 0;
+  }
+
+  // =========================== UTILITY METHODS ===========================
 
   Future<Map<String, int>> getSyncStats() async {
     try {

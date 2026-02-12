@@ -1,6 +1,7 @@
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/models/admin_edit_menu_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
+import 'package:chiroku_cafe/utils/functions/image_cache_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -41,33 +42,28 @@ class MenuListItem extends StatelessWidget {
         contentPadding: const EdgeInsets.all(16),
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: menu.imageUrl != null
-              ? Image.network(
-                  menu.imageUrl!,
-                  width: 60,
-                  height: 60,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      width: 60,
-                      height: 60,
-                      color: AppColors.brownLight,
-                      child: const Icon(
-                        Icons.fastfood,
-                        color: AppColors.brownDarkActive,
-                      ),
-                    );
-                  },
-                )
-              : Container(
-                  width: 60,
-                  height: 60,
-                  color: AppColors.brownLight,
-                  child: const Icon(
-                    Icons.fastfood,
-                    color: AppColors.brownDarkActive,
-                  ),
-                ),
+          child: ImageCacheHelper.cachedMenuImage(
+            imageUrl: menu.imageUrl,
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+            backgroundColor: AppColors.brownLight,
+            borderRadius: BorderRadius.circular(8),
+            loadingColor: AppColors.brownNormal,
+            errorWidget: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: AppColors.brownLight,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.fastfood,
+                color: AppColors.brownDarkActive,
+                size: 30,
+              ),
+            ),
+          ),
         ),
         title: Text(
           menu.name,
