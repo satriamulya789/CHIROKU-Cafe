@@ -410,6 +410,44 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
+  // =========================== COUNT METHODS ===========================
+
+  Future<int> getUsersCount() async {
+    log('🔢 Counting users...');
+    try {
+      final users = await (select(usersLocalTable)
+            ..where((tbl) => tbl.isDeleted.equals(false)))
+          .get();
+      final count = users.length;
+      log('✅ Users count: $count');
+      return count;
+    } catch (e) {
+      log('❌ Error counting users: $e');
+      return 0;
+    }
+  }
+
+  Future<int> getMenusCount() async {
+    log('🔢 Counting menus...');
+    // TODO: Implement when menu table exists
+    log('⚠️ Menu table not yet implemented, returning 0');
+    return 0;
+  }
+
+  Future<int> getCategoriesCount() async {
+    log('🔢 Counting categories...');
+    // TODO: Implement when category table exists
+    log('⚠️ Category table not yet implemented, returning 0');
+    return 0;
+  }
+
+  Future<int> getTablesCount() async {
+    log('🔢 Counting tables...');
+    // TODO: Implement when table entity exists
+    log('⚠️ Table entity not yet implemented, returning 0');
+    return 0;
+  }
+
   // =========================== UTILITY METHODS ===========================
 
   Future<void> permanentlyDeleteUser(String id) async {
