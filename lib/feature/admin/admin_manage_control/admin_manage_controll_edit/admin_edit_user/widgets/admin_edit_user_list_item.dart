@@ -2,6 +2,7 @@ import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_con
 import 'package:chiroku_cafe/shared/constants/protected_users.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
+import 'package:chiroku_cafe/utils/functions/image_cache_helper.dart';
 import 'package:flutter/material.dart';
 
 class UserListItem extends StatelessWidget {
@@ -38,21 +39,7 @@ class UserListItem extends StatelessWidget {
           horizontal: 16,
           vertical: 12,
         ),
-        leading: CircleAvatar(
-          radius: 24,
-          backgroundColor: AppColors.brownLight,
-          backgroundImage: user.avatarUrl != null
-              ? NetworkImage(user.avatarUrl!)
-              : null,
-          child: user.avatarUrl == null
-              ? Text(
-                  user.fullName[0].toUpperCase(),
-                  style: AppTypography.h5.copyWith(
-                    color: AppColors.brownNormal,
-                  ),
-                )
-              : null,
-        ),
+        leading: _buildAvatar(),
         title: Text(
           user.fullName,
           style: AppTypography.h6.copyWith(color: AppColors.brownDark),
@@ -104,6 +91,22 @@ class UserListItem extends StatelessWidget {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAvatar() {
+    // Use ImageCacheHelper with custom styling matching your design
+    return ImageCacheHelper.cachedAvatarWithInitial(
+      imageUrl: user.avatarUrl,
+      userName: user.fullName,
+      size: 48, // 24 radius * 2
+      fit: BoxFit.cover,
+      backgroundColor: AppColors.brownLight,
+      textColor: AppColors.brownNormal,
+      loadingColor: AppColors.brownNormal,
+      textStyle: AppTypography.h5.copyWith(
+        color: AppColors.brownNormal,
       ),
     );
   }

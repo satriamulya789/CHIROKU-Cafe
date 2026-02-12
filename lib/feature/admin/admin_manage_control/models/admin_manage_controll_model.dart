@@ -10,6 +10,11 @@ class AdminTabModel {
     required this.icon,
     required this.route,
   });
+
+  @override
+  String toString() {
+    return 'AdminTabModel(index: $index, title: $title, icon: $icon, route: $route)';
+  }
 }
 
 class AdminStatsModel {
@@ -32,5 +37,10 @@ class AdminStatsModel {
       totalCategories: 0,
       totalTables: 0,
     );
+  }
+
+  @override
+  String toString() {
+    return 'AdminStatsModel(users: $totalUsers, menus: $totalMenus, categories: $totalCategories, tables: $totalTables)';
   }
 }

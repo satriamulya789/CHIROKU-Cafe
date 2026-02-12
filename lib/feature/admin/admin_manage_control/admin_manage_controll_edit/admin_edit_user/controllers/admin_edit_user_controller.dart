@@ -1,19 +1,28 @@
+import 'package:chiroku_cafe/core/network/network_info.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/models/admin_edit_user_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/services/admin_edit_user_service.dart';
 import 'package:chiroku_cafe/shared/constants/protected_users.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
+import 'package:chiroku_cafe/utils/functions/image_cache_helper.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:async';
+import 'dart:developer';
 
 class AdminEditUserController extends GetxController {
   final UserService _service = UserService();
   final snackbar = CustomSnackbar();
+  final NetworkInfo _networkInfo = NetworkInfoImpl(Connectivity());
 
   final users = <UserModel>[].obs;
   final isLoading = false.obs;
   final searchQuery = ''.obs;
+  final isOnline = true.obs;
+
+  StreamSubscription<bool>? _connectivitySubscription;
 
   // Form controllers
   final fullNameController = TextEditingController();
@@ -28,19 +37,107 @@ class AdminEditUserController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchUsers();
+    _initConnectivity();
+    fetchUsers(); // ✅ Fetch users on init
+    _listenToConnectivity();
   }
 
   @override
   void onClose() {
+    _connectivitySubscription?.cancel();
     fullNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    roleController.dispose();
     isPasswordObscured.close();
     isConfirmPasswordObscured.close();
-    roleController.dispose();
     super.onClose();
+  }
+
+  // ==================== CONNECTIVITY ====================
+  Future<void> _initConnectivity() async {
+    isOnline.value = await _networkInfo.isConnected;
+    log('🌐 Initial connectivity: ${isOnline.value ? "Online" : "Offline"}');
+  }
+
+  void _listenToConnectivity() {
+    _connectivitySubscription = _networkInfo.onConnectivityChanged.listen((
+      connected,
+    ) {
+      log('🔄 Connectivity changed: ${connected ? "Online" : "Offline"}');
+      isOnline.value = connected;
+
+      if (connected) {
+        snackbar.showSuccessSnackbar('Back online! Syncing data...');
+        _syncWhenOnline();
+      } else {
+        snackbar.showInfoSnackbar(
+          'You are offline. Changes will sync when online.',
+        );
+      }
+    });
+  }
+
+  Future<void> _syncWhenOnline() async {
+    try {
+      await _service.syncPendingChanges();
+      await fetchUsers(showLoading: false); // Refresh data after sync
+      log('✅ Auto-sync completed');
+    } catch (e) {
+      log('❌ Auto-sync failed: $e');
+    }
+  }
+
+  // ==================== PRECACHE AVATARS ====================
+  Future<void> _precacheAvatarsInBackground(List<UserModel> usersList) async {
+    try {
+      final context = Get.context;
+      if (context == null) {
+        log('⚠️ Context not available for precaching');
+        return;
+      }
+
+      final avatarUrls = usersList
+          .where((u) => u.avatarUrl != null && u.avatarUrl!.isNotEmpty)
+          .map((u) => u.avatarUrl!)
+          .toList();
+
+      if (avatarUrls.isEmpty) {
+        log('ℹ️ No avatars to precache');
+        return;
+      }
+
+      log('🖼️ Starting precache for ${avatarUrls.length} avatars...');
+
+      // Check which images are already cached
+      int alreadyCached = 0;
+      int needsDownload = 0;
+
+      for (final url in avatarUrls) {
+        final isCached = await ImageCacheHelper.isImageCached(url);
+        if (isCached) {
+          alreadyCached++;
+        } else {
+          needsDownload++;
+        }
+      }
+
+      log(
+        '📊 Cache status: $alreadyCached already cached, $needsDownload needs download',
+      );
+
+      // Precache only uncached images
+      if (needsDownload > 0) {
+        await ImageCacheHelper.precacheAvatars(context, avatarUrls);
+        log('✅ Precaching completed');
+      } else {
+        log('✅ All avatars already cached');
+      }
+    } catch (e) {
+      log('❌ Error precaching avatars: $e');
+      // Don't show error to user, this is background operation
+    }
   }
 
   List<UserModel> get filteredUsers {
@@ -56,47 +153,61 @@ class AdminEditUserController extends GetxController {
     }).toList();
   }
 
-  Future<void> fetchUsers() async {
+  // ==================== FETCH USERS ====================
+  Future<void> fetchUsers({bool showLoading = true, bool withPrecache = true}) async {
     try {
-      isLoading.value = true;
-      users.value = await _service.fetchUsers();
+      if (showLoading) isLoading.value = true;
+      
+      log('📥 Controller: Fetching users...');
+      final usersList = await _service.fetchUsers();
+      users.value = usersList;
+      log('✅ Controller: Loaded ${users.length} users');
+
+      // Precache avatars if requested
+      if (withPrecache) {
+        await _precacheAvatarsInBackground(usersList);
+      }
     } catch (e) {
+      log('❌ Controller: Error fetching users: $e');
       snackbar.showErrorSnackbar('Failed to fetch users: $e');
     } finally {
-      isLoading.value = false;
+      if (showLoading) isLoading.value = false;
     }
   }
 
-  void setEditUser(UserModel user) {
-    fullNameController.text = user.fullName;
-    emailController.text = user.email ?? '';
-    roleController.text = user.role;
-    passwordController.clear();
-    confirmPasswordController.clear();
-  }
-
+  // ==================== CREATE USER ====================
   Future<void> createUser() async {
     try {
       if (!_validateCreateForm()) return;
 
       isLoading.value = true;
-      await _service.createUser(
+      log('➕ Controller: Creating user...');
+      
+      final userId = await _service.createUser(
         email: emailController.text.trim(),
         password: passwordController.text,
         fullName: fullNameController.text.trim(),
         role: roleController.text,
       );
-      await fetchUsers();
+
+      await fetchUsers(showLoading: false);
       clearForm();
       Get.back();
-      snackbar.showSuccessSnackbar('User created successfully');
+      
+      final message = isOnline.value
+          ? 'User created successfully'
+          : 'User created locally (ID: $userId). Will sync when online.';
+      snackbar.showSuccessSnackbar(message);
+      log('✅ Controller: User created with ID: $userId');
     } catch (e) {
+      log('❌ Controller: Error creating user: $e');
       snackbar.showErrorSnackbar('Failed to create user: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
+  // ==================== UPDATE USER ====================
   Future<void> updateUser(UserModel user) async {
     try {
       if (ProtectedUsers.isProtected(user.email)) {
@@ -109,6 +220,8 @@ class AdminEditUserController extends GetxController {
       if (!_validateUpdateForm()) return;
 
       isLoading.value = true;
+      log('✏️ Controller: Updating user ${user.id}...');
+      
       await _service.updateUser(
         user.id,
         fullName: fullNameController.text.trim(),
@@ -117,17 +230,25 @@ class AdminEditUserController extends GetxController {
             : emailController.text.trim(),
         role: roleController.text,
       );
-      await fetchUsers();
+
+      await fetchUsers(showLoading: false);
       clearForm();
       Get.back();
-      snackbar.showSuccessSnackbar('User updated successfully');
+
+      final message = isOnline.value
+          ? 'User updated successfully'
+          : 'User updated locally. Will sync when online.';
+      snackbar.showSuccessSnackbar(message);
+      log('✅ Controller: User updated');
     } catch (e) {
+      log('❌ Controller: Error updating user: $e');
       snackbar.showErrorSnackbar('Failed to update user: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
+  // ==================== DELETE USER ====================
   Future<void> deleteUser(UserModel user) async {
     try {
       if (ProtectedUsers.isProtected(user.email)) {
@@ -138,10 +259,18 @@ class AdminEditUserController extends GetxController {
       }
 
       isLoading.value = true;
+      log('🗑️ Controller: Deleting user ${user.id}...');
+      
       await _service.deleteUser(user.id);
-      await fetchUsers();
-      snackbar.showSuccessSnackbar('User deleted successfully');
+      await fetchUsers(showLoading: false);
+
+      final message = isOnline.value
+          ? 'User deleted successfully'
+          : 'User deleted locally. Will sync when online.';
+      snackbar.showSuccessSnackbar(message);
+      log('✅ Controller: User deleted');
     } catch (e) {
+      log('❌ Controller: Error deleting user: $e');
       final errorMessage = e.toString();
       if (errorMessage.contains('23503')) {
         _showCannotDeleteUserDialog();
@@ -175,6 +304,15 @@ class AdminEditUserController extends GetxController {
         ],
       ),
     );
+  }
+
+  // ==================== FORM HELPERS ====================
+  void setEditUser(UserModel user) {
+    fullNameController.text = user.fullName;
+    emailController.text = user.email ?? '';
+    roleController.text = user.role;
+    passwordController.clear();
+    confirmPasswordController.clear();
   }
 
   bool _validateCreateForm() {
@@ -230,5 +368,111 @@ class AdminEditUserController extends GetxController {
 
   void updateSearchQuery(String query) {
     searchQuery.value = query;
+  }
+
+  // ==================== MANUAL SYNC ====================
+  Future<void> manualSync() async {
+    if (!isOnline.value) {
+      snackbar.showErrorSnackbar('Cannot sync while offline');
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+      snackbar.showInfoSnackbar('Syncing data...');
+      log('🔄 Controller: Manual sync started...');
+      
+      await _service.manualSync();
+      await fetchUsers(showLoading: false);
+      
+      snackbar.showSuccessSnackbar('Data synced successfully');
+      log('✅ Controller: Manual sync completed');
+    } catch (e) {
+      log('❌ Controller: Manual sync failed: $e');
+      snackbar.showErrorSnackbar('Sync failed: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // ==================== SEARCH ====================
+  Future<void> searchUsers(String query) async {
+    try {
+      updateSearchQuery(query);
+      
+      if (query.isEmpty) {
+        return; // filteredUsers getter will show all
+      }
+      
+      log('🔍 Searching for: $query');
+      final results = await _service.searchUsers(query);
+      log('📊 Found ${results.length} results');
+    } catch (e) {
+      log('❌ Search error: $e');
+    }
+  }
+
+  // ==================== GET USERS BY ROLE ====================
+  Future<List<UserModel>> getUsersByRole(String role) async {
+    try {
+      return await _service.getUsersByRole(role);
+    } catch (e) {
+      log('❌ Error getting users by role: $e');
+      return [];
+    }
+  }
+
+  // ==================== GET USERS COUNT ====================
+  Future<int> getUsersCount() async {
+    try {
+      return await _service.getUsersCount();
+    } catch (e) {
+      log('❌ Error getting users count: $e');
+      return 0;
+    }
+  }
+
+  // ==================== CLEAR IMAGE CACHE ====================
+  Future<void> clearImageCache() async {
+    try {
+      isLoading.value = true;
+      log('🗑️ Clearing image cache...');
+
+      final cacheInfo = await ImageCacheHelper.getCacheInfo();
+      log('📦 Cache info before clear: $cacheInfo');
+
+      await ImageCacheHelper.clearCache();
+      snackbar.showSuccessSnackbar('Image cache cleared successfully');
+      log('✅ Image cache cleared');
+
+      // Refresh users to re-download images
+      await fetchUsers(showLoading: false, withPrecache: true);
+    } catch (e) {
+      log('❌ Error clearing image cache: $e');
+      snackbar.showErrorSnackbar('Failed to clear cache: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // ==================== CHECK CACHE STATUS ====================
+  Future<void> checkCacheStatus() async {
+    try {
+      final cacheInfo = await ImageCacheHelper.getCacheInfo();
+      log('📦 Current cache info: $cacheInfo');
+      
+      int cachedCount = 0;
+      for (final user in users) {
+        if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty) {
+          final isCached = await ImageCacheHelper.isImageCached(user.avatarUrl!);
+          if (isCached) cachedCount++;
+        }
+      }
+      
+      log('📊 $cachedCount of ${users.length} avatars are cached');
+      snackbar.showInfoSnackbar('$cachedCount avatars cached locally');
+    } catch (e) {
+      log('❌ Error checking cache status: $e');
+    }
   }
 }
