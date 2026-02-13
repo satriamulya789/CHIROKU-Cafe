@@ -20,9 +20,11 @@ class AdminManageControlView extends GetView<AdminManageControlController> {
       body: Column(
         children: [
           // AppBar dengan tabTitle dinamis
-          Obx(() => AdminManageControlAppBar(
-                currentTitle: controller.getCurrentTitle(),
-              )),
+          Obx(
+            () => AdminManageControlAppBar(
+              currentTitle: controller.getCurrentTitle(),
+            ),
+          ),
           Expanded(
             child: RefreshIndicator(
               onRefresh: controller.manualRefresh,
@@ -31,26 +33,26 @@ class AdminManageControlView extends GetView<AdminManageControlController> {
               child: CustomScrollView(
                 slivers: [
                   // Stats Section
-                  SliverToBoxAdapter(
-                    child: _buildStatsSection(),
-                  ),
-                  
+                  SliverToBoxAdapter(child: _buildStatsSection()),
+
                   // Tab Bar
                   SliverToBoxAdapter(
                     child: AdminTabBar(controller: controller),
                   ),
-                  
+
                   // Tab Content
                   SliverFillRemaining(
-                    child: Obx(() => IndexedStack(
-                          index: controller.currentTabIndex.value,
-                          children: const [
-                            AdminEditUserView(),
-                            AdminEditMenuView(),
-                            AdminEditCategoryView(),
-                            AdminEditTableView(),
-                          ],
-                        )),
+                    child: Obx(
+                      () => IndexedStack(
+                        index: controller.currentTabIndex.value,
+                        children: const [
+                          AdminEditUserView(),
+                          AdminEditMenuView(),
+                          AdminEditCategoryView(),
+                          AdminEditTableView(),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -89,47 +91,41 @@ class AdminManageControlView extends GetView<AdminManageControlController> {
                     color: AppColors.brownDark,
                   ),
                 ),
-                if (isOffline) ...[
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.alertLight,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.cloud_off,
-                          size: 12,
-                          color: AppColors.alertDark,
+
+                if (!isLoading) ...[
+                  // Hapus kondisi !isOffline
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        isOffline ? Icons.storage : Icons.sync,
+                        size: 12,
+                        color: AppColors.greyNormal,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        isOffline
+                            ? 'Using local data'
+                            : 'Live data from server',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: AppColors.greyNormal,
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Offline',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.alertDark,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ],
             ),
-          
+
             // Stats Cards Grid
             GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 4,
-              childAspectRatio: 1.1, // ✅ CHANGED: Slightly taller cards to prevent overflow
+              childAspectRatio:
+                  1.1, // ✅ CHANGED: Slightly taller cards to prevent overflow
               mainAxisSpacing: 8,
               crossAxisSpacing: 8,
               children: [
@@ -167,25 +163,18 @@ class AdminManageControlView extends GetView<AdminManageControlController> {
                 ),
               ],
             ),
-            
+
             // Last Updated Info (Only when online)
             if (!isOffline && !isLoading) ...[
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.sync,
-                    size: 12,
-                    color: AppColors.greyNormal,
-                  ),
+                  Icon(Icons.sync, size: 12, color: AppColors.greyNormal),
                   const SizedBox(width: 4),
                   Text(
                     'Live data from server',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: AppColors.greyNormal,
-                    ),
+                    style: TextStyle(fontSize: 10, color: AppColors.greyNormal),
                   ),
                 ],
               ),

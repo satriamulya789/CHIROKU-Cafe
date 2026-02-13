@@ -43,25 +43,24 @@ class AdminManageControlController extends GetxController {
   // ==================== CONNECTIVITY ====================
   Future<void> _initConnectivity() async {
     isOnline.value = await _networkInfo.isConnected;
-    log('🌐 Controller: Initial connectivity - ${isOnline.value ? "Online" : "Offline"}');
-    
-    if (!isOnline.value) {
-      snackbar.showInfoSnackbar('📴 Offline mode - Stats unavailable');
-    }
+    log(
+      '🌐 Controller: Initial connectivity - ${isOnline.value ? "Online" : "Offline"}',
+    );
   }
 
   void _listenToConnectivity() {
     _connectivitySubscription = _networkInfo.onConnectivityChanged.listen((
       connected,
     ) {
-      log('🔄 Controller: Connectivity changed to ${connected ? "Online" : "Offline"}');
+      log(
+        '🔄 Controller: Connectivity changed to ${connected ? "Online" : "Offline"}',
+      );
       isOnline.value = connected;
-
       if (connected) {
         snackbar.showSuccessSnackbar('🌐 Back online! Refreshing data...');
         _refreshAllData();
       } else {
-        snackbar.showInfoSnackbar('📴 Offline mode - Stats unavailable');
+        snackbar.showInfoSnackbar('📴 Offline mode - Using local data');
       }
     });
   }
@@ -92,20 +91,19 @@ class AdminManageControlController extends GetxController {
   Future<void> fetchStats({bool showLoading = true}) async {
     try {
       if (showLoading) isLoadingStats.value = true;
-      
+
       log('📊 Controller: Fetching stats...');
       stats.value = await _service.fetchStats();
-      
+
       if (stats.value.totalUsers > 0 || stats.value.totalMenus > 0) {
         log('✅ Controller: Stats loaded - ${stats.value}');
       } else {
         log('⚠️ Controller: Empty stats returned');
       }
-      
     } catch (e) {
       log('❌ Controller: Error fetching stats - $e');
       stats.value = AdminStatsModel.empty();
-      
+
       // Don't show error snackbar if offline (already shown by connectivity listener)
       if (isOnline.value) {
         snackbar.showErrorSnackbar('Failed to fetch stats');
@@ -121,14 +119,14 @@ class AdminManageControlController extends GetxController {
       log('⚠️ Invalid tab index: $index');
       return;
     }
-    
+
     log('📑 Changing tab from ${currentTabIndex.value} to $index');
     currentTabIndex.value = index;
   }
 
   Future<void> refreshCurrentTab() async {
     log('🔄 Refreshing current tab (${getCurrentTitle()})...');
-    
+
     switch (currentTabIndex.value) {
       case 0:
         await userController.fetchUsers();
@@ -143,7 +141,7 @@ class AdminManageControlController extends GetxController {
         await tableController.fetchTables();
         break;
     }
-    
+
     await fetchStats(showLoading: false);
     log('✅ Tab refresh completed');
   }

@@ -11,7 +11,9 @@ import 'dart:developer';
 
 part 'drift_database.g.dart';
 
-@DriftDatabase(tables: [SessionTable, UsersLocalTable, MenuLocalTable, CategoryLocalTable])
+@DriftDatabase(
+  tables: [SessionTable, UsersLocalTable, MenuLocalTable, CategoryLocalTable],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -37,7 +39,7 @@ class AppDatabase extends _$AppDatabase {
       },
       onUpgrade: (Migrator m, int from, int to) async {
         log('⬆️ Upgrading database from $from to $to');
-        
+
         if (from < 4) {
           log('➕ Migrating to version 4: Recreating session table');
           await m.deleteTable('session_table');
@@ -75,7 +77,9 @@ class AppDatabase extends _$AppDatabase {
     required String role,
     required DateTime expiresAt,
   }) async {
-    log('💾 Upserting session: userId=$userId, role=$role, expiresAt=$expiresAt');
+    log(
+      '💾 Upserting session: userId=$userId, role=$role, expiresAt=$expiresAt',
+    );
     try {
       await into(sessionTable).insertOnConflictUpdate(
         SessionTableCompanion.insert(
@@ -88,9 +92,11 @@ class AppDatabase extends _$AppDatabase {
         ),
       );
       log('✅ Session upserted successfully');
-      
+
       final savedSession = await getSession();
-      log('🔍 Verification - Saved session: ${savedSession?.userId}, role=${savedSession?.role}');
+      log(
+        '🔍 Verification - Saved session: ${savedSession?.userId}, role=${savedSession?.role}',
+      );
     } catch (e) {
       log('❌ Error upserting session: $e');
       rethrow;
@@ -102,7 +108,9 @@ class AppDatabase extends _$AppDatabase {
     try {
       final session = await (select(sessionTable)..limit(1)).getSingleOrNull();
       if (session != null) {
-        log('✅ Session found: userId=${session.userId}, role=${session.role}, expires=${session.expiresAt}');
+        log(
+          '✅ Session found: userId=${session.userId}, role=${session.role}, expires=${session.expiresAt}',
+        );
       } else {
         log('❌ No session found in DB');
       }
@@ -135,7 +143,7 @@ class AppDatabase extends _$AppDatabase {
       log('❌ No session exists');
       return false;
     }
-    
+
     final isValid = session.expiresAt.isAfter(DateTime.now());
     log('✅ Session valid: $isValid');
     return isValid;
@@ -152,7 +160,7 @@ class AppDatabase extends _$AppDatabase {
     final userId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
     log('📴 Creating user offline: $userId - $fullName');
     log('🔐 Password length: ${password.length} chars');
-    
+
     try {
       await into(usersLocalTable).insert(
         UsersLocalTableCompanion.insert(
@@ -176,7 +184,8 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
-  Future<void> updateUserOffline(String id, {
+  Future<void> updateUserOffline(
+    String id, {
     String? fullName,
     String? email,
     String? role,
@@ -190,15 +199,16 @@ class AppDatabase extends _$AppDatabase {
 
       final pendingOp = user.isLocalOnly ? 'CREATE' : 'UPDATE';
 
-      await (update(usersLocalTable)..where((tbl) => tbl.id.equals(id)))
-          .write(UsersLocalTableCompanion(
-        fullName: fullName != null ? Value(fullName) : const Value.absent(),
-        email: email != null ? Value(email) : const Value.absent(),
-        role: role != null ? Value(role) : const Value.absent(),
-        updatedAt: Value(DateTime.now()),
-        needsSync: const Value(true),
-        pendingOperation: Value(pendingOp),
-      ));
+      await (update(usersLocalTable)..where((tbl) => tbl.id.equals(id))).write(
+        UsersLocalTableCompanion(
+          fullName: fullName != null ? Value(fullName) : const Value.absent(),
+          email: email != null ? Value(email) : const Value.absent(),
+          role: role != null ? Value(role) : const Value.absent(),
+          updatedAt: Value(DateTime.now()),
+          needsSync: const Value(true),
+          pendingOperation: Value(pendingOp),
+        ),
+      );
       log('✅ User updated offline (operation: $pendingOp)');
     } catch (e) {
       log('❌ Error updating user offline: $e');
@@ -209,10 +219,10 @@ class AppDatabase extends _$AppDatabase {
   Future<void> deleteUserOffline(String id) async {
     log('🗑️ Deleting user offline: $id');
     try {
-      final user = await (select(usersLocalTable)
-            ..where((tbl) => tbl.id.equals(id)))
-          .getSingleOrNull();
-          
+      final user = await (select(
+        usersLocalTable,
+      )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+
       if (user == null) {
         throw Exception('User not found');
       }
@@ -221,13 +231,16 @@ class AppDatabase extends _$AppDatabase {
         await (delete(usersLocalTable)..where((tbl) => tbl.id.equals(id))).go();
         log('✅ Local-only user permanently deleted: $id');
       } else {
-        await (update(usersLocalTable)..where((tbl) => tbl.id.equals(id)))
-            .write(UsersLocalTableCompanion(
-          isDeleted: const Value(true),
-          needsSync: const Value(true),
-          pendingOperation: const Value('DELETE'),
-          updatedAt: Value(DateTime.now()),
-        ));
+        await (update(
+          usersLocalTable,
+        )..where((tbl) => tbl.id.equals(id))).write(
+          UsersLocalTableCompanion(
+            isDeleted: const Value(true),
+            needsSync: const Value(true),
+            pendingOperation: const Value('DELETE'),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
         log('✅ User marked for deletion: $id');
       }
     } catch (e) {
@@ -239,12 +252,14 @@ class AppDatabase extends _$AppDatabase {
   Future<List<UsersLocal>> getUsersNeedingSync() async {
     log('🔄 Getting users needing sync...');
     try {
-      final users = await (select(usersLocalTable)
-            ..where((tbl) => tbl.needsSync.equals(true)))
-          .get();
+      final users = await (select(
+        usersLocalTable,
+      )..where((tbl) => tbl.needsSync.equals(true))).get();
       log('✅ Found ${users.length} users needing sync');
       for (final user in users) {
-        log('  📋 User: ${user.id} (${user.fullName}) - Operation: ${user.pendingOperation}');
+        log(
+          '  📋 User: ${user.id} (${user.fullName}) - Operation: ${user.pendingOperation}',
+        );
       }
       return users;
     } catch (e) {
@@ -257,20 +272,24 @@ class AppDatabase extends _$AppDatabase {
     log('✅ Marking user as synced: $oldId ${newId != null ? "-> $newId" : ""}');
     try {
       if (newId != null && oldId != newId) {
-        final user = await (select(usersLocalTable)
-              ..where((tbl) => tbl.id.equals(oldId)))
-            .getSingleOrNull();
-            
+        final user = await (select(
+          usersLocalTable,
+        )..where((tbl) => tbl.id.equals(oldId))).getSingleOrNull();
+
         if (user != null) {
-          await (delete(usersLocalTable)..where((tbl) => tbl.id.equals(oldId))).go();
-          
+          await (delete(
+            usersLocalTable,
+          )..where((tbl) => tbl.id.equals(oldId))).go();
+
           await into(usersLocalTable).insert(
             UsersLocalTableCompanion.insert(
               id: newId,
               fullName: user.fullName,
               email: Value(user.email),
               avatarUrl: Value(user.avatarUrl),
-              role: user.role.isNotEmpty ? Value(user.role) : const Value('cashier'),
+              role: user.role.isNotEmpty
+                  ? Value(user.role)
+                  : const Value('cashier'),
               createdAt: Value(user.createdAt),
               updatedAt: Value(user.updatedAt),
               syncedAt: Value(DateTime.now()),
@@ -281,21 +300,26 @@ class AppDatabase extends _$AppDatabase {
             ),
           );
           log('✅ User ID replaced: $oldId -> $newId');
-          
+
           final verifyUser = await getUserById(newId);
           if (verifyUser != null) {
-            log('🔍 Verification: User exists with new ID: ${verifyUser.fullName}');
+            log(
+              '🔍 Verification: User exists with new ID: ${verifyUser.fullName}',
+            );
           }
         }
       } else {
-        await (update(usersLocalTable)..where((tbl) => tbl.id.equals(oldId)))
-            .write(UsersLocalTableCompanion(
-          needsSync: const Value(false),
-          syncedAt: Value(DateTime.now()),
-          isLocalOnly: const Value(false),
-          pendingOperation: const Value.absent(),
-          tempPassword: const Value.absent(),
-        ));
+        await (update(
+          usersLocalTable,
+        )..where((tbl) => tbl.id.equals(oldId))).write(
+          UsersLocalTableCompanion(
+            needsSync: const Value(false),
+            syncedAt: Value(DateTime.now()),
+            isLocalOnly: const Value(false),
+            pendingOperation: const Value.absent(),
+            tempPassword: const Value.absent(),
+          ),
+        );
         log('✅ User marked as synced: $oldId');
       }
     } catch (e) {
@@ -367,10 +391,16 @@ class AppDatabase extends _$AppDatabase {
   Future<List<UsersLocal>> getAllUsers() async {
     log('🔍 Getting all users...');
     try {
-      final users = await (select(usersLocalTable)
-            ..where((tbl) => tbl.isDeleted.equals(false))
-            ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]))
-          .get();
+      final users =
+          await (select(usersLocalTable)
+                ..where((tbl) => tbl.isDeleted.equals(false))
+                ..orderBy([
+                  (t) => OrderingTerm(
+                    expression: t.createdAt,
+                    mode: OrderingMode.desc,
+                  ),
+                ]))
+              .get();
       log('✅ Found ${users.length} users');
       return users;
     } catch (e) {
@@ -383,17 +413,20 @@ class AppDatabase extends _$AppDatabase {
     log('👂 Setting up users realtime watcher...');
     return (select(usersLocalTable)
           ..where((tbl) => tbl.isDeleted.equals(false))
-          ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]))
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]))
         .watch();
   }
 
   Future<UsersLocal?> getUserById(String id) async {
     log('🔍 Getting user by ID: $id');
     try {
-      final user = await (select(usersLocalTable)
-            ..where((tbl) => tbl.id.equals(id)))
-          .getSingleOrNull();
-          
+      final user = await (select(
+        usersLocalTable,
+      )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+
       if (user != null) {
         log('✅ User found: ${user.fullName} (deleted: ${user.isDeleted})');
       } else {
@@ -409,9 +442,9 @@ class AppDatabase extends _$AppDatabase {
   Future<int> getUsersCount() async {
     log('🔢 Counting users...');
     try {
-      final users = await (select(usersLocalTable)
-            ..where((tbl) => tbl.isDeleted.equals(false)))
-          .get();
+      final users = await (select(
+        usersLocalTable,
+      )..where((tbl) => tbl.isDeleted.equals(false))).get();
       final count = users.length;
       log('✅ Users count: $count');
       return count;
@@ -455,7 +488,7 @@ class AppDatabase extends _$AppDatabase {
     bool isAvailable = true,
   }) async {
     log('📴 Creating menu offline: $name');
-    
+
     try {
       final id = await into(menuLocalTable).insert(
         MenuLocalTableCompanion.insert(
@@ -482,7 +515,8 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
-  Future<void> updateMenuOffline(int id, {
+  Future<void> updateMenuOffline(
+    int id, {
     int? categoryId,
     String? name,
     double? price,
@@ -501,20 +535,29 @@ class AppDatabase extends _$AppDatabase {
 
       final pendingOp = menu.isLocalOnly ? 'CREATE' : 'UPDATE';
 
-      await (update(menuLocalTable)..where((tbl) => tbl.id.equals(id)))
-          .write(MenuLocalTableCompanion(
-        categoryId: categoryId != null ? Value(categoryId) : const Value.absent(),
-        name: name != null ? Value(name) : const Value.absent(),
-        price: price != null ? Value(price) : const Value.absent(),
-        description: description != null ? Value(description) : const Value.absent(),
-        stock: stock != null ? Value(stock) : const Value.absent(),
-        imageUrl: imageUrl != null ? Value(imageUrl) : const Value.absent(),
-        localImagePath: localImagePath != null ? Value(localImagePath) : const Value.absent(),
-        isAvailable: isAvailable != null ? Value(isAvailable) : const Value.absent(),
-        updatedAt: Value(DateTime.now()),
-        needsSync: const Value(true),
-        pendingOperation: Value(pendingOp),
-      ));
+      await (update(menuLocalTable)..where((tbl) => tbl.id.equals(id))).write(
+        MenuLocalTableCompanion(
+          categoryId: categoryId != null
+              ? Value(categoryId)
+              : const Value.absent(),
+          name: name != null ? Value(name) : const Value.absent(),
+          price: price != null ? Value(price) : const Value.absent(),
+          description: description != null
+              ? Value(description)
+              : const Value.absent(),
+          stock: stock != null ? Value(stock) : const Value.absent(),
+          imageUrl: imageUrl != null ? Value(imageUrl) : const Value.absent(),
+          localImagePath: localImagePath != null
+              ? Value(localImagePath)
+              : const Value.absent(),
+          isAvailable: isAvailable != null
+              ? Value(isAvailable)
+              : const Value.absent(),
+          updatedAt: Value(DateTime.now()),
+          needsSync: const Value(true),
+          pendingOperation: Value(pendingOp),
+        ),
+      );
       log('✅ Menu updated offline (operation: $pendingOp)');
     } catch (e) {
       log('❌ Error updating menu offline: $e');
@@ -525,10 +568,10 @@ class AppDatabase extends _$AppDatabase {
   Future<void> deleteMenuOffline(int id) async {
     log('🗑️ Deleting menu offline: $id');
     try {
-      final menu = await (select(menuLocalTable)
-            ..where((tbl) => tbl.id.equals(id)))
-          .getSingleOrNull();
-          
+      final menu = await (select(
+        menuLocalTable,
+      )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+
       if (menu == null) {
         throw Exception('Menu not found');
       }
@@ -537,13 +580,14 @@ class AppDatabase extends _$AppDatabase {
         await (delete(menuLocalTable)..where((tbl) => tbl.id.equals(id))).go();
         log('✅ Local-only menu permanently deleted: $id');
       } else {
-        await (update(menuLocalTable)..where((tbl) => tbl.id.equals(id)))
-            .write(MenuLocalTableCompanion(
-          isDeleted: const Value(true),
-          needsSync: const Value(true),
-          pendingOperation: const Value('DELETE'),
-          updatedAt: Value(DateTime.now()),
-        ));
+        await (update(menuLocalTable)..where((tbl) => tbl.id.equals(id))).write(
+          MenuLocalTableCompanion(
+            isDeleted: const Value(true),
+            needsSync: const Value(true),
+            pendingOperation: const Value('DELETE'),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
         log('✅ Menu marked for deletion: $id');
       }
     } catch (e) {
@@ -555,9 +599,9 @@ class AppDatabase extends _$AppDatabase {
   Future<List<MenuLocal>> getMenusNeedingSync() async {
     log('🔄 Getting menus needing sync...');
     try {
-      final menus = await (select(menuLocalTable)
-            ..where((tbl) => tbl.needsSync.equals(true)))
-          .get();
+      final menus = await (select(
+        menuLocalTable,
+      )..where((tbl) => tbl.needsSync.equals(true))).get();
       log('✅ Found ${menus.length} menus needing sync');
       return menus;
     } catch (e) {
@@ -567,16 +611,20 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> markMenuAsSynced(int localId, {int? newId}) async {
-    log('✅ Marking menu as synced: $localId ${newId != null ? "-> $newId" : ""}');
+    log(
+      '✅ Marking menu as synced: $localId ${newId != null ? "-> $newId" : ""}',
+    );
     try {
       if (newId != null && localId != newId) {
-        final menu = await (select(menuLocalTable)
-              ..where((tbl) => tbl.id.equals(localId)))
-            .getSingleOrNull();
-            
+        final menu = await (select(
+          menuLocalTable,
+        )..where((tbl) => tbl.id.equals(localId))).getSingleOrNull();
+
         if (menu != null) {
-          await (delete(menuLocalTable)..where((tbl) => tbl.id.equals(localId))).go();
-          
+          await (delete(
+            menuLocalTable,
+          )..where((tbl) => tbl.id.equals(localId))).go();
+
           await into(menuLocalTable).insert(
             MenuLocalTableCompanion.insert(
               id: Value(newId),
@@ -598,13 +646,16 @@ class AppDatabase extends _$AppDatabase {
           log('✅ Menu ID replaced: $localId -> $newId');
         }
       } else {
-        await (update(menuLocalTable)..where((tbl) => tbl.id.equals(localId)))
-            .write(MenuLocalTableCompanion(
-          needsSync: const Value(false),
-          syncedAt: Value(DateTime.now()),
-          isLocalOnly: const Value(false),
-          pendingOperation: const Value.absent(),
-        ));
+        await (update(
+          menuLocalTable,
+        )..where((tbl) => tbl.id.equals(localId))).write(
+          MenuLocalTableCompanion(
+            needsSync: const Value(false),
+            syncedAt: Value(DateTime.now()),
+            isLocalOnly: const Value(false),
+            pendingOperation: const Value.absent(),
+          ),
+        );
         log('✅ Menu marked as synced: $localId');
       }
     } catch (e) {
@@ -678,10 +729,16 @@ class AppDatabase extends _$AppDatabase {
   Future<List<MenuLocal>> getAllMenus() async {
     log('🔍 Getting all menus...');
     try {
-      final menus = await (select(menuLocalTable)
-            ..where((tbl) => tbl.isDeleted.equals(false))
-            ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]))
-          .get();
+      final menus =
+          await (select(menuLocalTable)
+                ..where((tbl) => tbl.isDeleted.equals(false))
+                ..orderBy([
+                  (t) => OrderingTerm(
+                    expression: t.createdAt,
+                    mode: OrderingMode.desc,
+                  ),
+                ]))
+              .get();
       log('✅ Found ${menus.length} menus');
       return menus;
     } catch (e) {
@@ -694,17 +751,20 @@ class AppDatabase extends _$AppDatabase {
     log('👂 Setting up menus realtime watcher...');
     return (select(menuLocalTable)
           ..where((tbl) => tbl.isDeleted.equals(false))
-          ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]))
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]))
         .watch();
   }
 
   Future<MenuLocal?> getMenuById(int id) async {
     log('🔍 Getting menu by ID: $id');
     try {
-      final menu = await (select(menuLocalTable)
-            ..where((tbl) => tbl.id.equals(id)))
-          .getSingleOrNull();
-          
+      final menu = await (select(
+        menuLocalTable,
+      )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+
       if (menu != null) {
         log('✅ Menu found: ${menu.name}');
       } else {
@@ -720,9 +780,9 @@ class AppDatabase extends _$AppDatabase {
   Future<int> getMenusCount() async {
     log('🔢 Counting menus...');
     try {
-      final menus = await (select(menuLocalTable)
-            ..where((tbl) => tbl.isDeleted.equals(false)))
-          .get();
+      final menus = await (select(
+        menuLocalTable,
+      )..where((tbl) => tbl.isDeleted.equals(false))).get();
       final count = menus.length;
       log('✅ Menus count: $count');
       return count;
@@ -735,7 +795,9 @@ class AppDatabase extends _$AppDatabase {
   // =========================== CATEGORY METHODS ===========================
 
   Future<void> upsertCategory(CategoryLocal category) async {
-    log('💾 Upserting category from Supabase: ${category.id} - ${category.name}');
+    log(
+      '💾 Upserting category from Supabase: ${category.id} - ${category.name}',
+    );
     try {
       await into(categoryLocalTable).insertOnConflictUpdate(
         CategoryLocalTableCompanion(
@@ -756,7 +818,9 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> upsertCategories(List<CategoryLocal> categoriesList) async {
-    log('💾 Bulk upserting ${categoriesList.length} categories from Supabase...');
+    log(
+      '💾 Bulk upserting ${categoriesList.length} categories from Supabase...',
+    );
     try {
       await batch((batch) {
         for (final category in categoriesList) {
@@ -785,10 +849,11 @@ class AppDatabase extends _$AppDatabase {
   Future<List<CategoryLocal>> getAllCategories() async {
     log('🔍 Getting all categories...');
     try {
-      final categories = await (select(categoryLocalTable)
-            ..where((tbl) => tbl.isDeleted.equals(false))
-            ..orderBy([(t) => OrderingTerm(expression: t.name)]))
-          .get();
+      final categories =
+          await (select(categoryLocalTable)
+                ..where((tbl) => tbl.isDeleted.equals(false))
+                ..orderBy([(t) => OrderingTerm(expression: t.name)]))
+              .get();
       log('✅ Found ${categories.length} categories');
       return categories;
     } catch (e) {
@@ -808,10 +873,10 @@ class AppDatabase extends _$AppDatabase {
   Future<CategoryLocal?> getCategoryById(int id) async {
     log('🔍 Getting category by ID: $id');
     try {
-      final category = await (select(categoryLocalTable)
-            ..where((tbl) => tbl.id.equals(id)))
-          .getSingleOrNull();
-          
+      final category = await (select(
+        categoryLocalTable,
+      )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+
       if (category != null) {
         log('✅ Category found: ${category.name}');
       } else {
@@ -827,9 +892,9 @@ class AppDatabase extends _$AppDatabase {
   Future<int> getCategoriesCount() async {
     log('🔢 Counting categories...');
     try {
-      final categories = await (select(categoryLocalTable)
-            ..where((tbl) => tbl.isDeleted.equals(false)))
-          .get();
+      final categories = await (select(
+        categoryLocalTable,
+      )..where((tbl) => tbl.isDeleted.equals(false))).get();
       final count = categories.length;
       log('✅ Categories count: $count');
       return count;
@@ -845,6 +910,29 @@ class AppDatabase extends _$AppDatabase {
     return 0;
   }
 
+  Future<Map<String, int>> getAdminStats() async {
+    log('📊 Getting admin stats from local database...');
+    try {
+      final usersCount = await getUsersCount();
+      final menusCount = await getMenusCount();
+      final categoriesCount = await getCategoriesCount();
+      final tablesCount = await getTablesCount();
+
+      final stats = {
+        'users': usersCount,
+        'menus': menusCount,
+        'categories': categoriesCount,
+        'tables': tablesCount,
+      };
+
+      log('✅ Admin stats from local DB: $stats');
+      return stats;
+    } catch (e) {
+      log('❌ Error getting admin stats: $e');
+      return {'users': 0, 'menus': 0, 'categories': 0, 'tables': 0};
+    }
+  }
+
   // =========================== UTILITY METHODS ===========================
 
   Future<Map<String, int>> getSyncStats() async {
@@ -854,7 +942,7 @@ class AppDatabase extends _$AppDatabase {
       final localOnly = allUsers.where((u) => u.isLocalOnly).length;
       final deleted = allUsers.where((u) => u.isDeleted).length;
       final synced = allUsers.where((u) => !u.needsSync && !u.isDeleted).length;
-      
+
       final stats = {
         'total': allUsers.length,
         'synced': synced,
@@ -862,7 +950,7 @@ class AppDatabase extends _$AppDatabase {
         'localOnly': localOnly,
         'deleted': deleted,
       };
-      
+
       log('📊 Sync Stats: $stats');
       return stats;
     } catch (e) {
