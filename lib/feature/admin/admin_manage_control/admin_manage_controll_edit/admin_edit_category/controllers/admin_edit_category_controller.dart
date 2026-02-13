@@ -1,35 +1,71 @@
-import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/models/admin_edit_category_model.dart';
+import 'package:chiroku_cafe/core/databases/drift_database.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/services/admin_edit_category_service.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:chiroku_cafe/shared/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:async';
+import 'dart:developer';
 
 class AdminEditCategoryController extends GetxController {
-  final CategoryService _service = CategoryService();
+  final CategoryService _service;
   final snackbar = CustomSnackbar();
 
-  final categories = <CategoryModel>[].obs;
+  // Stream-based categories (realtime from local DB)
+  final categories = <CategoryLocal>[].obs;
   final isLoading = false.obs;
   final searchQuery = ''.obs;
+
+  StreamSubscription<List<CategoryLocal>>? _categoriesSubscription;
 
   // Form controller
   final nameController = TextEditingController();
 
+  AdminEditCategoryController(this._service);
+
   @override
   void onInit() {
     super.onInit();
-    fetchCategories();
+    _initCategoriesStream();
+    _initialSync();
   }
 
   @override
   void onClose() {
+    _categoriesSubscription?.cancel();
     nameController.dispose();
     super.onClose();
   }
 
-  List<CategoryModel> get filteredCategories {
+  void _initCategoriesStream() {
+    log('👂 Initializing categories realtime stream...');
+    _categoriesSubscription = _service.watchCategories().listen(
+      (categoriesList) {
+        log('📡 Categories stream updated: ${categoriesList.length} items');
+        categories.value = categoriesList;
+      },
+      onError: (error) {
+        log('❌ Categories stream error: $error');
+        snackbar.showErrorSnackbar('Stream error: $error');
+      },
+    );
+  }
+
+  Future<void> _initialSync() async {
+    try {
+      isLoading.value = true;
+      await _service.fetchAndSyncCategories();
+      log('✅ Initial category sync completed');
+    } catch (e) {
+      log('⚠️ Initial sync failed (may be offline): $e');
+      // Don't show error - offline is acceptable
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  List<CategoryLocal> get filteredCategories {
     if (searchQuery.value.isEmpty) return categories;
     return categories.where((category) {
       return category.name.toLowerCase().contains(
@@ -38,18 +74,20 @@ class AdminEditCategoryController extends GetxController {
     }).toList();
   }
 
-  Future<void> fetchCategories() async {
+  Future<void> refreshCategories() async {
     try {
       isLoading.value = true;
-      categories.value = await _service.fetchCategories();
+      await _service.fetchAndSyncCategories();
+      snackbar.showSuccessSnackbar('Categories refreshed');
     } catch (e) {
-      snackbar.showErrorSnackbar('Failed to fetch categories: $e');
+      log('⚠️ Refresh failed: $e');
+      snackbar.showInfoSnackbar('Using local data');
     } finally {
       isLoading.value = false;
     }
   }
 
-  void setEditCategory(CategoryModel category) {
+  void setEditCategory(CategoryLocal category) {
     nameController.text = category.name;
   }
 
@@ -62,10 +100,11 @@ class AdminEditCategoryController extends GetxController {
 
       isLoading.value = true;
       await _service.createCategory(nameController.text);
-      await fetchCategories();
       Get.back();
       snackbar.showSuccessSnackbar('Category created successfully');
+      clearForm();
     } catch (e) {
+      log('❌ Create category error: $e');
       snackbar.showErrorSnackbar('Failed to create category: $e');
     } finally {
       isLoading.value = false;
@@ -81,10 +120,11 @@ class AdminEditCategoryController extends GetxController {
 
       isLoading.value = true;
       await _service.updateCategory(id, nameController.text);
-      await fetchCategories();
       Get.back();
       snackbar.showSuccessSnackbar('Category updated successfully');
+      clearForm();
     } catch (e) {
+      log('❌ Update category error: $e');
       snackbar.showErrorSnackbar('Failed to update category: $e');
     } finally {
       isLoading.value = false;
@@ -95,14 +135,17 @@ class AdminEditCategoryController extends GetxController {
     try {
       isLoading.value = true;
       await _service.deleteCategory(id);
-      await fetchCategories();
       snackbar.showSuccessSnackbar('Category deleted successfully');
     } catch (e) {
       final errorMessage = e.toString();
-      if (errorMessage.contains('23503')) {
+      log('❌ Delete category error: $errorMessage');
+
+      if (errorMessage.contains('23503') ||
+          errorMessage.contains('foreign key') ||
+          errorMessage.contains('violates')) {
         _showCannotDeleteCategoryDialog();
       } else {
-        snackbar.showErrorSnackbar('Failed to delete category: $e');
+        snackbar.showErrorSnackbar('Failed to delete category');
       }
     } finally {
       isLoading.value = false;

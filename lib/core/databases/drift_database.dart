@@ -794,6 +794,143 @@ class AppDatabase extends _$AppDatabase {
 
   // =========================== CATEGORY METHODS ===========================
 
+  // OFFLINE CRUD OPERATIONS
+  Future<int> createCategoryOffline({required String name}) async {
+    log('📴 Creating category offline: $name');
+
+    try {
+      final id = await into(categoryLocalTable).insert(
+        CategoryLocalTableCompanion.insert(
+          name: name,
+          createdAt: Value(DateTime.now()),
+          updatedAt: Value(DateTime.now()),
+          needsSync: const Value(true),
+        ),
+      );
+      log('✅ Category created offline with ID: $id');
+      return id;
+    } catch (e) {
+      log('❌ Error creating category offline: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateCategoryOffline(int id, {String? name}) async {
+    log('✏️ Updating category offline: $id');
+    try {
+      final category = await getCategoryById(id);
+      if (category == null) {
+        throw Exception('Category not found');
+      }
+
+      await (update(
+        categoryLocalTable,
+      )..where((tbl) => tbl.id.equals(id))).write(
+        CategoryLocalTableCompanion(
+          name: name != null ? Value(name) : const Value.absent(),
+          updatedAt: Value(DateTime.now()),
+          needsSync: const Value(true),
+        ),
+      );
+      log('✅ Category updated offline');
+    } catch (e) {
+      log('❌ Error updating category offline: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> deleteCategoryOffline(int id) async {
+    log('🗑️ Deleting category offline: $id');
+    try {
+      final category = await (select(
+        categoryLocalTable,
+      )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+
+      if (category == null) {
+        throw Exception('Category not found');
+      }
+
+      await (update(
+        categoryLocalTable,
+      )..where((tbl) => tbl.id.equals(id))).write(
+        CategoryLocalTableCompanion(
+          isDeleted: const Value(true),
+          needsSync: const Value(true),
+          updatedAt: Value(DateTime.now()),
+        ),
+      );
+      log('✅ Category marked for deletion: $id');
+    } catch (e) {
+      log('❌ Error deleting category offline: $e');
+      rethrow;
+    }
+  }
+
+  // SYNC QUEUE MANAGEMENT
+  Future<List<CategoryLocal>> getCategoriesNeedingSync() async {
+    log('🔄 Getting categories needing sync...');
+    try {
+      final categories = await (select(
+        categoryLocalTable,
+      )..where((tbl) => tbl.needsSync.equals(true))).get();
+      log('✅ Found ${categories.length} categories needing sync');
+      for (final category in categories) {
+        log(
+          '  📋 Category: ${category.id} (${category.name}) - Deleted: ${category.isDeleted}',
+        );
+      }
+      return categories;
+    } catch (e) {
+      log('❌ Error getting categories needing sync: $e');
+      return [];
+    }
+  }
+
+  Future<void> markCategoryAsSynced(int localId, {int? newId}) async {
+    log(
+      '✅ Marking category as synced: $localId ${newId != null ? "-> $newId" : ""}',
+    );
+    try {
+      if (newId != null && localId != newId) {
+        final category = await (select(
+          categoryLocalTable,
+        )..where((tbl) => tbl.id.equals(localId))).getSingleOrNull();
+
+        if (category != null) {
+          await (delete(
+            categoryLocalTable,
+          )..where((tbl) => tbl.id.equals(localId))).go();
+
+          await into(categoryLocalTable).insert(
+            CategoryLocalTableCompanion.insert(
+              id: Value(newId),
+              name: category.name,
+              createdAt: Value(category.createdAt),
+              updatedAt: Value(category.updatedAt),
+              syncedAt: Value(DateTime.now()),
+              needsSync: const Value(false),
+            ),
+          );
+          log('✅ Category ID replaced: $localId -> $newId');
+        }
+      } else {
+        await (update(
+          categoryLocalTable,
+        )..where((tbl) => tbl.id.equals(localId))).write(
+          CategoryLocalTableCompanion(
+            needsSync: const Value(false),
+            syncedAt: Value(DateTime.now()),
+          ),
+        );
+        log('✅ Category marked as synced: $localId');
+      }
+    } catch (e) {
+      log('❌ Error marking category as synced: $e');
+      rethrow;
+    }
+  }
+
+  // SUPABASE SYNC OPERATIONS
   Future<void> upsertCategory(CategoryLocal category) async {
     log(
       '💾 Upserting category from Supabase: ${category.id} - ${category.name}',
@@ -846,6 +983,7 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
+  // READ OPERATIONS
   Future<List<CategoryLocal>> getAllCategories() async {
     log('🔍 Getting all categories...');
     try {
@@ -901,6 +1039,29 @@ class AppDatabase extends _$AppDatabase {
     } catch (e) {
       log('❌ Error counting categories: $e');
       return 0;
+    }
+  }
+
+  Future<void> permanentlyDeleteCategory(int id) async {
+    log('🗑️ Permanently deleting category: $id');
+    try {
+      await (delete(
+        categoryLocalTable,
+      )..where((tbl) => tbl.id.equals(id))).go();
+      log('✅ Category permanently deleted');
+    } catch (e) {
+      log('❌ Error permanently deleting category: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> clearAllCategories() async {
+    log('🗑️ Clearing all categories...');
+    try {
+      await delete(categoryLocalTable).go();
+      log('✅ All categories cleared');
+    } catch (e) {
+      log('❌ Error clearing categories: $e');
     }
   }
 

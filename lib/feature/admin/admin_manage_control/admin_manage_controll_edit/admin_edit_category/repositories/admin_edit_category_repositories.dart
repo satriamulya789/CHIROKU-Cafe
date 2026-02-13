@@ -11,8 +11,10 @@ class CategoryRepositories {
           .from(ApiConstant.categoriesTable)
           .select()
           .order('created_at', ascending: false);
-      
-      return (response as List).map((json) => CategoryModel.fromJson(json)).toList();
+
+      return (response as List)
+          .map((json) => CategoryModel.fromJson(json))
+          .toList();
     } catch (e) {
       throw Exception('Failed to load categories: $e');
     }
@@ -25,8 +27,25 @@ class CategoryRepositories {
           .insert(category.toJson())
           .select()
           .single();
-      
+
       return CategoryModel.fromJson(response);
+    } catch (e) {
+      throw Exception('Failed to create category: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> createCategoryWithReturn(String name) async {
+    try {
+      final response = await _supabase
+          .from(ApiConstant.categoriesTable)
+          .insert({
+            'name': name,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .select()
+          .single();
+
+      return response;
     } catch (e) {
       throw Exception('Failed to create category: $e');
     }
@@ -46,10 +65,7 @@ class CategoryRepositories {
 
   Future<void> deleteCategory(int id) async {
     try {
-      await _supabase
-          .from(ApiConstant.categoriesTable)
-          .delete()
-          .eq('id', id);
+      await _supabase.from(ApiConstant.categoriesTable).delete().eq('id', id);
     } catch (e) {
       throw Exception('Failed to delete category: $e');
     }

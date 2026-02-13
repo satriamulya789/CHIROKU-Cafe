@@ -67,13 +67,10 @@ class AdminManageControlController extends GetxController {
 
   void _initializeControllers() {
     log('🎮 Initializing sub-controllers...');
-    userController = Get.put(AdminEditUserController(), permanent: true);
-    menuController = Get.put(AdminEditMenuController(), permanent: true);
-    categoryController = Get.put(
-      AdminEditCategoryController(),
-      permanent: true,
-    );
-    tableController = Get.put(AdminEditTableController(), permanent: true);
+    userController = Get.find<AdminEditUserController>();
+    menuController = Get.find<AdminEditMenuController>();
+    categoryController = Get.find<AdminEditCategoryController>();
+    tableController = Get.find<AdminEditTableController>();
     log('✅ All sub-controllers initialized');
   }
 
@@ -135,7 +132,7 @@ class AdminManageControlController extends GetxController {
         await menuController.fetchMenus();
         break;
       case 2:
-        await categoryController.fetchCategories();
+        await categoryController.refreshCategories();
         break;
       case 3:
         await tableController.fetchTables();
