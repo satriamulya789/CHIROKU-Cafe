@@ -198,7 +198,7 @@ class AuthErrorModel {
     );
   }
 
-   factory AuthErrorModel.signoutError() {
+  factory AuthErrorModel.signoutError() {
     return AuthErrorModel(
       message: 'Failed to sign out. Please try again.',
       code: 'signout_error',
@@ -224,7 +224,7 @@ class AuthErrorModel {
     );
   }
 
-   factory AuthErrorModel.loadUserSuccess() {
+  factory AuthErrorModel.loadUserSuccess() {
     return AuthErrorModel(
       message: 'User data loaded successfully.',
       code: 'load_user_success',
@@ -332,6 +332,57 @@ class AuthErrorModel {
       message: 'Too many requests. Please try again later.',
       code: 'too_many_requests',
       statusCode: 429,
+    );
+  }
+
+  // ==================== Rate Limiting Errors ====================
+
+  /// Error when rate limit is exceeded (generic)
+  factory AuthErrorModel.rateLimitExceeded({String? retryAfter}) {
+    final retryMessage = retryAfter != null
+        ? ' Please try again after $retryAfter.'
+        : ' Please try again later.';
+    return AuthErrorModel(
+      message: 'Too many attempts.$retryMessage',
+      code: 'rate_limit_exceeded',
+      statusCode: 429,
+    );
+  }
+
+  /// Error when too many login attempts
+  factory AuthErrorModel.tooManyLoginAttempts({String? retryAfter}) {
+    final retryMessage = retryAfter != null
+        ? ' Please try again after $retryAfter.'
+        : ' Please try again later.';
+    return AuthErrorModel(
+      message: 'Too many login attempts.$retryMessage',
+      code: 'too_many_login_attempts',
+      statusCode: 429,
+    );
+  }
+
+  /// Error when too many sign up attempts
+  factory AuthErrorModel.tooManySignUpAttempts({String? retryAfter}) {
+    final retryMessage = retryAfter != null
+        ? ' Please try again after $retryAfter.'
+        : ' Please try again later.';
+    return AuthErrorModel(
+      message: 'Too many registration attempts.$retryMessage',
+      code: 'too_many_signup_attempts',
+      statusCode: 429,
+    );
+  }
+
+  /// Error when account is temporarily locked due to suspicious activity
+  factory AuthErrorModel.accountTemporarilyLocked({String? unlockTime}) {
+    final unlockMessage = unlockTime != null
+        ? ' Your account will be unlocked after $unlockTime.'
+        : ' Please contact support if this persists.';
+    return AuthErrorModel(
+      message:
+          'Account temporarily locked due to suspicious activity.$unlockMessage',
+      code: 'account_temporarily_locked',
+      statusCode: 423,
     );
   }
 

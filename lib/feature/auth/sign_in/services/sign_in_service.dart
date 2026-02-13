@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:chiroku_cafe/constant/api_constant.dart';
 import 'package:chiroku_cafe/shared/models/auth_error_model.dart';
+import 'package:chiroku_cafe/shared/services/rate_limit_service.dart';
 import 'package:chiroku_cafe/utils/enums/user_enum.dart';
 import 'package:chiroku_cafe/utils/functions/not_register_email.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -9,18 +10,42 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SignInService {
   final SupabaseClient supabase = Supabase.instance.client;
   final _emailNotRegister = NotRegisterEmail();
+  RateLimitService? _rateLimitService;
   // final _customSnackbar = CustomSnackbar();
+
+  /// Initialize rate limit service
+  Future<void> _initRateLimitService() async {
+    _rateLimitService ??= await RateLimitService.create();
+  }
 
   //sign in with email & password
   Future<AuthResponse> signIn({
     required String email,
     required String password,
   }) async {
+    // Initialize rate limit service
+    await _initRateLimitService();
+
+    // Check rate limit BEFORE any validation
+    final rateLimitResult = await _rateLimitService!.checkLoginRateLimit();
+    if (!rateLimitResult.canProceed) {
+      log(
+        'Login rate limit exceeded. Remaining: ${rateLimitResult.remainingSeconds}s',
+        name: 'SignInService.signIn',
+        level: 900,
+      );
+      throw AuthErrorModel.tooManyLoginAttempts(
+        retryAfter: rateLimitResult.formattedRemainingTime,
+      );
+    }
+
     //validator
     final emailNotRegister = await _emailNotRegister.isEmailNotRegistered(
       email,
     );
     if (emailNotRegister) {
+      // Track failed attempt
+      await _rateLimitService!.trackLoginAttempt(success: false);
       throw AuthErrorModel.emailNotRegistered();
     }
     if (password.isEmpty) {
@@ -45,10 +70,36 @@ class SignInService {
       final user = response.user;
       if (user == null) {
         log('user not register');
+        // Track failed attempt
+        await _rateLimitService!.trackLoginAttempt(success: false);
+        throw AuthErrorModel.emailNotRegistered();
       }
+
+      // Success - reset rate limit counter
+      await _rateLimitService!.trackLoginAttempt(success: true);
+      log('Login successful, rate limit reset', name: 'SignInService.signIn');
+
       return response;
+    } on AuthException catch (e) {
+      // Track failed attempt for auth errors
+      await _rateLimitService!.trackLoginAttempt(success: false);
+
+      // Check if it's a rate limit error from Supabase
+      if (e.statusCode == '429') {
+        log(
+          'Supabase rate limit hit',
+          name: 'SignInService.signIn',
+          level: 900,
+        );
+        throw AuthErrorModel.tooManyLoginAttempts();
+      }
+
+      log('Auth error during sign in', name: 'SignInService.signIn', error: e);
+      rethrow;
     } catch (e) {
-      log('Error sign in user');
+      // Track failed attempt for other errors
+      await _rateLimitService!.trackLoginAttempt(success: false);
+      log('Error sign in user', name: 'SignInService.signIn', error: e);
       rethrow;
     }
   }
