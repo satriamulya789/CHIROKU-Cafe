@@ -1,11 +1,11 @@
-import 'package:chiroku_cafe/core/databases/drift_database.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/models/admin_edit_category_model.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CategoryListItem extends StatelessWidget {
-  final CategoryLocal category;
+  final CategoryModel category;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -54,7 +54,7 @@ class CategoryListItem extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          'Created: ${dateFormatter.format(category.createdAt)}',
+          'Created: ${category.createdAt != null ? dateFormatter.format(category.createdAt!) : "N/A"}',
           style: AppTypography.bodySmall.copyWith(color: AppColors.brownNormal),
         ),
         trailing: Row(

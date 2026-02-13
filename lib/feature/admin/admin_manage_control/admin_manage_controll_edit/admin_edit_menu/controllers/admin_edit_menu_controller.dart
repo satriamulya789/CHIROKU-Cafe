@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/models/admin_edit_category_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/models/admin_edit_menu_model.dart';
@@ -22,6 +24,9 @@ class AdminEditMenuController extends GetxController {
   final isUploadingImage = false.obs;
   final searchQuery = ''.obs;
 
+  // Stream subscriptions
+  StreamSubscription<List<MenuModel>>? _menusSubscription;
+
   // Form controllers
   final nameController = TextEditingController();
   final priceController = TextEditingController();
@@ -35,12 +40,13 @@ class AdminEditMenuController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchMenus();
+    _initMenusStream(); // ✅ Subscribe to menus stream
     fetchCategories();
   }
 
   @override
   void onClose() {
+    _menusSubscription?.cancel();
     nameController.dispose();
     priceController.dispose();
     descriptionController.dispose();
@@ -55,6 +61,29 @@ class AdminEditMenuController extends GetxController {
     }).toList();
   }
 
+  // ==================== INIT MENUS STREAM ====================
+  void _initMenusStream() {
+    try {
+      log('👁️ Controller: Setting up menus stream...');
+      _menusSubscription = _service.watchMenus().listen(
+        (menusList) {
+          log('📥 Controller: Received ${menusList.length} menus from stream');
+          menus.value = menusList;
+        },
+        onError: (error) {
+          log('❌ Controller: Menus stream error: $error');
+          snackbar.showErrorSnackbar('Error loading menus: $error');
+        },
+      );
+      log('✅ Controller: Menus stream initialized');
+    } catch (e) {
+      log('❌ Controller: Error initializing menus stream: $e');
+      snackbar.showErrorSnackbar('Failed to initialize menus stream: $e');
+    }
+  }
+
+  // ==================== FETCH MENUS (DEPRECATED - Use stream instead) ====================
+  @Deprecated('Use stream subscription instead')
   Future<void> fetchMenus() async {
     try {
       isLoading.value = true;
@@ -181,6 +210,7 @@ class AdminEditMenuController extends GetxController {
         isAvailable: isAvailable.value,
       );
 
+      // Stream will auto-update UI
       Get.back();
       snackbar.showSuccessSnackbar('Menu created successfully');
     } catch (e) {
@@ -217,6 +247,7 @@ class AdminEditMenuController extends GetxController {
         isAvailable: isAvailable.value,
       );
 
+      // Stream will auto-update UI
       Get.back();
       snackbar.showSuccessSnackbar('Menu updated successfully');
     } catch (e) {
@@ -237,7 +268,7 @@ class AdminEditMenuController extends GetxController {
         await _service.deleteImage(imageUrl);
       }
 
-      await fetchMenus();
+      // Stream will auto-update UI
       snackbar.showSuccessSnackbar('Menu deleted successfully');
     } catch (e) {
       final errorMessage = e.toString();
@@ -273,7 +304,7 @@ class AdminEditMenuController extends GetxController {
             onPressed: () async {
               Get.back();
               await _service.toggleMenuAvailability(id, false);
-              await fetchMenus();
+              // Stream will auto-update UI
               snackbar.showSuccessSnackbar('Menu status set to Not Available');
             },
             style: ElevatedButton.styleFrom(

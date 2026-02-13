@@ -1,4 +1,4 @@
-import 'package:chiroku_cafe/core/databases/drift_database.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/models/admin_edit_category_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/controllers/admin_edit_category_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/widgets/admin_edit_category_form_dialog.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/widgets/admin_edit_category_list_item.dart';
@@ -49,7 +49,7 @@ class AdminEditCategoryView extends GetView<AdminEditCategoryController> {
                     return CategoryListItem(
                       category: category,
                       onEdit: () => _showEditDialog(context, category),
-                      onDelete: () => _showDeleteDialog(context, category.id),
+                      onDelete: () => _showDeleteDialog(context, category.id!),
                     );
                   },
                 ),
@@ -105,12 +105,12 @@ class AdminEditCategoryView extends GetView<AdminEditCategoryController> {
     );
   }
 
-  void _showEditDialog(BuildContext context, CategoryLocal category) {
+  void _showEditDialog(BuildContext context, CategoryModel category) {
     controller.setEditCategory(category);
     showDialog(
       context: context,
       builder: (context) =>
-          CategoryFormDialog(categoryId: category.id, isEdit: true),
+          CategoryFormDialog(categoryId: category.id!, isEdit: true),
     );
   }
 

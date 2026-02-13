@@ -135,7 +135,8 @@ class AdminManageControlController extends GetxController {
         await categoryController.refreshCategories();
         break;
       case 3:
-        await tableController.fetchTables();
+        // Tables use Stream-based architecture, just trigger sync
+        await tableController.syncNow();
         break;
     }
 

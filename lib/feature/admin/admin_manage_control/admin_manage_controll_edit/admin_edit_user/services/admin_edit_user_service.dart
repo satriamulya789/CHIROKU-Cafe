@@ -17,6 +17,17 @@ class UserService {
     }
   }
 
+  /// Watch all users (real-time stream)
+  Stream<List<UserModel>> watchUsers() {
+    try {
+      log('👁️ Service: Setting up users stream...');
+      return _repository.watchUsers();
+    } catch (e) {
+      log('❌ Service: Error setting up users stream: $e');
+      rethrow;
+    }
+  }
+
   /// Fetch single user by ID
   Future<UserModel> fetchUserById(String id) async {
     try {
@@ -64,7 +75,7 @@ class UserService {
   }) async {
     try {
       log('✏️ Service: Updating user $id...');
-      
+
       final data = <String, dynamic>{};
       if (fullName != null) data['full_name'] = fullName;
       if (email != null) data['email'] = email;
@@ -162,7 +173,7 @@ class UserService {
       final lowerQuery = query.toLowerCase();
       return users.where((u) {
         return u.fullName.toLowerCase().contains(lowerQuery) ||
-               (u.email?.toLowerCase().contains(lowerQuery) ?? false);
+            (u.email?.toLowerCase().contains(lowerQuery) ?? false);
       }).toList();
     } catch (e) {
       log('❌ Service: Error searching users: $e');

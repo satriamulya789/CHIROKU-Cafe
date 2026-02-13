@@ -23,6 +23,7 @@ class AdminEditUserController extends GetxController {
   final isOnline = true.obs;
 
   StreamSubscription<bool>? _connectivitySubscription;
+  StreamSubscription<List<UserModel>>? _usersSubscription;
 
   // Form controllers
   final fullNameController = TextEditingController();
@@ -38,13 +39,14 @@ class AdminEditUserController extends GetxController {
   void onInit() {
     super.onInit();
     _initConnectivity();
-    fetchUsers(); // ✅ Fetch users on init
+    _initUsersStream(); // ✅ Subscribe to users stream
     _listenToConnectivity();
   }
 
   @override
   void onClose() {
     _connectivitySubscription?.cancel();
+    _usersSubscription?.cancel();
     fullNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
@@ -82,10 +84,34 @@ class AdminEditUserController extends GetxController {
   Future<void> _syncWhenOnline() async {
     try {
       await _service.syncPendingChanges();
-      await fetchUsers(showLoading: false); // Refresh data after sync
+      // Stream will auto-update UI, no need to manually fetch
       log('✅ Auto-sync completed');
     } catch (e) {
       log('❌ Auto-sync failed: $e');
+    }
+  }
+
+  // ==================== INIT USERS STREAM ====================
+  void _initUsersStream() {
+    try {
+      log('👁️ Controller: Setting up users stream...');
+      _usersSubscription = _service.watchUsers().listen(
+        (usersList) async {
+          log('📥 Controller: Received ${usersList.length} users from stream');
+          users.value = usersList;
+
+          // Precache avatars in background
+          await _precacheAvatarsInBackground(usersList);
+        },
+        onError: (error) {
+          log('❌ Controller: Users stream error: $error');
+          snackbar.showErrorSnackbar('Error loading users: $error');
+        },
+      );
+      log('✅ Controller: Users stream initialized');
+    } catch (e) {
+      log('❌ Controller: Error initializing users stream: $e');
+      snackbar.showErrorSnackbar('Failed to initialize users stream: $e');
     }
   }
 
@@ -154,10 +180,13 @@ class AdminEditUserController extends GetxController {
   }
 
   // ==================== FETCH USERS ====================
-  Future<void> fetchUsers({bool showLoading = true, bool withPrecache = true}) async {
+  Future<void> fetchUsers({
+    bool showLoading = true,
+    bool withPrecache = true,
+  }) async {
     try {
       if (showLoading) isLoading.value = true;
-      
+
       log('📥 Controller: Fetching users...');
       final usersList = await _service.fetchUsers();
       users.value = usersList;
@@ -182,7 +211,7 @@ class AdminEditUserController extends GetxController {
 
       isLoading.value = true;
       log('➕ Controller: Creating user...');
-      
+
       final userId = await _service.createUser(
         email: emailController.text.trim(),
         password: passwordController.text,
@@ -193,7 +222,7 @@ class AdminEditUserController extends GetxController {
       await fetchUsers(showLoading: false);
       clearForm();
       Get.back();
-      
+
       final message = isOnline.value
           ? 'User created successfully'
           : 'User created locally (ID: $userId). Will sync when online.';
@@ -221,7 +250,7 @@ class AdminEditUserController extends GetxController {
 
       isLoading.value = true;
       log('✏️ Controller: Updating user ${user.id}...');
-      
+
       await _service.updateUser(
         user.id,
         fullName: fullNameController.text.trim(),
@@ -231,7 +260,7 @@ class AdminEditUserController extends GetxController {
         role: roleController.text,
       );
 
-      await fetchUsers(showLoading: false);
+      // Stream will auto-update UI
       clearForm();
       Get.back();
 
@@ -260,9 +289,9 @@ class AdminEditUserController extends GetxController {
 
       isLoading.value = true;
       log('🗑️ Controller: Deleting user ${user.id}...');
-      
+
       await _service.deleteUser(user.id);
-      await fetchUsers(showLoading: false);
+      // Stream will auto-update UI
 
       final message = isOnline.value
           ? 'User deleted successfully'
@@ -381,10 +410,10 @@ class AdminEditUserController extends GetxController {
       isLoading.value = true;
       snackbar.showInfoSnackbar('Syncing data...');
       log('🔄 Controller: Manual sync started...');
-      
+
       await _service.manualSync();
-      await fetchUsers(showLoading: false);
-      
+      // Stream will auto-update UI
+
       snackbar.showSuccessSnackbar('Data synced successfully');
       log('✅ Controller: Manual sync completed');
     } catch (e) {
@@ -399,11 +428,11 @@ class AdminEditUserController extends GetxController {
   Future<void> searchUsers(String query) async {
     try {
       updateSearchQuery(query);
-      
+
       if (query.isEmpty) {
         return; // filteredUsers getter will show all
       }
-      
+
       log('🔍 Searching for: $query');
       final results = await _service.searchUsers(query);
       log('📊 Found ${results.length} results');
@@ -460,15 +489,17 @@ class AdminEditUserController extends GetxController {
     try {
       final cacheInfo = await ImageCacheHelper.getCacheInfo();
       log('📦 Current cache info: $cacheInfo');
-      
+
       int cachedCount = 0;
       for (final user in users) {
         if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty) {
-          final isCached = await ImageCacheHelper.isImageCached(user.avatarUrl!);
+          final isCached = await ImageCacheHelper.isImageCached(
+            user.avatarUrl!,
+          );
           if (isCached) cachedCount++;
         }
       }
-      
+
       log('📊 $cachedCount of ${users.length} avatars are cached');
       snackbar.showInfoSnackbar('$cachedCount avatars cached locally');
     } catch (e) {

@@ -1,4 +1,4 @@
-import 'package:chiroku_cafe/core/databases/drift_database.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/models/admin_edit_category_model.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/services/admin_edit_category_service.dart';
 import 'package:chiroku_cafe/shared/style/app_color.dart';
 import 'package:chiroku_cafe/shared/style/google_text_style.dart';
@@ -13,11 +13,11 @@ class AdminEditCategoryController extends GetxController {
   final snackbar = CustomSnackbar();
 
   // Stream-based categories (realtime from local DB)
-  final categories = <CategoryLocal>[].obs;
+  final categories = <CategoryModel>[].obs;
   final isLoading = false.obs;
   final searchQuery = ''.obs;
 
-  StreamSubscription<List<CategoryLocal>>? _categoriesSubscription;
+  StreamSubscription<List<CategoryModel>>? _categoriesSubscription;
 
   // Form controller
   final nameController = TextEditingController();
@@ -55,7 +55,7 @@ class AdminEditCategoryController extends GetxController {
   Future<void> _initialSync() async {
     try {
       isLoading.value = true;
-      await _service.fetchAndSyncCategories();
+      await _service.fetchAndSync();
       log('✅ Initial category sync completed');
     } catch (e) {
       log('⚠️ Initial sync failed (may be offline): $e');
@@ -65,7 +65,7 @@ class AdminEditCategoryController extends GetxController {
     }
   }
 
-  List<CategoryLocal> get filteredCategories {
+  List<CategoryModel> get filteredCategories {
     if (searchQuery.value.isEmpty) return categories;
     return categories.where((category) {
       return category.name.toLowerCase().contains(
@@ -77,7 +77,7 @@ class AdminEditCategoryController extends GetxController {
   Future<void> refreshCategories() async {
     try {
       isLoading.value = true;
-      await _service.fetchAndSyncCategories();
+      await _service.fetchAndSync();
       snackbar.showSuccessSnackbar('Categories refreshed');
     } catch (e) {
       log('⚠️ Refresh failed: $e');
@@ -87,7 +87,7 @@ class AdminEditCategoryController extends GetxController {
     }
   }
 
-  void setEditCategory(CategoryLocal category) {
+  void setEditCategory(CategoryModel category) {
     nameController.text = category.name;
   }
 
@@ -99,7 +99,7 @@ class AdminEditCategoryController extends GetxController {
       }
 
       isLoading.value = true;
-      await _service.createCategory(nameController.text);
+      await _service.createCategory(name: nameController.text);
       Get.back();
       snackbar.showSuccessSnackbar('Category created successfully');
       clearForm();
@@ -119,7 +119,7 @@ class AdminEditCategoryController extends GetxController {
       }
 
       isLoading.value = true;
-      await _service.updateCategory(id, nameController.text);
+      await _service.updateCategory(id, name: nameController.text);
       Get.back();
       snackbar.showSuccessSnackbar('Category updated successfully');
       clearForm();

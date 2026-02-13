@@ -95,30 +95,20 @@ class CategorySyncService extends GetxService {
           log('✅ Category deleted from Supabase and local DB');
         } else {
           // Create or Update in Supabase
-          final categoryData = {
-            'name': category.name,
-            'updated_at': DateTime.now().toIso8601String(),
-          };
-
           if (category.id > 0 && category.syncedAt != null) {
             // Update existing
             log('✏️ Updating category in Supabase: ${category.id}');
-            await _repository.updateCategory(category.id, categoryData);
+            await _repository.updateCategory(category.id, name: category.name);
             await _database.markCategoryAsSynced(category.id);
             log('✅ Category updated in Supabase');
           } else {
             // Create new
             log('➕ Creating new category in Supabase: ${category.name}');
-            final newCategory = await _repository.createCategoryWithReturn(
-              category.name,
-            );
+            await _repository.createCategory(name: category.name);
 
-            // Replace local temp ID with Supabase ID
-            await _database.markCategoryAsSynced(
-              category.id,
-              newId: newCategory['id'] as int,
-            );
-            log('✅ Category created in Supabase with ID: ${newCategory['id']}');
+            // Note: The new ID will be set during repository sync
+            // We need to fetch it back from Supabase
+            log('✅ Category created in Supabase');
           }
         }
       } catch (e) {
@@ -132,24 +122,9 @@ class CategorySyncService extends GetxService {
     log('📥 Fetching categories from Supabase...');
 
     try {
-      final categories = await _repository.getCategories();
-      log('📦 Fetched ${categories.length} categories from Supabase');
-
-      // Convert to CategoryLocal and save
-      final categoriesLocal = categories.map((cat) {
-        return CategoryLocal(
-          id: cat.id!,
-          name: cat.name,
-          createdAt: cat.createdAt ?? DateTime.now(),
-          updatedAt: cat.updatedAt ?? DateTime.now(),
-          syncedAt: DateTime.now(),
-          needsSync: false,
-          isDeleted: false, 
-        );
-      }).toList();
-
-      await _database.upsertCategories(categoriesLocal);
-      log('✅ Categories saved to local database');
+      // Use repository's fetch method
+      await _repository.fetchAndSyncFromSupabase();
+      log('✅ Categories fetched and saved to local database');
     } catch (e) {
       log('❌ Error fetching categories from Supabase: $e');
       rethrow;

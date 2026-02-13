@@ -2,6 +2,7 @@ import 'package:chiroku_cafe/core/tables/session_table.dart';
 import 'package:chiroku_cafe/core/tables/user_table.dart';
 import 'package:chiroku_cafe/core/tables/menu_table.dart';
 import 'package:chiroku_cafe/core/tables/category_table.dart';
+import 'package:chiroku_cafe/core/tables/tables_local_table.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,13 +13,19 @@ import 'dart:developer';
 part 'drift_database.g.dart';
 
 @DriftDatabase(
-  tables: [SessionTable, UsersLocalTable, MenuLocalTable, CategoryLocalTable],
+  tables: [
+    SessionTable,
+    UsersLocalTable,
+    MenuLocalTable,
+    CategoryLocalTable,
+    TablesLocalTable,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
@@ -63,6 +70,11 @@ class AppDatabase extends _$AppDatabase {
           await m.createTable(menuLocalTable);
           await m.createTable(categoryLocalTable);
           log('✅ Menu and category tables created');
+        }
+        if (from < 9) {
+          log('➕ Migrating to version 9: Creating tables local table');
+          await m.createTable(tablesLocalTable);
+          log('✅ Tables local table created');
         }
       },
     );
@@ -1065,10 +1077,314 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
+  // =========================== TABLES METHODS ===========================
+
+  // OFFLINE CRUD OPERATIONS
+  Future<int> createTableOffline({
+    required String name,
+    int capacity = 1,
+    String status = 'available',
+  }) async {
+    log('📴 Creating table offline: $name');
+
+    try {
+      final id = await into(tablesLocalTable).insert(
+        TablesLocalTableCompanion.insert(
+          name: name,
+          capacity: Value(capacity),
+          status: Value(status),
+          createdAt: Value(DateTime.now()),
+          updatedAt: Value(DateTime.now()),
+          needsSync: const Value(true),
+          isLocalOnly: const Value(true),
+          pendingOperation: const Value('CREATE'),
+        ),
+      );
+      log('✅ Table created offline with ID: $id');
+      return id;
+    } catch (e) {
+      log('❌ Error creating table offline: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateTableOffline(
+    int id, {
+    String? name,
+    int? capacity,
+    String? status,
+  }) async {
+    log('✏️ Updating table offline: $id');
+    try {
+      final table = await getTableById(id);
+      if (table == null) {
+        throw Exception('Table not found');
+      }
+
+      final pendingOp = table.isLocalOnly ? 'CREATE' : 'UPDATE';
+
+      await (update(tablesLocalTable)..where((tbl) => tbl.id.equals(id))).write(
+        TablesLocalTableCompanion(
+          name: name != null ? Value(name) : const Value.absent(),
+          capacity: capacity != null ? Value(capacity) : const Value.absent(),
+          status: status != null ? Value(status) : const Value.absent(),
+          updatedAt: Value(DateTime.now()),
+          needsSync: const Value(true),
+          pendingOperation: Value(pendingOp),
+        ),
+      );
+      log('✅ Table updated offline (operation: $pendingOp)');
+    } catch (e) {
+      log('❌ Error updating table offline: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> deleteTableOffline(int id) async {
+    log('🗑️ Deleting table offline: $id');
+    try {
+      final table = await (select(
+        tablesLocalTable,
+      )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+
+      if (table == null) {
+        throw Exception('Table not found');
+      }
+
+      if (table.isLocalOnly) {
+        await (delete(
+          tablesLocalTable,
+        )..where((tbl) => tbl.id.equals(id))).go();
+        log('✅ Local-only table permanently deleted: $id');
+      } else {
+        await (update(
+          tablesLocalTable,
+        )..where((tbl) => tbl.id.equals(id))).write(
+          TablesLocalTableCompanion(
+            isDeleted: const Value(true),
+            needsSync: const Value(true),
+            pendingOperation: const Value('DELETE'),
+            updatedAt: Value(DateTime.now()),
+          ),
+        );
+        log('✅ Table marked for deletion: $id');
+      }
+    } catch (e) {
+      log('❌ Error deleting table offline: $e');
+      rethrow;
+    }
+  }
+
+  // SYNC QUEUE MANAGEMENT
+  Future<List<TablesLocal>> getTablesNeedingSync() async {
+    log('🔄 Getting tables needing sync...');
+    try {
+      final tables = await (select(
+        tablesLocalTable,
+      )..where((tbl) => tbl.needsSync.equals(true))).get();
+      log('✅ Found ${tables.length} tables needing sync');
+      for (final table in tables) {
+        log(
+          '  📋 Table: ${table.id} (${table.name}) - Operation: ${table.pendingOperation}',
+        );
+      }
+      return tables;
+    } catch (e) {
+      log('❌ Error getting tables needing sync: $e');
+      return [];
+    }
+  }
+
+  Future<void> markTableAsSynced(int localId, {int? newId}) async {
+    log(
+      '✅ Marking table as synced: $localId ${newId != null ? "-> $newId" : ""}',
+    );
+    try {
+      if (newId != null && localId != newId) {
+        final table = await (select(
+          tablesLocalTable,
+        )..where((tbl) => tbl.id.equals(localId))).getSingleOrNull();
+
+        if (table != null) {
+          await (delete(
+            tablesLocalTable,
+          )..where((tbl) => tbl.id.equals(localId))).go();
+
+          await into(tablesLocalTable).insert(
+            TablesLocalTableCompanion.insert(
+              id: Value(newId),
+              name: table.name,
+              capacity: Value(table.capacity),
+              status: Value(table.status),
+              createdAt: Value(table.createdAt),
+              updatedAt: Value(table.updatedAt),
+              syncedAt: Value(DateTime.now()),
+              needsSync: const Value(false),
+              isLocalOnly: const Value(false),
+            ),
+          );
+          log('✅ Table ID replaced: $localId -> $newId');
+        }
+      } else {
+        await (update(
+          tablesLocalTable,
+        )..where((tbl) => tbl.id.equals(localId))).write(
+          TablesLocalTableCompanion(
+            needsSync: const Value(false),
+            syncedAt: Value(DateTime.now()),
+            isLocalOnly: const Value(false),
+            pendingOperation: const Value.absent(),
+          ),
+        );
+        log('✅ Table marked as synced: $localId');
+      }
+    } catch (e) {
+      log('❌ Error marking table as synced: $e');
+      rethrow;
+    }
+  }
+
+  // SUPABASE SYNC OPERATIONS
+  Future<void> upsertTable(TablesLocal table) async {
+    log('💾 Upserting table from Supabase: ${table.id} - ${table.name}');
+    try {
+      await into(tablesLocalTable).insertOnConflictUpdate(
+        TablesLocalTableCompanion(
+          id: Value(table.id),
+          name: Value(table.name),
+          capacity: Value(table.capacity),
+          status: Value(table.status),
+          createdAt: Value(table.createdAt),
+          updatedAt: Value(table.updatedAt),
+          syncedAt: Value(DateTime.now()),
+          needsSync: const Value(false),
+          isDeleted: Value(table.isDeleted),
+          isLocalOnly: const Value(false),
+        ),
+      );
+      log('✅ Table upserted: ${table.id}');
+    } catch (e) {
+      log('❌ Error upserting table: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> upsertTables(List<TablesLocal> tablesList) async {
+    log('💾 Bulk upserting ${tablesList.length} tables from Supabase...');
+    try {
+      await batch((batch) {
+        for (final table in tablesList) {
+          batch.insert(
+            tablesLocalTable,
+            TablesLocalTableCompanion(
+              id: Value(table.id),
+              name: Value(table.name),
+              capacity: Value(table.capacity),
+              status: Value(table.status),
+              createdAt: Value(table.createdAt),
+              updatedAt: Value(table.updatedAt),
+              syncedAt: Value(DateTime.now()),
+              needsSync: const Value(false),
+              isDeleted: Value(table.isDeleted),
+              isLocalOnly: const Value(false),
+            ),
+            mode: InsertMode.insertOrReplace,
+          );
+        }
+      });
+      log('✅ Bulk upsert completed');
+    } catch (e) {
+      log('❌ Error bulk upserting tables: $e');
+      rethrow;
+    }
+  }
+
+  // READ OPERATIONS
+  Future<List<TablesLocal>> getAllTables() async {
+    log('🔍 Getting all tables...');
+    try {
+      final tables =
+          await (select(tablesLocalTable)
+                ..where((tbl) => tbl.isDeleted.equals(false))
+                ..orderBy([
+                  (t) => OrderingTerm(
+                    expression: t.createdAt,
+                    mode: OrderingMode.desc,
+                  ),
+                ]))
+              .get();
+      log('✅ Found ${tables.length} tables');
+      return tables;
+    } catch (e) {
+      log('❌ Error getting tables: $e');
+      return [];
+    }
+  }
+
+  Stream<List<TablesLocal>> watchAllTables() {
+    log('👂 Setting up tables realtime watcher...');
+    return (select(tablesLocalTable)
+          ..where((tbl) => tbl.isDeleted.equals(false))
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]))
+        .watch();
+  }
+
+  Future<TablesLocal?> getTableById(int id) async {
+    log('🔍 Getting table by ID: $id');
+    try {
+      final table = await (select(
+        tablesLocalTable,
+      )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+
+      if (table != null) {
+        log('✅ Table found: ${table.name}');
+      } else {
+        log('❌ Table not found: $id');
+      }
+      return table;
+    } catch (e) {
+      log('❌ Error getting table: $e');
+      return null;
+    }
+  }
+
+  Future<void> permanentlyDeleteTable(int id) async {
+    log('🗑️ Permanently deleting table: $id');
+    try {
+      await (delete(tablesLocalTable)..where((tbl) => tbl.id.equals(id))).go();
+      log('✅ Table permanently deleted');
+    } catch (e) {
+      log('❌ Error permanently deleting table: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> clearAllTables() async {
+    log('🗑️ Clearing all tables...');
+    try {
+      await delete(tablesLocalTable).go();
+      log('✅ All tables cleared');
+    } catch (e) {
+      log('❌ Error clearing tables: $e');
+    }
+  }
+
   Future<int> getTablesCount() async {
     log('🔢 Counting tables...');
-    log('⚠️ Table entity not yet implemented, returning 0');
-    return 0;
+    try {
+      final tables = await (select(
+        tablesLocalTable,
+      )..where((tbl) => tbl.isDeleted.equals(false))).get();
+      final count = tables.length;
+      log('✅ Tables count: $count');
+      return count;
+    } catch (e) {
+      log('❌ Error counting tables: $e');
+      return 0;
+    }
   }
 
   Future<Map<String, int>> getAdminStats() async {

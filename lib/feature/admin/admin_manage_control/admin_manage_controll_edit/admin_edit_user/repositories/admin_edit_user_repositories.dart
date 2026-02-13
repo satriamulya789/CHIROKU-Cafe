@@ -22,12 +22,12 @@ class UserRepositories {
   Future<List<UserModel>> getUsers() async {
     try {
       final isOnline = await _networkInfo.isConnected;
-      
+
       if (isOnline) {
         log('🌐 Online: Fetching users from Supabase...');
         await _syncFromSupabase();
       }
-      
+
       log('📦 Loading users from local DB...');
       final localUsers = await _database.getAllUsers();
       return localUsers.map((u) => UserModel.fromLocal(u)).toList();
@@ -35,6 +35,19 @@ class UserRepositories {
       log('❌ Error getting users: $e');
       final localUsers = await _database.getAllUsers();
       return localUsers.map((u) => UserModel.fromLocal(u)).toList();
+    }
+  }
+
+  // ==================== WATCH USERS (STREAM) ====================
+  Stream<List<UserModel>> watchUsers() {
+    try {
+      log('👁️ Repository: Setting up users stream from local DB...');
+      return _database.watchAllUsers().map((users) {
+        return users.map((u) => UserModel.fromLocal(u)).toList();
+      });
+    } catch (e) {
+      log('❌ Error setting up users stream: $e');
+      rethrow;
     }
   }
 
@@ -51,9 +64,7 @@ class UserRepositories {
           .map((json) => UserModel.fromJson(json))
           .toList();
 
-      await _database.upsertUsers(
-        users.map((u) => u.toLocal()).toList(),
-      );
+      await _database.upsertUsers(users.map((u) => u.toLocal()).toList());
       log('✅ Synced ${users.length} users from Supabase');
     } catch (e) {
       log('❌ Error syncing from Supabase: $e');
@@ -75,7 +86,7 @@ class UserRepositories {
 
         final user = UserModel.fromJson(response);
         await _database.upsertUser(user.toLocal());
-        
+
         return user;
       } else {
         log('📴 Offline: Loading user $id from local DB...');
@@ -108,7 +119,7 @@ class UserRepositories {
       if (isOnline) {
         try {
           log('🌐 ONLINE: Creating user via temporary client...');
-          
+
           // Create temporary Supabase client
           final tempClient = SupabaseClient(
             ApiConstant.supabaseUrl,
@@ -154,18 +165,18 @@ class UserRepositories {
             needsSync: false,
             isDeleted: false,
           );
-          
+
           await _database.upsertUser(newUser.toLocal());
           log('✅ User created in Supabase and synced locally: $userId');
-          
+
           // Dispose temporary client
           await tempClient.dispose();
-          
+
           return userId;
         } catch (e) {
           log('❌ Error creating user online: $e');
           log('⚠️ Falling back to offline mode...');
-          
+
           return await _createUserOffline(
             email: email,
             password: password,
@@ -196,14 +207,14 @@ class UserRepositories {
     required String role,
   }) async {
     log('📴 Creating user offline with password storage...');
-    
+
     final tempId = await _database.createUserOffline(
       fullName: fullName,
       email: email,
       password: password,
       role: role,
     );
-    
+
     log('✅ User created offline with temp ID: $tempId');
     return tempId;
   }
@@ -226,7 +237,7 @@ class UserRepositories {
         try {
           log('🌐 Online: Updating user in Supabase...');
           data['updated_at'] = DateTime.now().toIso8601String();
-          
+
           await _supabase
               .from(ApiConstant.usersTable)
               .update(data)
@@ -261,17 +272,14 @@ class UserRepositories {
       if (isOnline) {
         try {
           log('🌐 Online: Deleting user from Supabase...');
-          
-          await _supabase
-              .from(ApiConstant.usersTable)
-              .delete()
-              .eq('id', id);
-          
+
+          await _supabase.from(ApiConstant.usersTable).delete().eq('id', id);
+
           await _database.permanentlyDeleteUser(id);
           log('✅ User deleted from Supabase and local');
         } catch (e) {
           log('❌ Error deleting user online: $e');
-          
+
           await _database.deleteUserOffline(id);
           log('✅ User marked for deletion, will sync when online');
         }
@@ -297,14 +305,14 @@ class UserRepositories {
 
       log('🔄 Syncing pending changes...');
       final usersNeedingSync = await _database.getUsersNeedingSync();
-      
+
       if (usersNeedingSync.isEmpty) {
         log('✅ No pending changes');
         return;
       }
 
       log('🔄 Syncing ${usersNeedingSync.length} users...');
-      
+
       for (final user in usersNeedingSync) {
         try {
           final operation = user.pendingOperation;
@@ -332,7 +340,7 @@ class UserRepositories {
   // ==================== SYNC CREATE ====================
   Future<void> _syncCreate(dynamic user) async {
     log('➕ Syncing CREATE: ${user.fullName}');
-    
+
     final password = user.tempPassword;
     if (password == null || password.isEmpty) {
       log('❌ Password not found for temp user: ${user.id}');
@@ -343,9 +351,7 @@ class UserRepositories {
     final tempClient = SupabaseClient(
       ApiConstant.supabaseUrl,
       ApiConstant.supabaseAnonKey,
-      authOptions: const AuthClientOptions(
-        authFlowType: AuthFlowType.implicit,
-      ),
+      authOptions: const AuthClientOptions(authFlowType: AuthFlowType.implicit),
     );
 
     try {
@@ -369,14 +375,16 @@ class UserRepositories {
         'full_name': user.fullName,
         'email': user.email,
         'role': user.role,
-        'created_at': user.createdAt?.toIso8601String() ?? DateTime.now().toIso8601String(),
+        'created_at':
+            user.createdAt?.toIso8601String() ??
+            DateTime.now().toIso8601String(),
         'updated_at': DateTime.now().toIso8601String(),
       });
 
       // Update local DB
       await _database.markUserAsSynced(user.id, newId: realUserId);
       log('✅ Created user synced: ${user.id} -> $realUserId');
-      
+
       // Dispose client
       await tempClient.dispose();
     } catch (e) {
@@ -388,13 +396,16 @@ class UserRepositories {
   // ==================== SYNC UPDATE ====================
   Future<void> _syncUpdate(dynamic user) async {
     log('✏️ Syncing UPDATE: ${user.fullName}');
-    
-    await _supabase.from(ApiConstant.usersTable).update({
-      'full_name': user.fullName,
-      'email': user.email,
-      'role': user.role,
-      'updated_at': DateTime.now().toIso8601String(),
-    }).eq('id', user.id);
+
+    await _supabase
+        .from(ApiConstant.usersTable)
+        .update({
+          'full_name': user.fullName,
+          'email': user.email,
+          'role': user.role,
+          'updated_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', user.id);
 
     await _database.markUserAsSynced(user.id);
     log('✅ Updated user synced: ${user.id}');
@@ -403,11 +414,8 @@ class UserRepositories {
   // ==================== SYNC DELETE ====================
   Future<void> _syncDelete(dynamic user) async {
     log('🗑️ Syncing DELETE: ${user.fullName}');
-    
-    await _supabase
-        .from(ApiConstant.usersTable)
-        .delete()
-        .eq('id', user.id);
+
+    await _supabase.from(ApiConstant.usersTable).delete().eq('id', user.id);
 
     await _database.permanentlyDeleteUser(user.id);
     log('✅ Deleted user synced: ${user.id}');

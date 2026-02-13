@@ -1,112 +1,63 @@
-import 'package:chiroku_cafe/core/databases/drift_database.dart';
-import 'package:chiroku_cafe/core/network/network_info.dart';
-import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/services/admin_edit_category_sync_service.dart';
 import 'dart:developer';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/models/admin_edit_category_model.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/repositories/admin_edit_category_repositories.dart';
 
 class CategoryService {
-  final AppDatabase _database;
-  final NetworkInfo _networkInfo;
-  final CategorySyncService _syncService;
+  final CategoryRepositories _repository;
 
-  CategoryService(this._database, this._networkInfo, this._syncService);
+  CategoryService(this._repository);
 
-  // STREAM FOR REALTIME DATA
-  Stream<List<CategoryLocal>> watchCategories() {
-    log('👂 Setting up category stream watcher');
-    return _database.watchAllCategories();
+  /// Watch categories stream (realtime updates from local DB)
+  Stream<List<CategoryModel>> watchCategories() {
+    log('[Service] Setting up categories stream');
+    return _repository.watchCategories();
   }
 
-  // CREATE
-  Future<void> createCategory(String name) async {
-    log('➕ Creating category: $name');
-
-    try {
-      final isOnline = await _networkInfo.isConnected;
-
-      if (isOnline) {
-        // Online: Create in local DB first, then sync
-        await _database.createCategoryOffline(name: name);
-        log('✅ Category created in local DB, triggering sync...');
-        await _syncService.syncCategories();
-      } else {
-        // Offline: Create in local DB only
-        await _database.createCategoryOffline(name: name);
-        log('📴 Category created offline, will sync when online');
-      }
-    } catch (e) {
-      log('❌ Error creating category: $e');
-      rethrow;
-    }
+  /// Create category (offline-first)
+  Future<void> createCategory({required String name}) async {
+    log('[Service] Creating category: $name');
+    await _repository.createCategory(name: name);
   }
 
-  // UPDATE
-  Future<void> updateCategory(int id, String name) async {
-    log('✏️ Updating category: $id');
-
-    try {
-      final isOnline = await _networkInfo.isConnected;
-
-      if (isOnline) {
-        // Online: Update in local DB first, then sync
-        await _database.updateCategoryOffline(id, name: name);
-        log('✅ Category updated in local DB, triggering sync...');
-        await _syncService.syncCategories();
-      } else {
-        // Offline: Update in local DB only
-        await _database.updateCategoryOffline(id, name: name);
-        log('📴 Category updated offline, will sync when online');
-      }
-    } catch (e) {
-      log('❌ Error updating category: $e');
-      rethrow;
-    }
+  /// Update category (offline-first)
+  Future<void> updateCategory(int id, {required String name}) async {
+    log('[Service] Updating category $id: $name');
+    await _repository.updateCategory(id, name: name);
   }
 
-  // DELETE
+  /// Delete category (offline-first)
   Future<void> deleteCategory(int id) async {
-    log('🗑️ Deleting category: $id');
-
-    try {
-      final isOnline = await _networkInfo.isConnected;
-
-      if (isOnline) {
-        // Online: Mark as deleted in local DB, then sync
-        await _database.deleteCategoryOffline(id);
-        log('✅ Category marked for deletion, triggering sync...');
-        await _syncService.syncCategories();
-      } else {
-        // Offline: Mark as deleted in local DB only
-        await _database.deleteCategoryOffline(id);
-        log('📴 Category marked for deletion offline, will sync when online');
-      }
-    } catch (e) {
-      log('❌ Error deleting category: $e');
-      rethrow;
-    }
+    log('[Service] Deleting category: $id');
+    await _repository.deleteCategory(id);
   }
 
-  // FETCH/REFRESH FROM SUPABASE
-  Future<void> fetchAndSyncCategories() async {
-    log('🔄 Fetching and syncing categories...');
-
-    try {
-      final isOnline = await _networkInfo.isConnected;
-
-      if (isOnline) {
-        await _syncService.syncCategories();
-        log('✅ Categories synced successfully');
-      } else {
-        log('📴 Device offline, using local data');
-      }
-    } catch (e) {
-      log('❌ Error syncing categories: $e');
-      rethrow;
-    }
+  /// Sync pending changes to Supabase
+  Future<void> syncPendingChanges() async {
+    log('[Service] Syncing pending changes');
+    await _repository.syncPendingChanges();
   }
 
-  // GET LOCAL CATEGORIES (for non-stream usage)
-  Future<List<CategoryLocal>> getLocalCategories() async {
-    log('📖 Getting local categories');
-    return await _database.getAllCategories();
+  /// Fetch and sync from Supabase
+  Future<void> fetchAndSync() async {
+    log('[Service] Fetching and syncing from Supabase');
+    await _repository.fetchAndSyncFromSupabase();
+  }
+
+  /// Subscribe to realtime changes
+  void subscribeToRealtime() {
+    log('[Service] Subscribing to realtime changes');
+    _repository.subscribeToRealtimeChanges();
+  }
+
+  /// Unsubscribe from realtime changes
+  void unsubscribeFromRealtime() {
+    log('[Service] Unsubscribing from realtime changes');
+    _repository.unsubscribeFromRealtimeChanges();
+  }
+
+  /// Dispose resources
+  void dispose() {
+    log('[Service] Disposing service');
+    _repository.dispose();
   }
 }

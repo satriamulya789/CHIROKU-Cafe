@@ -12,22 +12,18 @@ class SplashController extends GetxController {
   final SplashRepository _repository;
   final SessionRepository sessionRepository;
   final AppDatabase database;
-  
+
   final RxString appVersion = ''.obs;
   final RxBool isLoading = true.obs;
   final RxBool isOnline = true.obs;
-  
+
   // ✅ Observable session (real-time dari database)
   final Rx<SessionLocal?> currentSession = Rx<SessionLocal?>(null);
-  
+
   // ✅ StreamSubscription untuk watch session
   StreamSubscription<SessionLocal?>? _sessionSubscription;
 
-  SplashController(
-    this._repository,
-    this.sessionRepository,
-    this.database,
-  );
+  SplashController(this._repository, this.sessionRepository, this.database);
 
   @override
   void onInit() {
@@ -36,10 +32,10 @@ class SplashController extends GetxController {
     _loadAppVersion();
     _checkInitialConnectivity();
     _listenConnectivity();
-    
+
     // ✅ Watch session changes (real-time)
     _watchSessionChanges();
-    
+
     _startApp();
   }
 
@@ -55,7 +51,7 @@ class SplashController extends GetxController {
       final PackageInfo packageInfo = await PackageInfo.fromPlatform();
       appVersion.value = packageInfo.version;
     } catch (e) {
-      appVersion.value = '1.3.1 beta'; // Fallback
+      appVersion.value = '2.1.0'; // Fallback
     }
   }
 
@@ -79,12 +75,14 @@ class SplashController extends GetxController {
   /// ✅ Watch session changes from database (real-time)
   void _watchSessionChanges() {
     log('👂 Setting up real-time session watcher...');
-    
+
     _sessionSubscription = database.watchSession().listen((session) {
       currentSession.value = session;
-      
+
       if (session != null) {
-        log('👂 Session changed: userId=${session.userId}, role=${session.role}');
+        log(
+          '👂 Session changed: userId=${session.userId}, role=${session.role}',
+        );
       } else {
         log('👂 Session cleared from database');
       }
@@ -101,16 +99,18 @@ class SplashController extends GetxController {
   Future<void> _checkAuthStatus() async {
     try {
       isLoading.value = true;
-      
+
       // ✅ Use getCurrentSessionLocal (has role info, works offline)
       final localSession = await sessionRepository.getCurrentSessionLocal();
-      
-      log('🚀 Auth Check: session=${localSession != null}, online=${isOnline.value}');
+
+      log(
+        '🚀 Auth Check: session=${localSession != null}, online=${isOnline.value}',
+      );
 
       if (localSession != null) {
         log('🚀 Auth Check: User ID: ${localSession.userId}');
         log('🚀 Auth Check: Role: ${localSession.role}');
-        
+
         // ✅ Navigate based on role from local session (works offline)
         _navigateByRole(localSession.role);
       } else {

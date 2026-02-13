@@ -38,7 +38,7 @@ class AdminEditTableView extends GetView<AdminEditTableController> {
               }
 
               return RefreshIndicator(
-                onRefresh: controller.fetchTables,
+                onRefresh: controller.syncNow,
                 color: AppColors.brownNormal,
                 child: ListView.builder(
                   padding: const EdgeInsets.all(16),
@@ -63,9 +63,7 @@ class AdminEditTableView extends GetView<AdminEditTableController> {
         icon: const Icon(Icons.table_chart, color: AppColors.white),
         label: Text(
           'Add Table',
-          style: AppTypography.button.copyWith(
-            color: AppColors.white,
-          ),
+          style: AppTypography.button.copyWith(color: AppColors.white),
         ),
       ),
     );
@@ -89,7 +87,10 @@ class AdminEditTableView extends GetView<AdminEditTableController> {
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
         ),
       ),
     );
@@ -107,10 +108,7 @@ class AdminEditTableView extends GetView<AdminEditTableController> {
     controller.setEditTable(table);
     showDialog(
       context: context,
-      builder: (context) => TableFormDialog(
-        tableId: table.id,
-        isEdit: true,
-      ),
+      builder: (context) => TableFormDialog(tableId: table.id, isEdit: true),
     );
   }
 
@@ -126,9 +124,12 @@ class AdminEditTableView extends GetView<AdminEditTableController> {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel', style: AppTypography.button.copyWith(
-              color: AppColors.brownNormal,
-            )),
+            child: Text(
+              'Cancel',
+              style: AppTypography.button.copyWith(
+                color: AppColors.brownNormal,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -138,9 +139,10 @@ class AdminEditTableView extends GetView<AdminEditTableController> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.alertNormal,
             ),
-            child: Text('Delete', style: AppTypography.button.copyWith(
-              color: AppColors.white,
-            )),
+            child: Text(
+              'Delete',
+              style: AppTypography.button.copyWith(color: AppColors.white),
+            ),
           ),
         ],
       ),

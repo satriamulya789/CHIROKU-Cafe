@@ -59,7 +59,8 @@ class AdminEditMenuView extends GetView<AdminEditMenuController> {
                     return MenuListItem(
                       menu: menu,
                       onEdit: () => _navigateToEditPage(menu),
-                      onDelete: () => _showDeleteDialog(context, menu.id, menu.imageUrl),
+                      onDelete: () =>
+                          _showDeleteDialog(context, menu.id!, menu.imageUrl),
                     );
                   },
                 ),
@@ -74,9 +75,7 @@ class AdminEditMenuView extends GetView<AdminEditMenuController> {
         icon: const Icon(Icons.add, color: AppColors.white),
         label: Text(
           'Add Menu',
-          style: AppTypography.button.copyWith(
-            color: AppColors.white,
-          ),
+          style: AppTypography.button.copyWith(color: AppColors.white),
         ),
       ),
     );
@@ -100,7 +99,10 @@ class AdminEditMenuView extends GetView<AdminEditMenuController> {
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
         ),
       ),
     );
@@ -134,10 +136,12 @@ class AdminEditMenuView extends GetView<AdminEditMenuController> {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel',
-                style: AppTypography.button.copyWith(
-                  color: AppColors.brownNormal,
-                )),
+            child: Text(
+              'Cancel',
+              style: AppTypography.button.copyWith(
+                color: AppColors.brownNormal,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -147,10 +151,10 @@ class AdminEditMenuView extends GetView<AdminEditMenuController> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.alertNormal,
             ),
-            child: Text('Delete',
-                style: AppTypography.button.copyWith(
-                  color: AppColors.white,
-                )),
+            child: Text(
+              'Delete',
+              style: AppTypography.button.copyWith(color: AppColors.white),
+            ),
           ),
         ],
       ),
