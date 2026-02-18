@@ -8,11 +8,7 @@ class AdminMenuFormPage extends GetView<AdminEditMenuController> {
   final int? menuId;
   final bool isEdit;
 
-  const AdminMenuFormPage({
-    super.key,
-    this.menuId,
-    this.isEdit = false,
-  });
+  const AdminMenuFormPage({super.key, this.menuId, this.isEdit = false});
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +104,7 @@ class AdminMenuFormPage extends GetView<AdminEditMenuController> {
                 color: AppColors.brownLight,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppColors.brownNormal.withOpacity(0.3),
+                  color: AppColors.brownNormal.withValues(alpha: 0.3),
                 ),
               ),
               child: imageFile != null
@@ -138,35 +134,35 @@ class AdminMenuFormPage extends GetView<AdminEditMenuController> {
                       ],
                     )
                   : imageUrl != null && imageUrl.isNotEmpty
-                      ? Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                imageUrl,
-                                width: double.infinity,
-                                height: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return _buildPlaceholder();
-                                },
-                              ),
+                  ? Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            imageUrl,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return _buildPlaceholder();
+                            },
+                          ),
+                        ),
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: IconButton(
+                            onPressed: controller.removeImage,
+                            icon: const Icon(Icons.close),
+                            style: IconButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
                             ),
-                            Positioned(
-                              top: 8,
-                              right: 8,
-                              child: IconButton(
-                                onPressed: controller.removeImage,
-                                icon: const Icon(Icons.close),
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  foregroundColor: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : _buildPlaceholder(),
+                          ),
+                        ),
+                      ],
+                    )
+                  : _buildPlaceholder(),
             );
           }),
           const SizedBox(height: 16),
@@ -210,13 +206,13 @@ class AdminMenuFormPage extends GetView<AdminEditMenuController> {
           Icon(
             Icons.add_photo_alternate_outlined,
             size: 64,
-            color: AppColors.brownNormal.withOpacity(0.5),
+            color: AppColors.brownNormal.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 8),
           Text(
             'Add menu image',
             style: AppTypography.bodyMedium.copyWith(
-              color: AppColors.brownNormal.withOpacity(0.7),
+              color: AppColors.brownNormal.withValues(alpha: 0.7),
             ),
           ),
         ],
@@ -248,20 +244,22 @@ class AdminMenuFormPage extends GetView<AdminEditMenuController> {
             textCapitalization: TextCapitalization.words,
           ),
           const SizedBox(height: 16),
-          Obx(() => DropdownButtonFormField<int>(
-                value: controller.selectedCategoryId.value,
-                decoration: _inputDecoration('Category *'),
-                hint: const Text('Select Category'),
-                items: controller.categories.map((category) {
-                  return DropdownMenuItem(
-                    value: category.id,
-                    child: Text(category.name),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  controller.selectedCategoryId.value = value;
-                },
-              )),
+          Obx(
+            () => DropdownButtonFormField<int>(
+              initialValue: controller.selectedCategoryId.value,
+              decoration: _inputDecoration('Category *'),
+              hint: const Text('Select Category'),
+              items: controller.categories.map((category) {
+                return DropdownMenuItem(
+                  value: category.id,
+                  child: Text(category.name),
+                );
+              }).toList(),
+              onChanged: (value) {
+                controller.selectedCategoryId.value = value;
+              },
+            ),
+          ),
           const SizedBox(height: 16),
           TextField(
             controller: controller.priceController,
@@ -281,29 +279,31 @@ class AdminMenuFormPage extends GetView<AdminEditMenuController> {
             maxLines: 3,
           ),
           const SizedBox(height: 16),
-          Obx(() => SwitchListTile(
-                title: Text(
-                  'Available',
-                  style: AppTypography.bodyLarge.copyWith(
-                    color: AppColors.brownDark,
-                    fontWeight: FontWeight.w600,
-                  ),
+          Obx(
+            () => SwitchListTile(
+              title: Text(
+                'Available',
+                style: AppTypography.bodyLarge.copyWith(
+                  color: AppColors.brownDark,
+                  fontWeight: FontWeight.w600,
                 ),
-                subtitle: Text(
-                  controller.isAvailable.value
-                      ? 'Menu is available for order'
-                      : 'Menu is not available',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.brownNormal,
-                  ),
+              ),
+              subtitle: Text(
+                controller.isAvailable.value
+                    ? 'Menu is available for order'
+                    : 'Menu is not available',
+                style: AppTypography.bodySmall.copyWith(
+                  color: AppColors.brownNormal,
                 ),
-                value: controller.isAvailable.value,
-                onChanged: (value) {
-                  controller.isAvailable.value = value;
-                },
-                activeColor: AppColors.successNormal,
-                contentPadding: EdgeInsets.zero,
-              )),
+              ),
+              value: controller.isAvailable.value,
+              onChanged: (value) {
+                controller.isAvailable.value = value;
+              },
+              activeTrackColor: AppColors.successNormal,
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
         ],
       ),
     );
@@ -311,8 +311,9 @@ class AdminMenuFormPage extends GetView<AdminEditMenuController> {
 
   Widget _buildActionButtons() {
     return Obx(() {
-      final isLoading = controller.isLoading.value || controller.isUploadingImage.value;
-      
+      final isLoading =
+          controller.isLoading.value || controller.isUploadingImage.value;
+
       return Row(
         children: [
           Expanded(
@@ -328,10 +329,7 @@ class AdminMenuFormPage extends GetView<AdminEditMenuController> {
                 side: const BorderSide(color: AppColors.brownNormal),
                 foregroundColor: AppColors.brownNormal,
               ),
-              child: Text(
-                'Cancel',
-                style: AppTypography.button,
-              ),
+              child: Text('Cancel', style: AppTypography.button),
             ),
           ),
           const SizedBox(width: 16),
@@ -349,7 +347,9 @@ class AdminMenuFormPage extends GetView<AdminEditMenuController> {
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 backgroundColor: AppColors.brownNormal,
-                disabledBackgroundColor: AppColors.brownNormal.withOpacity(0.5),
+                disabledBackgroundColor: AppColors.brownNormal.withValues(
+                  alpha: 0.5,
+                ),
               ),
               child: isLoading
                   ? const SizedBox(
@@ -379,16 +379,16 @@ class AdminMenuFormPage extends GetView<AdminEditMenuController> {
       labelStyle: AppTypography.bodyMedium.copyWith(
         color: AppColors.brownNormal,
       ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: const BorderSide(color: AppColors.brownNormal, width: 2),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: AppColors.brownNormal.withOpacity(0.3)),
+        borderSide: BorderSide(
+          color: AppColors.brownNormal.withValues(alpha: 0.3),
+        ),
       ),
     );
   }

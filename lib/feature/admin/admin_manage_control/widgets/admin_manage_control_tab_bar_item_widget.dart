@@ -38,7 +38,7 @@ class AdminTabItem extends StatelessWidget {
                 icon,
                 color: isSelected 
                     ? AppColors.brownDarkActive 
-                    : AppColors.brownNormal.withOpacity(0.5),
+                    : AppColors.brownNormal.withValues(alpha: 0.5),
                 size: 24,
               ),
               const SizedBox(height: 4),
@@ -47,7 +47,7 @@ class AdminTabItem extends StatelessWidget {
                 style: AppTypography.label.copyWith(
                   color: isSelected 
                       ? AppColors.brownDarkActive 
-                      : AppColors.brownNormal.withOpacity(0.5),
+                      : AppColors.brownNormal.withValues(alpha: 0.5),
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 ),
               ),

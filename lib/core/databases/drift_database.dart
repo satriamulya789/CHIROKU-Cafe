@@ -7,6 +7,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'dart:async';
 import 'dart:io';
 import 'dart:developer';
 
@@ -622,7 +623,11 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
-  Future<void> markMenuAsSynced(int localId, {int? newId}) async {
+  Future<void> markMenuAsSynced(
+    int localId, {
+    int? newId,
+    String? imageUrl,
+  }) async {
     log(
       '✅ Marking menu as synced: $localId ${newId != null ? "-> $newId" : ""}',
     );
@@ -644,8 +649,8 @@ class AppDatabase extends _$AppDatabase {
               name: menu.name,
               price: menu.price,
               description: Value(menu.description),
-              imageUrl: Value(menu.imageUrl),
-              localImagePath: Value(menu.localImagePath),
+              imageUrl: Value(imageUrl ?? menu.imageUrl),
+              localImagePath: const Value(null),
               stock: Value(menu.stock),
               isAvailable: Value(menu.isAvailable),
               createdAt: Value(menu.createdAt),
@@ -666,6 +671,10 @@ class AppDatabase extends _$AppDatabase {
             syncedAt: Value(DateTime.now()),
             isLocalOnly: const Value(false),
             pendingOperation: const Value.absent(),
+            imageUrl: imageUrl != null ? Value(imageUrl) : const Value.absent(),
+            localImagePath: imageUrl != null
+                ? const Value(null)
+                : const Value.absent(),
           ),
         );
         log('✅ Menu marked as synced: $localId');
@@ -1419,6 +1428,61 @@ class AppDatabase extends _$AppDatabase {
       log('❌ Error getting admin stats: $e');
       return {'users': 0, 'menus': 0, 'categories': 0, 'tables': 0};
     }
+  }
+
+  /// Real-time stream of admin stats — updates instantly whenever any local
+  /// table changes (add/edit/delete/sync), regardless of connectivity.
+  Stream<Map<String, int>> watchAdminStats() {
+    log('👂 Setting up real-time admin stats watcher...');
+
+    // Track latest counts for each table
+    int usersCount = 0;
+    int menusCount = 0;
+    int categoriesCount = 0;
+    int tablesCount = 0;
+
+    final controller = StreamController<Map<String, int>>.broadcast();
+
+    void emit() {
+      if (!controller.isClosed) {
+        controller.add({
+          'users': usersCount,
+          'menus': menusCount,
+          'categories': categoriesCount,
+          'tables': tablesCount,
+        });
+      }
+    }
+
+    final usersSub = watchAllUsers().listen((users) {
+      usersCount = users.length;
+      emit();
+    });
+
+    final menusSub = watchAllMenus().listen((menus) {
+      menusCount = menus.length;
+      emit();
+    });
+
+    final categoriesSub = watchAllCategories().listen((categories) {
+      categoriesCount = categories.length;
+      emit();
+    });
+
+    final tablesSub = watchAllTables().listen((tables) {
+      tablesCount = tables.length;
+      emit();
+    });
+
+    controller.onCancel = () {
+      usersSub.cancel();
+      menusSub.cancel();
+      categoriesSub.cancel();
+      tablesSub.cancel();
+      controller.close();
+    };
+
+    return controller.stream;
   }
 
   // =========================== UTILITY METHODS ===========================

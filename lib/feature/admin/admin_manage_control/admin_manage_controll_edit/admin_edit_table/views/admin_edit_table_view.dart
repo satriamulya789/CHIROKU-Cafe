@@ -58,6 +58,7 @@ class AdminEditTableView extends GetView<AdminEditTableController> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'admin_edit_table_fab',
         onPressed: () => _showAddDialog(context),
         backgroundColor: AppColors.brownNormal,
         icon: const Icon(Icons.table_chart, color: AppColors.white),
@@ -78,7 +79,7 @@ class AdminEditTableView extends GetView<AdminEditTableController> {
         decoration: InputDecoration(
           hintText: 'Search tables...',
           hintStyle: AppTypography.bodyMedium.copyWith(
-            color: AppColors.brownNormal.withOpacity(0.5),
+            color: AppColors.brownNormal.withValues(alpha: 0.5),
           ),
           prefixIcon: const Icon(Icons.search, color: AppColors.brownNormal),
           filled: true,

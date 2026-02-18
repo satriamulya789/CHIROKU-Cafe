@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:chiroku_cafe/constant/api_constant.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/models/admin_edit_category_model.dart';
@@ -102,7 +103,7 @@ class MenuRepositories {
 
       await _supabase.storage.from(bucketName).remove([fileName]);
     } catch (e) {
-      print('Warning: Failed to delete image: $e');
+      log('Warning: Failed to delete image: $e');
     }
   }
 
@@ -116,17 +117,21 @@ class MenuRepositories {
     bool isAvailable = true,
   }) async {
     try {
-      final response = await _supabase.from(ApiConstant.menuTable).insert({
-        'category_id': categoryId,
-        'name': name,
-        'price': price,
-        'description': description,
-        'stock': stock,
-        'image_url': imageUrl,
-        'is_available': isAvailable,
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-      }).select('id').single();
+      final response = await _supabase
+          .from(ApiConstant.menuTable)
+          .insert({
+            'category_id': categoryId,
+            'name': name,
+            'price': price,
+            'description': description,
+            'stock': stock,
+            'image_url': imageUrl,
+            'is_available': isAvailable,
+            'created_at': DateTime.now().toIso8601String(),
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .select('id')
+          .single();
 
       return response['id'] as int;
     } catch (e) {

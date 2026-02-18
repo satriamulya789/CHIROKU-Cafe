@@ -59,6 +59,7 @@ class AdminEditCategoryView extends GetView<AdminEditCategoryController> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'admin_edit_category_fab',
         onPressed: () => _showAddDialog(context),
         backgroundColor: AppColors.brownNormal,
         icon: const Icon(Icons.category, color: AppColors.white),
@@ -79,7 +80,7 @@ class AdminEditCategoryView extends GetView<AdminEditCategoryController> {
         decoration: InputDecoration(
           hintText: 'Search categories...',
           hintStyle: AppTypography.bodyMedium.copyWith(
-            color: AppColors.brownNormal.withOpacity(0.5),
+            color: AppColors.brownNormal.withValues(alpha: 0.5),
           ),
           prefixIcon: const Icon(Icons.search, color: AppColors.brownNormal),
           filled: true,

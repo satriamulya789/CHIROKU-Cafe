@@ -6,7 +6,10 @@ import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_con
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/repositories/admin_edit_category_repositories.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/services/admin_edit_category_service.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/services/admin_edit_category_sync_service.dart';
+
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/controllers/admin_edit_menu_controller.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/repositories/admin_edit_menu_repositories.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/services/admin_edit_menu_sync_service.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_table/controllers/admin_edit_table_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/controllers/admin_edit_user_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/controllers/admin_manage_control_controller.dart';
@@ -65,6 +68,12 @@ class AdminManageControlBinding extends Bindings {
 
     Get.lazyPut<AdminEditTableController>(
       () => AdminEditTableController(),
+      fenix: true,
+    );
+
+    // Menu Sync Service
+    Get.lazyPut<AdminEditMenuSyncService>(
+      () => AdminEditMenuSyncService(database, networkInfo, MenuRepositories()),
       fenix: true,
     );
   }

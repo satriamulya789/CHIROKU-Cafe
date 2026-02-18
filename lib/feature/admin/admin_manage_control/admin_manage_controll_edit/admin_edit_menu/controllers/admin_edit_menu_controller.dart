@@ -83,11 +83,10 @@ class AdminEditMenuController extends GetxController {
   }
 
   // ==================== FETCH MENUS (DEPRECATED - Use stream instead) ====================
-  @Deprecated('Use stream subscription instead')
-  Future<void> fetchMenus() async {
+  Future<void> refreshMenus() async {
     try {
       isLoading.value = true;
-      menus.value = await _service.fetchMenus();
+      await _service.fetchMenus();
     } catch (e) {
       snackbar.showErrorSnackbar('Failed to fetch menus: $e');
     } finally {

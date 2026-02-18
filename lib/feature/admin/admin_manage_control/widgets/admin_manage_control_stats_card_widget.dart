@@ -30,12 +30,12 @@ class AdminStatsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8), // ✅ Reduced from 12 to 8
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isOffline 
-              ? AppColors.greyNormal.withOpacity(0.3)
-              : color.withOpacity(0.3),
+              ? AppColors.greyNormal.withValues(alpha: 0.3)
+              : color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -137,7 +137,7 @@ class AdminStatsCard extends StatelessWidget {
           color: AppColors.greyLight,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppColors.greyNormal.withOpacity(0.3),
+            color: AppColors.greyNormal.withValues(alpha: 0.3),
             width: 1,
           ),
         ),

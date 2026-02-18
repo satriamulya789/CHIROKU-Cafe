@@ -8,19 +8,12 @@ class TableFormDialog extends GetView<AdminEditTableController> {
   final int? tableId;
   final bool isEdit;
 
-  const TableFormDialog({
-    super.key,
-    this.tableId,
-    this.isEdit = false,
-  });
+  const TableFormDialog({super.key, this.tableId, this.isEdit = false});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        isEdit ? 'Edit Table' : 'Add Table',
-        style: AppTypography.h5,
-      ),
+      title: Text(isEdit ? 'Edit Table' : 'Add Table', style: AppTypography.h5),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -36,24 +29,26 @@ class TableFormDialog extends GetView<AdminEditTableController> {
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
-            Obx(() => DropdownButtonFormField<String>(
-              value: controller.selectedStatus.value,
-              decoration: _inputDecoration('Status'),
-              items: ['available', 'reserved'].map((status) {
-                return DropdownMenuItem(
-                  value: status,
-                  child: Text(
-                    status.toUpperCase(),
-                    style: AppTypography.bodyMedium,
-                  ),
-                );
-              }).toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  controller.selectedStatus.value = value;
-                }
-              },
-            )),
+            Obx(
+              () => DropdownButtonFormField<String>(
+                initialValue: controller.selectedStatus.value,
+                decoration: _inputDecoration('Status'),
+                items: ['available', 'reserved'].map((status) {
+                  return DropdownMenuItem(
+                    value: status,
+                    child: Text(
+                      status.toUpperCase(),
+                      style: AppTypography.bodyMedium,
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.selectedStatus.value = value;
+                  }
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -65,37 +60,39 @@ class TableFormDialog extends GetView<AdminEditTableController> {
           },
           child: Text(
             'Cancel',
-            style: AppTypography.button.copyWith(
-              color: AppColors.brownNormal,
-            ),
+            style: AppTypography.button.copyWith(color: AppColors.brownNormal),
           ),
         ),
-        Obx(() => ElevatedButton(
-          onPressed: controller.isLoading.value
-              ? null
-              : () => isEdit 
-                  ? controller.updateTable(tableId!) 
-                  : controller.createTable(),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.brownNormal,
-            disabledBackgroundColor: AppColors.brownNormal.withOpacity(0.5),
+        Obx(
+          () => ElevatedButton(
+            onPressed: controller.isLoading.value
+                ? null
+                : () => isEdit
+                      ? controller.updateTable(tableId!)
+                      : controller.createTable(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.brownNormal,
+              disabledBackgroundColor: AppColors.brownNormal.withValues(
+                alpha: 0.5,
+              ),
+            ),
+            child: controller.isLoading.value
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.white,
+                    ),
+                  )
+                : Text(
+                    isEdit ? 'Update' : 'Add',
+                    style: AppTypography.button.copyWith(
+                      color: AppColors.white,
+                    ),
+                  ),
           ),
-          child: controller.isLoading.value
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.white,
-                  ),
-                )
-              : Text(
-                  isEdit ? 'Update' : 'Add',
-                  style: AppTypography.button.copyWith(
-                    color: AppColors.white,
-                  ),
-                ),
-        )),
+        ),
       ],
     );
   }
@@ -106,9 +103,7 @@ class TableFormDialog extends GetView<AdminEditTableController> {
       labelStyle: AppTypography.bodyMedium.copyWith(
         color: AppColors.brownNormal,
       ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: const BorderSide(color: AppColors.brownNormal),

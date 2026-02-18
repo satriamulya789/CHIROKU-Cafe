@@ -155,8 +155,10 @@ class AdminEditUserController extends GetxController {
 
       // Precache only uncached images
       if (needsDownload > 0) {
-        await ImageCacheHelper.precacheAvatars(context, avatarUrls);
-        log('✅ Precaching completed');
+        if (context.mounted) {
+          await ImageCacheHelper.precacheAvatars(context, avatarUrls);
+          log('✅ Precaching completed');
+        }
       } else {
         log('✅ All avatars already cached');
       }

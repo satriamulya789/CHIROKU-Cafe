@@ -23,7 +23,7 @@ class AdminManageControlAppBar extends StatelessWidget
         color: AppColors.brownLight,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -36,7 +36,7 @@ class AdminManageControlAppBar extends StatelessWidget
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.brownNormal.withOpacity(0.12),
+                  color: AppColors.brownNormal.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 padding: const EdgeInsets.all(8),
@@ -61,14 +61,14 @@ class AdminManageControlAppBar extends StatelessWidget
                     Text(
                       currentTitle,
                       style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.brownNormal.withOpacity(0.8),
+                        color: AppColors.brownNormal.withValues(alpha: 0.8),
                         fontSize: 12,
                       ),
                     ),
                     if (user != null) ...[
                       const SizedBox(height: 2),
                       Text(
-                        user!.fullName ?? '-',
+                        user!.fullName,
                         style: AppTypography.bodySmall.copyWith(
                           color: AppColors.brownDark,
                           fontWeight: FontWeight.w600,
@@ -76,9 +76,9 @@ class AdminManageControlAppBar extends StatelessWidget
                         ),
                       ),
                       Text(
-                        user!.role ?? 'Admin',
+                        user!.role,
                         style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.brownNormal.withOpacity(0.7),
+                          color: AppColors.brownNormal.withValues(alpha: 0.7),
                           fontSize: 11,
                         ),
                       ),

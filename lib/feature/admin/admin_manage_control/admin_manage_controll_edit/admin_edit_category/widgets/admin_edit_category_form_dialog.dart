@@ -59,7 +59,7 @@ class CategoryFormDialog extends GetView<AdminEditCategoryController> {
                   : controller.createCategory(),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.brownNormal,
-            disabledBackgroundColor: AppColors.brownNormal.withOpacity(0.5),
+            disabledBackgroundColor: AppColors.brownNormal.withValues(alpha: 0.5),
           ),
           child: controller.isLoading.value
               ? const SizedBox(

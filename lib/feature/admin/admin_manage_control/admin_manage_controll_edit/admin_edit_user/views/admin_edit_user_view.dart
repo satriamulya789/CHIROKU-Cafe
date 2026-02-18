@@ -34,7 +34,7 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
                       Icon(
                         Icons.people_outline,
                         size: 80,
-                        color: AppColors.brownNormal.withOpacity(0.3),
+                        color: AppColors.brownNormal.withValues(alpha: 0.3),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -69,6 +69,7 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'admin_edit_user_fab',
         onPressed: () => _showAddDialog(context),
         backgroundColor: AppColors.brownNormal,
         icon: const Icon(Icons.person_add, color: AppColors.white),
@@ -89,7 +90,7 @@ class AdminEditUserView extends GetView<AdminEditUserController> {
         decoration: InputDecoration(
           hintText: 'Search users...',
           hintStyle: AppTypography.bodyMedium.copyWith(
-            color: AppColors.brownNormal.withOpacity(0.5),
+            color: AppColors.brownNormal.withValues(alpha: 0.5),
           ),
           prefixIcon: const Icon(Icons.search, color: AppColors.brownNormal),
           filled: true,

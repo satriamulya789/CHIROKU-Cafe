@@ -34,7 +34,7 @@ class AdminEditMenuView extends GetView<AdminEditMenuController> {
                       Icon(
                         Icons.restaurant_menu_outlined,
                         size: 80,
-                        color: AppColors.brownDarkActive.withOpacity(0.3),
+                        color: AppColors.brownDarkActive.withValues(alpha: 0.3),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -49,7 +49,7 @@ class AdminEditMenuView extends GetView<AdminEditMenuController> {
               }
 
               return RefreshIndicator(
-                onRefresh: controller.fetchMenus,
+                onRefresh: controller.refreshMenus,
                 color: AppColors.brownDark,
                 child: ListView.builder(
                   padding: const EdgeInsets.all(16),
@@ -70,6 +70,7 @@ class AdminEditMenuView extends GetView<AdminEditMenuController> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'admin_edit_menu_fab',
         onPressed: _navigateToAddPage,
         backgroundColor: AppColors.brownNormal,
         icon: const Icon(Icons.add, color: AppColors.white),
@@ -90,7 +91,7 @@ class AdminEditMenuView extends GetView<AdminEditMenuController> {
         decoration: InputDecoration(
           hintText: 'Search menus...',
           hintStyle: AppTypography.bodyMedium.copyWith(
-            color: AppColors.brownNormal.withOpacity(0.5),
+            color: AppColors.brownNormal.withValues(alpha: 0.5),
           ),
           prefixIcon: const Icon(Icons.search, color: AppColors.brownNormal),
           filled: true,

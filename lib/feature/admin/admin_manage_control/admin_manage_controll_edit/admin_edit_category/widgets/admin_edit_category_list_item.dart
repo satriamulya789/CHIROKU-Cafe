@@ -27,7 +27,7 @@ class CategoryListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: AppColors.brownDarkActive.withOpacity(0.05),
+            color: AppColors.brownDarkActive.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

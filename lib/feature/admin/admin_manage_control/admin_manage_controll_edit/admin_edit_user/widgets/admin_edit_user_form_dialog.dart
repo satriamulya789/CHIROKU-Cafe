@@ -126,7 +126,7 @@ class UserFormDialog extends GetView<AdminEditUserController> {
               const SizedBox(height: 16),
             ],
             DropdownButtonFormField<String>(
-              value: controller.roleController.text.isEmpty
+              initialValue: controller.roleController.text.isEmpty
                   ? 'cashier'
                   : controller.roleController.text,
               decoration: InputDecoration(
@@ -184,7 +184,9 @@ class UserFormDialog extends GetView<AdminEditUserController> {
                   },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.brownNormal,
-              disabledBackgroundColor: AppColors.brownNormal.withOpacity(0.5),
+              disabledBackgroundColor: AppColors.brownNormal.withValues(
+                alpha: 0.5,
+              ),
             ),
             child: controller.isLoading.value
                 ? const SizedBox(

@@ -73,7 +73,7 @@ class CategorySyncService extends GetxService {
       log('✅ Category sync completed at ${lastSyncTime.value}');
     } catch (e) {
       log('❌ Category sync failed: $e');
-      rethrow;
+      // Do not rethrow in background service to prevent app crash
     } finally {
       isSyncing.value = false;
     }

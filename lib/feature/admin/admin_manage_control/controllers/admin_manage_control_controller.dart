@@ -1,6 +1,10 @@
+import 'package:chiroku_cafe/core/databases/database_helper.dart';
 import 'package:chiroku_cafe/core/network/network_info.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/controllers/admin_edit_category_controller.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_category/services/admin_edit_category_sync_service.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/repositories/admin_edit_menu_repositories.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/controllers/admin_edit_menu_controller.dart';
+import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_menu/services/admin_edit_menu_sync_service.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_table/controllers/admin_edit_table_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/admin_manage_controll_edit/admin_edit_user/controllers/admin_edit_user_controller.dart';
 import 'package:chiroku_cafe/feature/admin/admin_manage_control/models/admin_manage_controll_model.dart';
@@ -23,21 +27,57 @@ class AdminManageControlController extends GetxController {
   final tabs = <AdminTabModel>[].obs;
 
   StreamSubscription<bool>? _connectivitySubscription;
+  StreamSubscription<AdminStatsModel>? _statsSubscription;
 
-  // Initialize all controllers
-  late final AdminEditUserController userController;
-  late final AdminEditMenuController menuController;
-  late final AdminEditCategoryController categoryController;
-  late final AdminEditTableController tableController;
+  // Lazy getters — resolved on demand, not during onInit
+  AdminEditUserController get userController =>
+      Get.find<AdminEditUserController>();
+  AdminEditMenuController get menuController =>
+      Get.find<AdminEditMenuController>();
+  AdminEditCategoryController get categoryController =>
+      Get.find<AdminEditCategoryController>();
+  AdminEditTableController get tableController =>
+      Get.find<AdminEditTableController>();
 
   @override
   void onInit() {
     super.onInit();
     _initConnectivity();
     _listenToConnectivity();
-    _initializeControllers();
     _loadTabs();
-    fetchStats();
+    _watchStats();
+    _initSyncServices();
+  }
+
+  void _initSyncServices() {
+    try {
+      // Initialize CategorySyncService
+      if (Get.isRegistered<CategorySyncService>()) {
+        Get.find<CategorySyncService>();
+      } else {
+        log('⚠️ CategorySyncService not registered');
+      }
+
+      // Initialize AdminEditMenuSyncService
+      if (Get.isRegistered<AdminEditMenuSyncService>()) {
+        Get.find<AdminEditMenuSyncService>();
+      } else {
+        log(
+          '⚠️ AdminEditMenuSyncService not registered, forcing initialization',
+        );
+        Get.put(
+          AdminEditMenuSyncService(
+            Get.find<DatabaseHelper>().database,
+            Get.find<NetworkInfo>(),
+            MenuRepositories(),
+          ),
+          permanent: true,
+        );
+      }
+      log('🔄 Sync services initialized');
+    } catch (e) {
+      log('⚠️ Failed to initialize sync services: $e');
+    }
   }
 
   // ==================== CONNECTIVITY ====================
@@ -65,49 +105,33 @@ class AdminManageControlController extends GetxController {
     });
   }
 
-  void _initializeControllers() {
-    log('🎮 Initializing sub-controllers...');
-    userController = Get.find<AdminEditUserController>();
-    menuController = Get.find<AdminEditMenuController>();
-    categoryController = Get.find<AdminEditCategoryController>();
-    tableController = Get.find<AdminEditTableController>();
-    log('✅ All sub-controllers initialized');
-  }
-
   void _loadTabs() {
     tabs.value = _service.getTabList();
     log('📑 Loaded ${tabs.length} tabs');
   }
 
   Future<void> _refreshAllData() async {
-    await fetchStats(showLoading: false);
     await refreshCurrentTab();
   }
 
-  // ==================== FETCH STATS ====================
-  Future<void> fetchStats({bool showLoading = true}) async {
-    try {
-      if (showLoading) isLoadingStats.value = true;
+  // ==================== REAL-TIME STATS STREAM ====================
+  /// Subscribes to a reactive stream from the local DB.
+  /// Stats update instantly whenever any table changes — online or offline.
+  void _watchStats() {
+    log('📊 Controller: Starting real-time stats watcher...');
+    isLoadingStats.value = true;
 
-      log('📊 Controller: Fetching stats...');
-      stats.value = await _service.fetchStats();
-
-      if (stats.value.totalUsers > 0 || stats.value.totalMenus > 0) {
-        log('✅ Controller: Stats loaded - ${stats.value}');
-      } else {
-        log('⚠️ Controller: Empty stats returned');
-      }
-    } catch (e) {
-      log('❌ Controller: Error fetching stats - $e');
-      stats.value = AdminStatsModel.empty();
-
-      // Don't show error snackbar if offline (already shown by connectivity listener)
-      if (isOnline.value) {
-        snackbar.showErrorSnackbar('Failed to fetch stats');
-      }
-    } finally {
-      if (showLoading) isLoadingStats.value = false;
-    }
+    _statsSubscription = _service.watchStats().listen(
+      (newStats) {
+        stats.value = newStats;
+        isLoadingStats.value = false;
+        log('📊 Stats updated: $newStats');
+      },
+      onError: (e) {
+        log('❌ Stats stream error: $e');
+        isLoadingStats.value = false;
+      },
+    );
   }
 
   // ==================== TAB MANAGEMENT ====================
@@ -129,7 +153,7 @@ class AdminManageControlController extends GetxController {
         await userController.fetchUsers();
         break;
       case 1:
-        await menuController.fetchMenus();
+        await menuController.refreshMenus();
         break;
       case 2:
         await categoryController.refreshCategories();
@@ -140,7 +164,6 @@ class AdminManageControlController extends GetxController {
         break;
     }
 
-    await fetchStats(showLoading: false);
     log('✅ Tab refresh completed');
   }
 
@@ -178,7 +201,9 @@ class AdminManageControlController extends GetxController {
   // ==================== MANUAL REFRESH ====================
   Future<void> manualRefresh() async {
     if (!isOnline.value) {
-      snackbar.showInfoSnackbar('Cannot refresh while offline');
+      // Even offline, we can still refresh the current tab's local data
+      snackbar.showInfoSnackbar('📴 Offline - Showing local data');
+      await refreshCurrentTab();
       return;
     }
 
@@ -191,6 +216,7 @@ class AdminManageControlController extends GetxController {
   void onClose() {
     log('🔴 Disposing AdminManageControlController...');
     _connectivitySubscription?.cancel();
+    _statsSubscription?.cancel();
     super.onClose();
   }
 }

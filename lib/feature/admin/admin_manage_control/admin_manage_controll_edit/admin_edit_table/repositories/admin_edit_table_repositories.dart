@@ -7,6 +7,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
 import 'dart:developer';
+import 'package:chiroku_cafe/core/databases/database_helper.dart';
+import 'package:get/get.dart';
 
 class TableRepositories {
   final NetworkInfo _networkInfo;
@@ -22,7 +24,8 @@ class TableRepositories {
     TablesRemoteDataSource? remoteDataSource,
   }) : _networkInfo = networkInfo ?? NetworkInfoImpl(Connectivity()),
        _localDataSource =
-           localDataSource ?? TablesLocalDataSource(AppDatabase()),
+           localDataSource ??
+           TablesLocalDataSource(Get.find<DatabaseHelper>().database),
        _remoteDataSource =
            remoteDataSource ?? TablesRemoteDataSource(Supabase.instance.client);
 

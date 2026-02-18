@@ -8,7 +8,7 @@ class UserModel {
   final String role;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  
+
   // ✅ Added for offline-first tracking
   final bool needsSync;
   final bool isDeleted;
@@ -35,11 +35,11 @@ class UserModel {
       email: json['email'] as String?,
       avatarUrl: json['avatar_url'] as String?,
       role: json['role'] as String,
-      createdAt: json['created_at'] != null 
-          ? DateTime.parse(json['created_at']) 
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
           : null,
-      updatedAt: json['updated_at'] != null 
-          ? DateTime.parse(json['updated_at']) 
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
           : null,
       needsSync: false, // Supabase data is always synced
       isDeleted: false,
@@ -56,8 +56,8 @@ class UserModel {
       role: local.role,
       createdAt: local.createdAt,
       updatedAt: local.updatedAt,
-      needsSync: local.needsSync ?? false,
-      isDeleted: local.isDeleted ?? false,
+      needsSync: local.needsSync,
+      isDeleted: local.isDeleted,
       pendingOperation: local.pendingOperation,
     );
   }
@@ -75,7 +75,7 @@ class UserModel {
       syncedAt: DateTime.now(),
       needsSync: needsSync,
       isDeleted: isDeleted,
-      pendingOperation: pendingOperation, 
+      pendingOperation: pendingOperation,
       isLocalOnly: false, // Not local-only if created online
     );
   }
@@ -121,23 +121,23 @@ class UserModel {
   }
 
   // ==================== HELPERS ====================
-  
+
   /// Check if this is a temporary (offline-created) user
   bool get isTemporary => id.startsWith('temp_');
-  
+
   /// Check if this user needs to be synced to server
   bool get requiresSync => needsSync || isTemporary;
-  
+
   /// Get display name (for UI)
   String get displayName => fullName.isEmpty ? email ?? 'Unknown' : fullName;
-  
+
   /// Check if user has valid email
   bool get hasEmail => email != null && email!.isNotEmpty;
 
   @override
   String toString() {
     return 'UserModel(id: $id, fullName: $fullName, email: $email, '
-           'role: $role, needsSync: $needsSync, isDeleted: $isDeleted)';
+        'role: $role, needsSync: $needsSync, isDeleted: $isDeleted)';
   }
 
   @override

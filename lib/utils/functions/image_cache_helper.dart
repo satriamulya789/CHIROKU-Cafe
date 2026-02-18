@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
+import 'dart:io';
 
 class ImageCacheHelper {
   // Custom cache manager untuk avatar
@@ -45,6 +46,21 @@ class ImageCacheHelper {
       );
     }
 
+    // Handle local file path
+    if (!imageUrl.startsWith('http')) {
+      final file = File(imageUrl);
+      if (file.existsSync()) {
+        return Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            image: DecorationImage(image: FileImage(file), fit: fit),
+          ),
+        );
+      }
+    }
+
     return CachedNetworkImage(
       imageUrl: imageUrl,
       cacheManager: _avatarCacheManager,
@@ -53,10 +69,7 @@ class ImageCacheHelper {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          image: DecorationImage(
-            image: imageProvider,
-            fit: fit,
-          ),
+          image: DecorationImage(image: imageProvider, fit: fit),
         ),
       ),
       placeholder: (context, url) => _buildLoadingAvatar(
@@ -98,6 +111,21 @@ class ImageCacheHelper {
       );
     }
 
+    // Handle local file path
+    if (!imageUrl.startsWith('http')) {
+      final file = File(imageUrl);
+      if (file.existsSync()) {
+        return Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            image: DecorationImage(image: FileImage(file), fit: fit),
+          ),
+        );
+      }
+    }
+
     return CachedNetworkImage(
       imageUrl: imageUrl,
       cacheManager: _avatarCacheManager,
@@ -106,10 +134,7 @@ class ImageCacheHelper {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          image: DecorationImage(
-            image: imageProvider,
-            fit: fit,
-          ),
+          image: DecorationImage(image: imageProvider, fit: fit),
         ),
       ),
       placeholder: (context, url) => _buildLoadingAvatar(
@@ -153,6 +178,21 @@ class ImageCacheHelper {
       );
     }
 
+    // Handle local file path
+    if (!imageUrl.startsWith('http')) {
+      final file = File(imageUrl);
+      if (file.existsSync()) {
+        return Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            borderRadius: borderRadius ?? BorderRadius.circular(8),
+            image: DecorationImage(image: FileImage(file), fit: fit),
+          ),
+        );
+      }
+    }
+
     return CachedNetworkImage(
       imageUrl: imageUrl,
       cacheManager: _menuCacheManager,
@@ -161,10 +201,7 @@ class ImageCacheHelper {
         height: height,
         decoration: BoxDecoration(
           borderRadius: borderRadius ?? BorderRadius.circular(8),
-          image: DecorationImage(
-            image: imageProvider,
-            fit: fit,
-          ),
+          image: DecorationImage(image: imageProvider, fit: fit),
         ),
       ),
       placeholder: (context, url) => _buildLoadingMenuImage(
@@ -305,7 +342,8 @@ class ImageCacheHelper {
       child: Center(
         child: Text(
           initial,
-          style: textStyle ??
+          style:
+              textStyle ??
               TextStyle(
                 fontSize: size * 0.4,
                 fontWeight: FontWeight.bold,
@@ -319,8 +357,11 @@ class ImageCacheHelper {
   // ==================== PRECACHE METHODS ====================
 
   static Future<void> precacheAvatar(
-      BuildContext context, String? imageUrl) async {
-    if (imageUrl == null || imageUrl.isEmpty) return;
+    BuildContext context,
+    String? imageUrl,
+  ) async {
+    if (imageUrl == null || imageUrl.isEmpty || !imageUrl.startsWith('http'))
+      return;
 
     try {
       await _avatarCacheManager.downloadFile(imageUrl);
@@ -338,7 +379,7 @@ class ImageCacheHelper {
     int errorCount = 0;
 
     for (final url in imageUrls) {
-      if (url.isNotEmpty) {
+      if (url.isNotEmpty && url.startsWith('http')) {
         try {
           await _avatarCacheManager.downloadFile(url);
           successCount++;
@@ -354,7 +395,8 @@ class ImageCacheHelper {
   }
 
   static Future<void> precacheMenuImage(String? imageUrl) async {
-    if (imageUrl == null || imageUrl.isEmpty) return;
+    if (imageUrl == null || imageUrl.isEmpty || !imageUrl.startsWith('http'))
+      return;
 
     try {
       await _menuCacheManager.downloadFile(imageUrl);
@@ -369,7 +411,7 @@ class ImageCacheHelper {
     int errorCount = 0;
 
     for (final url in imageUrls) {
-      if (url.isNotEmpty) {
+      if (url.isNotEmpty && url.startsWith('http')) {
         try {
           await _menuCacheManager.downloadFile(url);
           successCount++;
@@ -387,6 +429,9 @@ class ImageCacheHelper {
   // ==================== CACHE INFO ====================
 
   static Future<bool> isImageCached(String imageUrl) async {
+    if (!imageUrl.startsWith('http')) {
+      return File(imageUrl).existsSync();
+    }
     try {
       final fileInfo = await _avatarCacheManager.getFileFromCache(imageUrl);
       final isCached = fileInfo != null;
@@ -403,6 +448,9 @@ class ImageCacheHelper {
   }
 
   static Future<bool> isAvatarCached(String imageUrl) async {
+    if (!imageUrl.startsWith('http')) {
+      return File(imageUrl).existsSync();
+    }
     try {
       final fileInfo = await _avatarCacheManager.getFileFromCache(imageUrl);
       final isCached = fileInfo != null;
@@ -419,6 +467,9 @@ class ImageCacheHelper {
   }
 
   static Future<bool> isMenuImageCached(String imageUrl) async {
+    if (!imageUrl.startsWith('http')) {
+      return File(imageUrl).existsSync();
+    }
     try {
       final fileInfo = await _menuCacheManager.getFileFromCache(imageUrl);
       final isCached = fileInfo != null;
@@ -494,8 +545,10 @@ class ImageCacheHelper {
     }
   }
 
-  static Future<void> clearImageCache(String imageUrl,
-      {bool isMenuImage = false}) async {
+  static Future<void> clearImageCache(
+    String imageUrl, {
+    bool isMenuImage = false,
+  }) async {
     try {
       if (isMenuImage) {
         await _menuCacheManager.removeFile(imageUrl);
