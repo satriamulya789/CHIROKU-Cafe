@@ -19,35 +19,37 @@ class MenuService {
 
   Future<List<MenuModel>> fetchMenus() async {
     final isOnline = await _networkInfo.isConnected;
-    
+
     if (isOnline) {
       log('🌐 Fetching menus from Supabase...');
       try {
         final menus = await _repository.getMenus();
-        
+
         // Save to local
         final menusRaw = await _repository.getMenusRaw();
         for (final menuData in menusRaw) {
-          await _database.upsertMenu(MenuLocal(
-            id: menuData['id'],
-            categoryId: menuData['category_id'],
-            name: menuData['name'],
-            price: (menuData['price'] as num).toDouble(),
-            description: menuData['description'],
-            imageUrl: menuData['image_url'],
-            localImagePath: null,
-            isAvailable: menuData['is_available'] ?? true,
-            stock: menuData['stock'] ?? 0,
-            createdAt: DateTime.parse(menuData['created_at']),
-            updatedAt: DateTime.parse(menuData['updated_at']),
-            syncedAt: DateTime.now(),
-            needsSync: false,
-            isDeleted: false,
-            isLocalOnly: false,
-            pendingOperation: null,
-          ));
+          await _database.upsertMenu(
+            MenuLocal(
+              id: menuData['id'],
+              categoryId: menuData['category_id'],
+              name: menuData['name'],
+              price: (menuData['price'] as num).toDouble(),
+              description: menuData['description'],
+              imageUrl: menuData['image_url'],
+              localImagePath: null,
+              isAvailable: menuData['is_available'] ?? true,
+              stock: menuData['stock'] ?? 0,
+              createdAt: DateTime.parse(menuData['created_at']),
+              updatedAt: DateTime.parse(menuData['updated_at']),
+              syncedAt: DateTime.now(),
+              needsSync: false,
+              isDeleted: false,
+              isLocalOnly: false,
+              pendingOperation: null,
+            ),
+          );
         }
-        
+
         return menus;
       } catch (e) {
         log('❌ Error fetching from Supabase, falling back to local: $e');
@@ -62,12 +64,12 @@ class MenuService {
   Future<List<MenuModel>> _fetchMenusFromLocal() async {
     final localMenus = await _database.getAllMenus();
     final localCategories = await _database.getAllCategories();
-    
+
     return localMenus.map((menu) {
       final category = localCategories.firstWhereOrNull(
         (cat) => cat.id == menu.categoryId,
       );
-      
+
       return MenuModel(
         id: menu.id,
         categoryId: menu.categoryId,
@@ -80,10 +82,7 @@ class MenuService {
         createdAt: menu.createdAt,
         updatedAt: menu.updatedAt,
         category: category != null
-            ? CategoryMenuModel(
-                id: category.id,
-                name: category.name,
-              )
+            ? CategoryMenuModel(id: category.id, name: category.name)
             : null,
       );
     }).toList();
@@ -91,26 +90,28 @@ class MenuService {
 
   Future<List<CategoryModel>> fetchCategories() async {
     final isOnline = await _networkInfo.isConnected;
-    
+
     if (isOnline) {
       log('🌐 Fetching categories from Supabase...');
       try {
         final categories = await _repository.getCategories();
-        
+
         // Save to local
         final categoriesRaw = await _repository.getCategoriesRaw();
         for (final categoryData in categoriesRaw) {
-          await _database.upsertCategory(CategoryLocal(
-            id: categoryData['id'],
-            name: categoryData['name'],
-            createdAt: DateTime.parse(categoryData['created_at']),
-            updatedAt: DateTime.parse(categoryData['updated_at']),
-            syncedAt: DateTime.now(),
-            needsSync: false,
-            isDeleted: false,
-          ));
+          await _database.upsertCategory(
+            CategoryLocal(
+              id: categoryData['id'],
+              name: categoryData['name'],
+              createdAt: DateTime.parse(categoryData['created_at']),
+              updatedAt: DateTime.parse(categoryData['updated_at']),
+              syncedAt: DateTime.now(),
+              needsSync: false,
+              isDeleted: false,
+            ),
+          );
         }
-        
+
         return categories;
       } catch (e) {
         log('❌ Error fetching from Supabase, falling back to local: $e');
@@ -124,17 +125,21 @@ class MenuService {
 
   Future<List<CategoryModel>> _fetchCategoriesFromLocal() async {
     final localCategories = await _database.getAllCategories();
-    return localCategories.map((category) => CategoryModel(
-      id: category.id,
-      name: category.name,
-      createdAt: category.createdAt,
-      updatedAt: category.updatedAt,
-    )).toList();
+    return localCategories
+        .map(
+          (category) => CategoryModel(
+            id: category.id,
+            name: category.name,
+            createdAt: category.createdAt,
+            updatedAt: category.updatedAt,
+          ),
+        )
+        .toList();
   }
 
   Future<String> uploadImage(File imageFile, String fileName) async {
     final isOnline = await _networkInfo.isConnected;
-    
+
     if (isOnline) {
       log('🌐 Uploading image to Supabase...');
       try {
@@ -151,7 +156,7 @@ class MenuService {
 
   Future<void> deleteImage(String imageUrl) async {
     final isOnline = await _networkInfo.isConnected;
-    
+
     if (isOnline) {
       try {
         await _repository.deleteImage(imageUrl);
@@ -171,11 +176,11 @@ class MenuService {
     bool isAvailable = true,
   }) async {
     final isOnline = await _networkInfo.isConnected;
-    
+
     if (isOnline) {
       log('🌐 Creating menu in Supabase...');
       try {
-        await _repository.createMenu(
+        final newId = await _repository.createMenu(
           categoryId: categoryId,
           name: name,
           price: price,
@@ -184,7 +189,32 @@ class MenuService {
           imageUrl: imageUrl,
           isAvailable: isAvailable,
         );
-        log('✅ Menu created in Supabase');
+
+        // ✅ Also save to local database immediately for instant UI update
+        await _database.upsertMenu(
+          MenuLocal(
+            id: newId,
+            categoryId: categoryId,
+            name: name,
+            price: price,
+            description: description,
+            imageUrl: imageUrl,
+            localImagePath: imageUrl?.startsWith('http') == false
+                ? imageUrl
+                : null,
+            isAvailable: isAvailable,
+            stock: stock,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            syncedAt: DateTime.now(),
+            needsSync: false,
+            isDeleted: false,
+            isLocalOnly: false,
+            pendingOperation: null,
+          ),
+        );
+
+        log('✅ Menu created in Supabase and local DB with ID: $newId');
       } catch (e) {
         log('❌ Error creating in Supabase, saving offline: $e');
         await _createMenuOffline(
@@ -243,7 +273,7 @@ class MenuService {
     bool isAvailable = true,
   }) async {
     final isOnline = await _networkInfo.isConnected;
-    
+
     if (isOnline) {
       log('🌐 Updating menu in Supabase...');
       try {
@@ -257,7 +287,32 @@ class MenuService {
           imageUrl: imageUrl,
           isAvailable: isAvailable,
         );
-        log('✅ Menu updated in Supabase');
+
+        // ✅ Also update local database immediately for instant UI update
+        await _database.upsertMenu(
+          MenuLocal(
+            id: id,
+            categoryId: categoryId,
+            name: name,
+            price: price,
+            description: description,
+            imageUrl: imageUrl,
+            localImagePath: imageUrl?.startsWith('http') == false
+                ? imageUrl
+                : null,
+            isAvailable: isAvailable,
+            stock: stock,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            syncedAt: DateTime.now(),
+            needsSync: false,
+            isDeleted: false,
+            isLocalOnly: false,
+            pendingOperation: null,
+          ),
+        );
+
+        log('✅ Menu updated in Supabase and local DB');
       } catch (e) {
         log('❌ Error updating in Supabase, saving offline: $e');
         await _updateMenuOffline(
@@ -311,15 +366,23 @@ class MenuService {
 
   Future<void> deleteMenu(int id) async {
     final isOnline = await _networkInfo.isConnected;
-    
+
     if (isOnline) {
       log('🌐 Deleting menu in Supabase...');
       try {
         await _repository.deleteMenu(id);
-        log('✅ Menu deleted in Supabase');
+
+        // ✅ Also delete from local database immediately for instant UI update
+        await _database.permanentlyDeleteMenu(id);
+
+        log('✅ Menu deleted in Supabase and local DB');
       } catch (e) {
-        log('❌ Error deleting in Supabase, marking offline: $e');
-        await _database.deleteMenuOffline(id);
+        log('❌ Error deleting in Supabase: $e');
+        // If it's a foreign key constraint error, don't mark offline
+        if (!e.toString().contains('23503')) {
+          await _database.deleteMenuOffline(id);
+        }
+        rethrow;
       }
     } else {
       log('📴 Offline - marking menu for deletion');
@@ -329,12 +392,21 @@ class MenuService {
 
   Future<void> toggleMenuAvailability(int id, bool isAvailable) async {
     final isOnline = await _networkInfo.isConnected;
-    
+
     if (isOnline) {
       log('🌐 Toggling menu availability in Supabase...');
       try {
         await _repository.toggleMenuAvailability(id, isAvailable);
-        log('✅ Menu availability updated in Supabase');
+
+        // ✅ Also update local database immediately for instant UI update
+        await _database.updateMenuOffline(id, isAvailable: isAvailable);
+        // Mark as synced since we just updated Supabase
+        final menu = await _database.getMenuById(id);
+        if (menu != null) {
+          await _database.markMenuAsSynced(id);
+        }
+
+        log('✅ Menu availability updated in Supabase and local DB');
       } catch (e) {
         log('❌ Error updating in Supabase, saving offline: $e');
         await _database.updateMenuOffline(id, isAvailable: isAvailable);
@@ -349,12 +421,12 @@ class MenuService {
   Stream<List<MenuModel>> watchMenus() {
     return _database.watchAllMenus().asyncMap((localMenus) async {
       final localCategories = await _database.getAllCategories();
-      
+
       return localMenus.map((menu) {
         final category = localCategories.firstWhereOrNull(
           (cat) => cat.id == menu.categoryId,
         );
-        
+
         return MenuModel(
           id: menu.id,
           categoryId: menu.categoryId,
@@ -367,10 +439,7 @@ class MenuService {
           createdAt: menu.createdAt,
           updatedAt: menu.updatedAt,
           category: category != null
-              ? CategoryMenuModel(
-                  id: category.id,
-                  name: category.name,
-                )
+              ? CategoryMenuModel(id: category.id, name: category.name)
               : null,
         );
       }).toList();
@@ -378,13 +447,17 @@ class MenuService {
   }
 
   Stream<List<CategoryModel>> watchCategories() {
-    return _database.watchAllCategories().map((localCategories) =>
-      localCategories.map((category) => CategoryModel(
-        id: category.id,
-        name: category.name,
-        createdAt: category.createdAt,
-        updatedAt: category.updatedAt,
-      )).toList()
+    return _database.watchAllCategories().map(
+      (localCategories) => localCategories
+          .map(
+            (category) => CategoryModel(
+              id: category.id,
+              name: category.name,
+              createdAt: category.createdAt,
+              updatedAt: category.updatedAt,
+            ),
+          )
+          .toList(),
     );
   }
 }

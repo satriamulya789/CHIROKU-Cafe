@@ -804,6 +804,17 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
+  Future<void> permanentlyDeleteMenu(int id) async {
+    log('🗑️ Permanently deleting menu: $id');
+    try {
+      await (delete(menuLocalTable)..where((tbl) => tbl.id.equals(id))).go();
+      log('✅ Menu permanently deleted');
+    } catch (e) {
+      log('❌ Error permanently deleting menu: $e');
+      rethrow;
+    }
+  }
+
   // =========================== CATEGORY METHODS ===========================
 
   // OFFLINE CRUD OPERATIONS
