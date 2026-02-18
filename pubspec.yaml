@@ -77,6 +77,8 @@ dependencies:
   drift: ^2.31.0
 
   shimmer: ^3.0.0
+  http: ^1.2.0
+  ota_update: ^5.1.0
 
 dev_dependencies:
   flutter_test:

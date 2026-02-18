@@ -5,6 +5,7 @@ import 'package:chiroku_cafe/config/routes/routes.dart';
 import 'package:chiroku_cafe/core/databases/drift_database.dart';
 import 'package:chiroku_cafe/feature/auth/splash_screen/repositories/splash_repository.dart';
 import 'package:chiroku_cafe/feature/auth/splash_screen/repositories/splash_session_offline_repository.dart';
+import 'package:chiroku_cafe/core/services/update_service.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -34,9 +35,19 @@ class SplashController extends GetxController {
     _listenConnectivity();
 
     // ✅ Watch session changes (real-time)
+    // ✅ Watch session changes (real-time)
     _watchSessionChanges();
 
+    // 🔄 Check for updates
+    _checkForUpdates();
+
     _startApp();
+  }
+
+  Future<void> _checkForUpdates() async {
+    // Add a small delay to ensure context is ready if needed, though GetX usually handles it
+    await Future.delayed(const Duration(seconds: 1));
+    await UpdateService().checkForUpdate();
   }
 
   @override
@@ -51,7 +62,7 @@ class SplashController extends GetxController {
       final PackageInfo packageInfo = await PackageInfo.fromPlatform();
       appVersion.value = packageInfo.version;
     } catch (e) {
-      appVersion.value = '2.1.0'; // Fallback
+      appVersion.value = '2.2.1'; // Fallback
     }
   }
 
